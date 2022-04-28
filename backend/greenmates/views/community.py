@@ -100,7 +100,7 @@ def get_create_feedlist(request):
         return Response(serializer.data)
     
     elif request.method == 'POST':
-        serializer = FeedPostPutSerializer(data=request.data)
+        serializer = FeedPostPutSerializer(data=request.data, context={"request": request})
         author = User.objects.get(pk=1)
         content_trans = n2mt(request.data['content'])
         if 'restaurant_id' in request.data:
