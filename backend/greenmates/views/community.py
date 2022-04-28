@@ -7,9 +7,11 @@ from rest_framework.decorators import api_view
 from rest_framework.status import (
     HTTP_201_CREATED,
     HTTP_204_NO_CONTENT,
+    HTTP_400_BAD_REQUEST,
+    HTTP_401_UNAUTHORIZED,
+    HTTP_403_FORBIDDEN,
 )
 from rest_framework.response import Response
-
 from ..models import (
     Feed,
     Restaurant,
@@ -25,6 +27,7 @@ from ..serializers.comment import (
     CommentPostPutSerializer,
     CommentTransSerializer,
 )
+from accounts.views.login import get_request_user
 import os
 import sys
 import urllib.request
@@ -83,6 +86,15 @@ def get_create_feedlist(request):
     POST: 새로운 피드를 작성한다.
     '''
     if request.method == 'GET':
+        # 로그인 기능 구현 시 필요!
+        # # user = get_object_or_404(User, pk=1)
+        # user = get_request_user(request)
+
+        # if not user:
+        #     return Response(status=HTTP_401_UNAUTHORIZED)
+        # elif user == 'EXPIRED_TOKEN':
+        #     return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
+
         feed_list = get_list_or_404(Feed)
         serializer = FeedSerializer(feed_list, many=True)
         return Response(serializer.data)
@@ -100,7 +112,7 @@ def get_create_feedlist(request):
                 serializer.save(author=author, content_trans=content_trans)
         
         return Response(
-            data={'Note': '피드가 정상적으로 작성되었습니다.'},
+            data='피드가 정상적으로 작성되었습니다.',
             status=HTTP_201_CREATED
         )
 
@@ -112,10 +124,20 @@ def update_delete_feed(request, feed_id):
     DELETE: 해당 피드를 삭제한다.
     '''
     feed = get_object_or_404(Feed, pk=feed_id)
-    print(feed)
+    # if request.user.id != feed.author.id:
+    if 1 != feed.author.id:
+        return Response(
+            data='피드에 접근 권한이 없습니다.',
+            status=HTTP_403_FORBIDDEN
+        )
     if request.method == 'PUT':
         serializer = FeedPostPutSerializer(instance=feed, data=request.data)
-        content_trans = n2mt(request.data['content'])
+        
+        if request.data['content'] == serializer.instance.content:
+            content_trans = serializer.instance.content_trans
+        else:
+            content_trans = n2mt(request.data['content'])
+
         if 'restaurant_id' in request.data:
             restaurant = Restaurant.objects.get(pk=request.data['restaurant_id'])
             if serializer.is_valid(raise_exception=True):
@@ -127,9 +149,15 @@ def update_delete_feed(request, feed_id):
         return Response(serializer.data)
     
     elif request.method == 'DELETE':
+        # if request.user.id != feed.author.id:
+        if 1 != feed.author.id:
+            return Response(
+                data='피드에 접근 권한이 없습니다.',
+                status=HTTP_403_FORBIDDEN
+            )
         feed.delete()
         return Response(
-            data={'Note': f'{feed_id}번 피드가 정상적으로 삭제되었습니다.'},
+            data=f'{feed_id}번 피드가 정상적으로 삭제되었습니다.',
             status=HTTP_204_NO_CONTENT
         )
 
@@ -159,7 +187,7 @@ def get_create_comment(request, feed_id):
                 serializer.save(author=author, feed=feed, content_trans=content_trans)
         
         return Response(
-            data={'Note': '댓글이 정상적으로 작성되었습니다.'},
+            data='댓글이 정상적으로 작성되었습니다.',
             status=HTTP_201_CREATED
         )
 
@@ -172,6 +200,12 @@ def update_delete_comment(request, comment_id):
     '''
     comment = get_object_or_404(Comment, pk=comment_id)
     if request.method == 'PUT':
+        # if request.user.id != feed.author.id:
+        if 1 != comment.author.id:
+            return Response(
+                data='댓글에 접근 권한이 없습니다.',
+                status=HTTP_403_FORBIDDEN
+            )
         serializer = CommentPostPutSerializer(instance=comment, data=request.data)
         content_trans = n2mt(request.data['content'])
         if serializer.is_valid(raise_exception=True):
@@ -179,9 +213,15 @@ def update_delete_comment(request, comment_id):
         return Response(serializer.data)
 
     elif request.method == 'DELETE':
+        # if request.user.id != feed.author.id:
+        if 1 != comment.author.id:
+            return Response(
+                data='댓글에 접근 권한이 없습니다.',
+                status=HTTP_403_FORBIDDEN
+            )
         comment.delete()
         return Response(
-            data={'Note': f'{comment_id}번 댓글이 정상적으로 삭제되었습니다.'},
+            data=f'{comment_id}번 댓글이 정상적으로 삭제되었습니다.',
             status=HTTP_204_NO_CONTENT
         )
 
