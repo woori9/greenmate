@@ -1,10 +1,22 @@
 import './App.css';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Home from './routes/Home';
+import Community from './routes/Community';
+import Map from './routes/Map';
+import MyMoim from './routes/MyMoim';
+import MyPage from './routes/MyPage';
 
 function App() {
   return (
-    <div>
-      <h1>그린메이트</h1>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/community" element={<Community />} />
+        <Route path="/map" element={<Map />} />
+        <Route path="/mymoim" element={<MyMoim />} />
+        <Route path="/mypage" element={<MyPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
