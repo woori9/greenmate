@@ -57,7 +57,7 @@ class Mate(models.Model):
     '''
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     moim = models.ForeignKey(Moim, on_delete=models.CASCADE)
-    is_joined = models.IntegerField(default=0)
+    mate_status = models.IntegerField(default=0)
 
 
 class UserReview(models.Model):
