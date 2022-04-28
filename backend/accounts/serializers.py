@@ -24,3 +24,12 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'nickname', 'vege_type',)
+        read_only_fields = ('id',)
+
+
+class UserPutSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = User
+        fields = ('id', 'nickname', 'vege_type', 'is_certified', 'language',)
+        read_only_fields = ('id',)
