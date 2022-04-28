@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { useAtom } from 'jotai';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
+import ResponsiveNavbar from '../components/common/navbar/ResponsiveNavbar';
 import MoimCategory from '../components/moim/MoimCategory';
 import MoimInfo from '../components/moim/MoimInfo';
 import moim from '../atoms/moim';
@@ -94,6 +95,7 @@ function MyMoim() {
 
   return (
     <>
+      <ResponsiveNavbar />
       <FloatButton type="button" onClick={() => navigate('/moim/create')}>
         <AddIcon />
         모임 열기
