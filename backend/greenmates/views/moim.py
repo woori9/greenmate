@@ -16,7 +16,7 @@ from ..serializers.moim import (
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
-user = User.objects.filter(pk=2)   # TODO: request.user로 변경 
+user = User.objects.filter(pk=2)   # TODO: request.user로 변경 (현재 pk=2로 TEST중)
 # TODO: 유저정보
 # 1. request.user 언어정보
 # 2. login_required
@@ -25,11 +25,11 @@ user = User.objects.filter(pk=2)   # TODO: request.user로 변경
 @api_view(['GET', 'POST'])
 def get_create_moim_list(request):
     '''
-    GET: 모든 모임 글을 조회
+    GET: 모집 중인 모든 모임 글을 조회
     POST: 새로운 모임 글을 작성
     '''
     def moim_list():
-        moims = get_list_or_404(Moim)
+        moims = Moim.objects.filter(status=0)
         serializer = MoimSimpleKrSerializer(moims, many=True)
         # if user.language: # En
         #     serializer = MoimSimpleEnSerializer(moims, many=True)
@@ -81,14 +81,25 @@ def get_waiting_moim(request):
     '''
     GET: 유저가 게스트로 대기중인 모임 리스트 조회
     '''
-    pass
+    # TODO: author_id를 request.user에서 가져오기. 현재 2번 user로 TEST 중.
+    if request.method == 'GET':
+        moims = get_list_or_404(Moim.objects.filter(mate__user=2, mate__mate_status=0).exclude(author_id=2))
+        serializer = MoimDetailKrSerializer(moims, many=True)
+        # if user.language:
+        #     serializer = MoimDetailEnSerializer(moims)
+        return Response(serializer.data)
 
 @api_view(['GET'])
 def get_joined_moim(request):
     '''
     GET: 유저가 게스트로 합류중인 모임 리스트 조회
     ''' 
-    pass
+    if request.method == 'GET':
+        moims = get_list_or_404(Moim.objects.filter(mate__user=2, mate__mate_status=1).exclude(author_id=2))
+        serializer = MoimDetailKrSerializer(moims, many=True)
+        # if user.language:
+        #     serializer = MoimDetailEnSerializer(moims)
+        return Response(serializer.data)
 
 @api_view(['GET'])
 def get_opened_moim(request):
@@ -96,7 +107,6 @@ def get_opened_moim(request):
     GET: 유저가 호스트로 개설한 모임 리스트 조회
     '''
     if request.method == 'GET':
-        # TODO: author_id를 request.user에서 가져오기
         moims = get_list_or_404(Moim.objects.filter(author_id=2, status__lt=2))
         serializer = MoimAllEnSerializer(moims, many=True)
         # if user.language:
@@ -109,4 +119,9 @@ def get_finished_moim(request):
     '''
     GET: 유저가 호스트 / 게스트로 참여한 종료된 모임 리스트 조회
     '''
-    pass
+    if request.method == 'GET':
+        moims = get_list_or_404(Moim.objects.filter(mate__user=2, mate__mate_status=4))
+        serializer = MoimDetailKrSerializer(moims, many=True)
+        # if user.language:
+        #     serializer = MoimDetailEnSerializer(moims)
+        return Response(serializer.data)
