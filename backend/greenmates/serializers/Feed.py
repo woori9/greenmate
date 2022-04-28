@@ -30,8 +30,8 @@ class FeedPostPutSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Feed
-        fields = '__all__'
-        # exclude = ('like_users', )
+        # fields = '__all__'
+        exclude = ('like_users', )
         read_only_fields = ('author', 'restaurant', 'content_trans', )
 
 
