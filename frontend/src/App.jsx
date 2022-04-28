@@ -1,10 +1,14 @@
 import './App.css';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import MyMoim from './routes/MyMoim';
 
 function App() {
   return (
-    <div>
-      <h1>그린메이트</h1>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/mymoim" element={<MyMoim />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
