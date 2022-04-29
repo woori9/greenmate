@@ -1,11 +1,16 @@
+import styled from 'styled-components';
 import ResponsiveNavbar from '../components/common/navbar/ResponsiveNavbar';
+
+const Container = styled.div`
+  border: 1px solid red;
+`;
 
 function Home() {
   return (
-    <>
-      <h1>홈</h1>
+    <Container>
       <ResponsiveNavbar />
-    </>
+      <h1>그린메이트그린메이트그린메이트그린메이트그린메이트그린메이트</h1>
+    </Container>
   );
 }
 
