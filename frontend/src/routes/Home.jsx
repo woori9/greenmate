@@ -9,7 +9,7 @@ function Home() {
   return (
     <Container>
       <ResponsiveNavbar />
-      <h1>그린메이트그린메이트그린메이트그린메이트그린메이트그린메이트</h1>
+      <h1>그린메이트그린메이트 그린메이트그린메이트그린메이트그린메이트</h1>
     </Container>
   );
 }
