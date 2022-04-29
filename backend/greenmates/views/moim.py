@@ -83,7 +83,7 @@ def get_waiting_moim(request):
     '''
     # TODO: author_id를 request.user에서 가져오기. 현재 2번 user로 TEST 중.
     if request.method == 'GET':
-        moims = get_list_or_404(Moim.objects.filter(mate__user=2, mate__mate_status=0).exclude(author_id=2))
+        moims = get_list_or_404(Moim.objects.filter(mate__user=2, mate__mate_status=0))
         serializer = MoimDetailKrSerializer(moims, many=True)
         # if user.language:
         #     serializer = MoimDetailEnSerializer(moims)

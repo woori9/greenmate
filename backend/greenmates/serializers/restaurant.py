@@ -7,3 +7,15 @@ class RestaurantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Restaurant
         fields = '__all__'
+
+# 식당 한글
+class RestaurantMoimDataKrSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Restaurant
+        fields = ('id', 'name_kr', 'address_kr')
+
+# 식당 영문
+class RestaurantMoimDataEnSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Restaurant
+        fields = ('id', 'name_en', 'address_en')

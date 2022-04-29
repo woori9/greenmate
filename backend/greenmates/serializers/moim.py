@@ -1,19 +1,9 @@
 from rest_framework import serializers
-from ..models import Moim, Mate, Restaurant
+from ..models import Moim, Mate
 from accounts.serializers import UserSerializer
-
-# 식당 한글
-class RestaurantMoimDataKrSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Restaurant
-        fields = ('id', 'name_kr', 'address_kr')
-
-# 식당 영문
-class RestaurantMoimDataEnSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Restaurant
-        fields = ('id', 'name_en', 'address_en')
-
+from .restaurant import (
+    RestaurantMoimDataKrSerializer, RestaurantMoimDataEnSerializer
+    )
 # mate 정보
 class MateSerializer(serializers.ModelSerializer):
 
@@ -41,7 +31,7 @@ class MoimSimpleSerializer(serializers.ModelSerializer):
         response['author'] = UserSerializer(instance.author).data
         return response
 
-    # 합류 중인 인원
+    # 합류 중인 인원수
     def get_now_cnt(self, obj):
         now_cnt = obj.mate_set.filter(mate_status=1).count()
         return now_cnt
