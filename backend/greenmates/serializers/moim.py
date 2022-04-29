@@ -137,9 +137,20 @@ class MoimTransSerializer(serializers.ModelSerializer):
         model = Moim
         fields = ('content_trans',)
 
-# TODO: 모임 글 작성 및 수정
+# 모임 글 작성 및 수정
 class MoimPostPutSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Moim
         fields = ('__all__')
         read_only_fields = ('author', 'content_trans', 'status',)
+    
+    def create(self, validated_data):
+        moim = Moim.objects.create(**validated_data)
+        mate = Mate.objects.create(
+            moim=moim, 
+            user=self.context['user'],
+            mate_status=1
+        )
+        mate.save()
+        return moim
