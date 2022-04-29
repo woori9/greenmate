@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import (
     Restaurant,
+    RestaurantInfo,
     Moim,
     Mate,
     UserReview,
@@ -12,6 +13,7 @@ from .models import (
 
 
 admin.site.register(Restaurant)
+admin.site.register(RestaurantInfo)
 admin.site.register(Moim)
 admin.site.register(Mate)
 admin.site.register(UserReview)
