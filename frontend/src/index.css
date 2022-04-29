@@ -27,3 +27,12 @@ code {
     padding: 5rem 1rem 5rem 1rem;
   }
 }
+
+.sr-only {
+  position: absolute;
+  z-index: -100;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+}
