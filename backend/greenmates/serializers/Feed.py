@@ -21,6 +21,7 @@ class FeedSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         response = super().to_representation(instance)
         response['restaurant'] = RestaurantSerializer(instance.restaurant).data
+        response['author'] = UserSerializer(instance.author).data
         return response
 
 
