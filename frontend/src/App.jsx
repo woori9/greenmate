@@ -5,6 +5,7 @@ import Community from './routes/Community';
 import Map from './routes/Map';
 import MyMoim from './routes/MyMoim';
 import MyPage from './routes/MyPage';
+import Chat from './routes/Chat';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/map" element={<Map />} />
         <Route path="/mymoim" element={<MyMoim />} />
         <Route path="/mypage" element={<MyPage />} />
+        <Route path="/chat" element={<Chat />} />
       </Routes>
     </BrowserRouter>
   );
