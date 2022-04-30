@@ -2,9 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import {
   getFirestore,
   collection,
-  setDoc,
   doc,
-  getDoc,
   addDoc,
   onSnapshot,
   query,
@@ -13,69 +11,16 @@ import {
 } from 'firebase/firestore';
 import ChatRoom from '../components/chat/ChatRoom';
 import app from '../service/firebase';
+import signIn from '../service/chat_service';
 
 const db = getFirestore(app);
 
 function Chat() {
   const userRef = useRef();
-  const roomRef = useRef();
+  const moimRef = useRef();
   const [user, setUser] = useState('');
   const [room, setRoom] = useState('');
   const [messages, setMessages] = useState([]);
-
-  // 회원가입 성공 후 시행
-  const submit = async () => {
-    if (!userRef.current.value) return;
-
-    setUser(userRef.current.value);
-
-    const docRef = doc(db, 'users', userRef.current.value);
-    const docSnap = await getDoc(docRef);
-
-    if (!docSnap.exists()) {
-      try {
-        await setDoc(doc(db, 'users', userRef.current.value), {
-          id: userRef.current.value,
-          rooms: [],
-          vaganType: userRef.current.value,
-          nickname: `random${userRef.current.value}`,
-        });
-        console.log('임시 회원 가입 완료');
-      } catch (e) {
-        console.error('Error adding document: ', e);
-      }
-    } else {
-      console.log('이미 존재하는 회원입니다');
-    }
-  };
-
-  const joinRoom = async () => {
-    if (!roomRef.current.value) return;
-
-    setRoom(roomRef.current.value);
-
-    const docRef = doc(db, 'rooms', roomRef.current.value);
-    const docSnap = await getDoc(docRef);
-
-    if (!docSnap.exists()) {
-      try {
-        await setDoc(doc(db, 'rooms', roomRef.current.value), {
-          id: roomRef.current.value,
-          users: [
-            {
-              id: userRef.current.value,
-              vaganType: userRef.current.value,
-              nickname: `random${userRef.current.value}`,
-            },
-          ],
-        });
-      } catch (e) {
-        console.error('Error adding document: ', e);
-      }
-    } else {
-      console.log('이미 존재하는 방');
-    }
-  };
 
   const sendMessage = async content => {
     try {
@@ -97,6 +42,7 @@ function Chat() {
     if (!room) return () => {};
     const q = query(
       collection(db, 'rooms', room, 'messages'),
+      // 내가 join 한 시점 이후의 메세지만
       orderBy('timestamp'),
     );
 
@@ -120,13 +66,25 @@ function Chat() {
       ) : (
         <>
           <input ref={userRef} type="text" placeholder="user" />
-          <button type="button" onClick={submit}>
+          <button
+            type="button"
+            onClick={() => {
+              setUser(userRef.current.value);
+              signIn(userRef.current.value);
+            }}
+          >
             set User
           </button>
         </>
       )}
-      <input ref={roomRef} type="text" placeholder="room" />
-      <button type="button" onClick={joinRoom}>
+      <input ref={moimRef} type="text" placeholder="room" />
+      <button
+        type="button"
+        onClick={async () => {
+          if (!moimRef.current.value) return;
+          setRoom(moimRef.current.value);
+        }}
+      >
         create room
       </button>
       {user && room && (
