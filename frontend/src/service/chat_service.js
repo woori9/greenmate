@@ -1,4 +1,10 @@
-import { getFirestore, setDoc, doc, getDoc } from 'firebase/firestore';
+import {
+  getFirestore,
+  setDoc,
+  doc,
+  getDoc,
+  collection,
+} from 'firebase/firestore';
 import app from './firebase';
 
 const db = getFirestore(app);
@@ -22,4 +28,31 @@ const signIn = async userId => {
   }
 };
 
-export default signIn;
+const getRoomId = async moimId => {
+  const moimRef = doc(db, 'moims', moimId);
+  const docSnap = await getDoc(moimRef);
+
+  if (docSnap.exists()) {
+    return docSnap.data().roomId;
+  }
+
+  try {
+    const newRoomRef = doc(collection(db, 'rooms'));
+    await setDoc(doc(db, 'moims', moimId), {
+      id: moimId,
+      roomId: newRoomRef.id,
+    });
+
+    const newRoom = {
+      id: newRoomRef.id,
+      moimId,
+    };
+
+    await setDoc(newRoomRef, newRoom);
+    return newRoomRef.id;
+  } catch (e) {
+    return e;
+  }
+};
+
+export { signIn, getRoomId };

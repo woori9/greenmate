@@ -11,7 +11,7 @@ import {
 } from 'firebase/firestore';
 import ChatRoom from '../components/chat/ChatRoom';
 import app from '../service/firebase';
-import signIn from '../service/chat_service';
+import { signIn, getRoomId } from '../service/chat_service';
 
 const db = getFirestore(app);
 
@@ -82,10 +82,11 @@ function Chat() {
         type="button"
         onClick={async () => {
           if (!moimRef.current.value) return;
-          setRoom(moimRef.current.value);
+          const roomId = await getRoomId(moimRef.current.value);
+          setRoom(roomId);
         }}
       >
-        create room
+        채팅방 입장
       </button>
       {user && room && (
         <ChatRoom sendMessage={sendMessage} messages={messages} />
