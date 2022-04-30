@@ -9,8 +9,14 @@ const StyledChatRoom = styled.div`
   height: 500px;
 `;
 
-function ChatRoom({ sendMessage, messages }) {
+function ChatRoom({ roomId, user, sendMessage, messages }) {
   const messageRef = useRef();
+  const handleSend = () => {
+    const content = messageRef.current.value;
+    if (!content) return;
+
+    sendMessage(roomId, content, user);
+  };
 
   return (
     <StyledChatRoom className="room">
@@ -20,10 +26,7 @@ function ChatRoom({ sendMessage, messages }) {
         ))}
       </ul>
       <input ref={messageRef} type="text" />
-      <button
-        type="button"
-        onClick={() => sendMessage(messageRef.current.value)}
-      >
+      <button type="button" onClick={handleSend}>
         send message
       </button>
     </StyledChatRoom>
@@ -32,6 +35,8 @@ function ChatRoom({ sendMessage, messages }) {
 
 ChatRoom.propTypes = {
   sendMessage: PropTypes.func.isRequired,
+  roomId: PropTypes.string.isRequired,
+  user: PropTypes.string.isRequired,
   messages: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string,

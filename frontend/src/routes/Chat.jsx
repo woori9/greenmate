@@ -2,16 +2,13 @@ import { useEffect, useRef, useState } from 'react';
 import {
   getFirestore,
   collection,
-  doc,
-  addDoc,
   onSnapshot,
   query,
   orderBy,
-  serverTimestamp,
 } from 'firebase/firestore';
 import ChatRoom from '../components/chat/ChatRoom';
 import app from '../service/firebase';
-import { signIn, getRoomId } from '../service/chat_service';
+import { signIn, getRoomId, sendMessage } from '../service/chat_service';
 
 const db = getFirestore(app);
 
@@ -21,22 +18,6 @@ function Chat() {
   const [user, setUser] = useState('');
   const [room, setRoom] = useState('');
   const [messages, setMessages] = useState([]);
-
-  const sendMessage = async content => {
-    try {
-      const roomref = doc(db, 'rooms', room);
-      const messagesRef = collection(roomref, 'messages');
-      const newMessage = {
-        author: user,
-        content,
-        timestamp: serverTimestamp(),
-      };
-
-      await addDoc(messagesRef, newMessage);
-    } catch (e) {
-      console.error('Error adding document: ', e);
-    }
-  };
 
   useEffect(() => {
     if (!room) return () => {};
@@ -89,7 +70,12 @@ function Chat() {
         채팅방 입장
       </button>
       {user && room && (
-        <ChatRoom sendMessage={sendMessage} messages={messages} />
+        <ChatRoom
+          roomId={room}
+          user={user}
+          sendMessage={sendMessage}
+          messages={messages}
+        />
       )}
     </>
   );

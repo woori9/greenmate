@@ -4,6 +4,8 @@ import {
   doc,
   getDoc,
   collection,
+  serverTimestamp,
+  addDoc,
 } from 'firebase/firestore';
 import app from './firebase';
 
@@ -55,4 +57,21 @@ const getRoomId = async moimId => {
   }
 };
 
-export { signIn, getRoomId };
+const sendMessage = async (roomId, content, user) => {
+  try {
+    const roomRef = doc(db, 'rooms', roomId);
+    const messagesRef = collection(roomRef, 'messages');
+
+    const newMessage = {
+      author: user,
+      content,
+      timestamp: serverTimestamp(),
+    };
+
+    await addDoc(messagesRef, newMessage);
+  } catch (e) {
+    throw new Error('firebase에 메세지를 저장하지 못했습니다.');
+  }
+};
+
+export { signIn, getRoomId, sendMessage };
