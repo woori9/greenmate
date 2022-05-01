@@ -16,6 +16,11 @@ class RestaurantSerializer(serializers.ModelSerializer):
         model = Restaurant
         fields = '__all__'
 
+    def to_representation(self, instance):
+        response = super().to_representation(instance)    
+        response['res_info'] = RestaurantInfo.objects.filter(restaurant=instance.id, language=user.language)
+        return response
+
 class RestaurantMapSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
 
@@ -30,19 +35,36 @@ class RestaurantMapSerializer(serializers.ModelSerializer):
             data = '준비중입니다.'
         return data
 
+# 모임 글 조회 시 보여 질 식당 정보
+class RestaurantInfoMoimSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RestaurantInfo
+        fields = ('restaurant', 'name', 'address')
+
 # 식당 한글
 class RestaurantMoimDataKrSerializer(serializers.ModelSerializer):
     class Meta:
         model = Restaurant
-        fields = ('id', 'name_kr', 'address_kr')
+        exclude = ('category', 'call', 'latitude', 'longitude', 'like_users',)
+
+    def to_representation(self, instance):
+        response = super().to_representation(instance)    
+        data = RestaurantInfo.objects.filter(restaurant=instance.id, language=0)[0]
+        response['id'] = data.restaurant.pk
+        response['name'] = data.name
+        response['address'] = data.address
+        return response
 
 # 식당 영문
 class RestaurantMoimDataEnSerializer(serializers.ModelSerializer):
     class Meta:
         model = Restaurant
-        fields = ('id', 'name_en', 'address_en')
+        exclude = ('category', 'call', 'latitude', 'longitude', 'like_users',)
+
     def to_representation(self, instance):
         response = super().to_representation(instance)    
-        response['res_info'] = RestaurantInfo.objects.filter(restaurant=instance.id, language=user.language)
+        data = RestaurantInfo.objects.filter(restaurant=instance.id, language=1)[0]
+        response['id'] = data.restaurant.pk
+        response['name'] = data.name
+        response['address'] = data.address
         return response
-

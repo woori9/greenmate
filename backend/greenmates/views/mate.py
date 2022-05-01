@@ -100,7 +100,7 @@ def decline_mate(request, mate_id):
     '''
     mate = get_object_or_404(Mate, pk=mate_id)
     moim = mate.moim
-    if moim.author.pk != 3: # 모임의 호스트가 아닌 경우
+    if moim.author.pk != user.pk: # 모임의 호스트가 아닌 경우
         return Response(
             data='접근 권한이 없습니다.',
             status=HTTP_403_FORBIDDEN
