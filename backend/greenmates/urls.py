@@ -2,7 +2,7 @@ from django.urls import path
 # ★★★★엔터 금지★★★★
 # 1
 from .views import moim
-
+from .views import mate
 
 
 
@@ -27,18 +27,18 @@ urlpatterns = [
     path('mates/join/', moim.get_joined_moim),
     path('mates/myopen/', moim.get_opened_moim),
     path('mates/finished/', moim.get_finished_moim),
-
-
-
-
+    path('mates/apply/<int:moim_id>/', mate.apply_mate),
+    path('mates/cancle/<int:mate_id>/', mate.cancle_mate),
+    path('mates/accept/<int:mate_id>/', mate.accept_mate),
+    path('mates/decline/<int:mate_id>/', mate.decline_mate),
+    path('mates/out/<int:mate_id>/', mate.out_mate),
+    path('mates/evaluate/<int:moim_id>/', mate.evaluate_mate),
 
 
 
 
 
     
-
-
 
 
 

@@ -4,20 +4,18 @@ from accounts.serializers import UserSerializer
 from .restaurant import (
     RestaurantMoimDataKrSerializer, RestaurantMoimDataEnSerializer
     )
-# mate 정보
-class MateSerializer(serializers.ModelSerializer):
+from .mate import MateSerializer
 
+class MoimSerializer(serializers.ModelSerializer):
+    now_cnt = serializers.SerializerMethodField() 
     class Meta:
-        model = Mate
-        fields = ('mate_status',)
-
-    def to_representation(self, instance):
-        response = super().to_representation(instance)
-        data = UserSerializer(instance.user).data
-        response['user_id'] = data['id']
-        response['nickname'] = data['nickname']
-        response['vege_type'] = data['vege_type']
-        return response
+        model = Moim
+        fields = (
+            'id', 'status', 'time', 'head_cnt', 'now_cnt',
+            )
+    def get_now_cnt(self, obj):
+        now_cnt = obj.mate_set.filter(mate_status=1).count()
+        return now_cnt
 
 # 기본 모임 정보
 class MoimSimpleSerializer(serializers.ModelSerializer):
