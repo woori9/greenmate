@@ -13,7 +13,7 @@ from .views import community
 
 
 # 3
-
+from .views import restaurant
 
 
 
@@ -82,8 +82,8 @@ urlpatterns = [
 
 
     # 3
-
-
+    path('restaurants/all/', restaurant.get_restaurant_list),
+    path('restaurant/search/', restaurant.search),
 
 
 

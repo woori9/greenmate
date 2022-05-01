@@ -16,20 +16,22 @@ from django.utils import timezone
 
 class Restaurant(models.Model):
     category = models.IntegerField()
-    name_kr = models.CharField(max_length=50)
-    name_en = models.CharField(max_length=255)
     call = models.CharField(max_length=20)
-    address_kr = models.TextField()
-    address_en = models.TextField()
-    menus_kr = models.TextField()
-    menus_en = models.TextField()
     latitude = models.FloatField()
     longitude = models.FloatField()
-    vege_types = models.CharField(max_length=50)
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_restaurants')
 
-    def __str__(self):
-        return f'{self.pk}: {self.name_kr}'
+
+class RestaurantInfo(models.Model):
+    '''
+    다국어 서비스 정보
+    '''
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
+    language = models.IntegerField()
+    name = models.CharField(max_length=255)
+    address = models.TextField()
+    menus = models.TextField()
+    vege_types = models.CharField(max_length=50)
 
 
 class Moim(models.Model):
