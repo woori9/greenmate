@@ -5,11 +5,11 @@ import moim from '../../atoms/moim';
 const ButtonDiv = styled.div`
   display: flex;
   justify-content: space-evenly;
-  margin: 0.5rem 0;
+  margin: 1rem 0;
 `;
 
 const Button = styled.button`
-  width: 9rem;
+  width: 8.5rem;
   height: 2rem;
   color: #000;
   background: none;
