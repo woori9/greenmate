@@ -27,7 +27,6 @@ def apply_mate(request, moim_id):
     ''' 
     moim = get_object_or_404(Moim, pk=moim_id)
     user_in_mate = moim.mate_set.values('user').filter(user=user.pk)
-    print(user_in_mate)
     if len(user_in_mate): # 호스트 or 이전에 거절/합류 된 유저라면 대기 신청 못함
         return Response(
             data='이 모임에 대기 신청이 불가합니다.',

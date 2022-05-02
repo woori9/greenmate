@@ -2,7 +2,7 @@ from rest_framework import serializers
 from ..models import Moim, Mate
 from accounts.serializers import UserSerializer
 from .restaurant import (
-    RestaurantMoimDataKrSerializer, RestaurantMoimDataEnSerializer
+    RestaurantMoimDataSerializer
     )
 from .mate import MateSerializer
 
@@ -18,7 +18,7 @@ class MoimSerializer(serializers.ModelSerializer):
         return now_cnt
 
 # 기본 모임 정보
-class MoimSimpleSerializer(serializers.ModelSerializer):
+class MoimSerializer(serializers.ModelSerializer):
     now_cnt = serializers.SerializerMethodField() 
 
     class Meta:
@@ -34,8 +34,8 @@ class MoimSimpleSerializer(serializers.ModelSerializer):
         now_cnt = obj.mate_set.filter(mate_status=1).count()
         return now_cnt
        
-# 기본 모임 정보 + 식당정보 (모임 list - 한글) 
-class MoimSimpleKrSerializer(MoimSimpleSerializer):
+# 기본 모임 정보 + 식당정보 (모임 list) 
+class MoimSimpleSerializer(MoimSerializer):
     class Meta:
         model = Moim
         fields = (
@@ -45,27 +45,11 @@ class MoimSimpleKrSerializer(MoimSimpleSerializer):
             )
     def to_representation(self, instance):
         response = super().to_representation(instance)
-        response['restaurant'] = RestaurantMoimDataKrSerializer(instance.restaurant).data
+        response['restaurant'] = RestaurantMoimDataSerializer(instance.restaurant).data
         return response
 
-
-# 기본 모임 정보 + 식당정보 (모임 list - 영어)  
-class MoimSimpleEnSerializer(MoimSimpleSerializer):
-    class Meta:
-        model = Moim
-        fields = (
-            'id','author',
-            'title', 'content', 'status', 'time', 'head_cnt', 'now_cnt',
-            'restaurant', 
-            )
-
-    def to_representation(self, instance):
-        response = super().to_representation(instance)
-        response['restaurant'] = RestaurantMoimDataEnSerializer(instance.restaurant).data
-        return response
-
-# 기본 모임 정보 + 식당정보 + mate_status 합류만 반환 (모임 상세 - 한글)
-class MoimDetailKrSerializer(MoimSimpleKrSerializer):
+# 기본 모임 정보 + 식당정보 + mate_status 합류만 반환 (모임 상세)
+class MoimDetailSerializer(MoimSimpleSerializer):
     mates = serializers.SerializerMethodField()     
     
     class Meta:
@@ -81,41 +65,8 @@ class MoimDetailKrSerializer(MoimSimpleKrSerializer):
         serializer = MateSerializer(queryset, many=True) 
         return serializer.data
 
-
-# 기본 모임 정보 + 식당정보 + mate_status 합류만 반환 (모임 상세 - 영어)
-class MoimDetailEnSerializer(MoimSimpleEnSerializer):
-    mates = serializers.SerializerMethodField()     
-    
-    class Meta:
-        model = Moim
-        fields = (
-            'id','author',
-            'title', 'content', 'status', 'time', 'head_cnt', 'now_cnt',
-            'mates', 'restaurant', 
-            )
-
-    def get_mates(self, obj):
-        queryset = obj.mate_set.filter(mate_status=1)
-        serializer = MateSerializer(queryset, many=True) 
-        return serializer.data
-
-# 기본 모임 정보 + 식당정보 + mate_status 대기 / 합류 / 거절 / 취소 / 완료 반환 (한글)
-class MoimAllKrSerializer(MoimSimpleKrSerializer):
-    mates = serializers.SerializerMethodField() 
-    
-    class Meta:
-        model = Moim
-        fields = (
-            'id','author',
-            'title', 'content', 'status', 'time', 'head_cnt', 'now_cnt',
-            'mates', 'restaurant', 
-            )
-
-    def get_mates(self, obj):
-        return MateSerializer(obj.mate_set, many=True).data
-
-# 기본 모임 정보 + 식당정보 + mate_status 대기 / 합류 / 거절 / 취소 / 완료 반환 (영어)
-class MoimAllEnSerializer(MoimSimpleEnSerializer):
+# 기본 모임 정보 + 식당정보 + mate_status 대기 / 합류 / 거절 / 취소 / 완료 반환 
+class MoimAllSerializer(MoimSimpleSerializer):
     mates = serializers.SerializerMethodField() 
     
     class Meta:
@@ -150,5 +101,4 @@ class MoimPostPutSerializer(serializers.ModelSerializer):
             user=self.context['user'],
             mate_status=1
         )
-        mate.save()
         return moim
