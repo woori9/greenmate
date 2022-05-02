@@ -21,7 +21,6 @@ class RestaurantSerializer(serializers.ModelSerializer):
         response['res_info'] = RestaurantInfo.objects.filter(restaurant=instance.id, language=user.language)
         return response
 
-
 class RestaurantMapSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
 
@@ -35,3 +34,23 @@ class RestaurantMapSerializer(serializers.ModelSerializer):
         except:
             data = '준비중입니다.'
         return data
+
+# 모임 글 조회 시 보여 질 식당 정보
+class RestaurantInfoMoimSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RestaurantInfo
+        fields = ('restaurant', 'name', 'address')
+
+# 모임 글에 보일 식당 정보
+class RestaurantMoimDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Restaurant
+        exclude = ('category', 'call', 'latitude', 'longitude', 'like_users',)
+
+    def to_representation(self, instance):
+        response = super().to_representation(instance)    
+        data = RestaurantInfo.objects.filter(restaurant=instance.id, language=user.language)[0]
+        response['id'] = data.restaurant.pk
+        response['name'] = data.name
+        response['address'] = data.address
+        return response
