@@ -2,9 +2,7 @@ from django.shortcuts import get_list_or_404, get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from ..models import Moim, Mate
-from ..serializers.moim import (
-    MoimSerializer, 
-    MoimOutSerializer)
+from ..serializers.moim import MoimSerializer
 from ..serializers.mate import (
     MatePutPostSerializer
 )
@@ -125,11 +123,11 @@ def out_mate(request, mate_id):
       case2: 참여 수락된 게스트가 모임 나감
     '''
     def out_host():
-        moim_serializer = MoimOutSerializer(moim).data
+        moim_serializer = MoimSerializer(moim).data
         if two_hrs < appointment and moim_serializer['now_cnt'] == 1:
             mate.delete()
             moim.status = 2
-            moim.save()
+            moim.save() 
             return Response(
                 data='모임을 나갔습니다.',
                 status=HTTP_204_NO_CONTENT

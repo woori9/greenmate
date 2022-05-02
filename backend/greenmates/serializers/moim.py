@@ -45,7 +45,7 @@ class MoimSimpleSerializer(MoimBaseSerializer):
             )
     def to_representation(self, instance):
         response = super().to_representation(instance)
-        response['restaurant'] = RestaurantMoimDataSerializer(instance.restaurant).data
+        response['restaurant'] = RestaurantMoimDataSerializer(instance.restaurant, context=self.context).data
         return response
 
 # 기본 모임 정보 + 식당정보 + mate_status 합류만 반환 (모임 상세)
@@ -102,19 +102,3 @@ class MoimPostPutSerializer(serializers.ModelSerializer):
             mate_status=1
         )
         return moim
-
-class MoimOutSerializer(serializers.ModelSerializer):
-    now_cnt = serializers.SerializerMethodField() 
-    mates = serializers.SerializerMethodField() 
-    class Meta:
-        model = Moim
-        fields = (
-            'id', 'status', 'time', 'head_cnt', 'now_cnt', 'mates'
-            )
-
-    def get_now_cnt(self, obj):
-        now_cnt = obj.mate_set.filter(mate_status=1).count()
-        return now_cnt
-    
-    def get_mates(self, obj):
-        return MateSerializer(obj.mate_set, many=True).data

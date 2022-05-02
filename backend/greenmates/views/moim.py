@@ -34,7 +34,7 @@ def get_create_moim_list(request):
     '''
     def moim_list():
         moims = Moim.objects.filter(status=0)
-        serializer = MoimSimpleSerializer(moims, many=True)
+        serializer = MoimSimpleSerializer(moims, context={'user': user}, many=True)
         return Response(serializer.data)
 
     def moim_create():
@@ -61,7 +61,7 @@ def get_update_moim_detail(request, moim_id):
     PUT : 해당 모임 글의 날짜, 시간 수정 (2시간 전까지)
     '''
     def moim_detail():
-        serializer = MoimDetailSerializer(moim)
+        serializer = MoimDetailSerializer(moim, context={'user': user},)
         return Response(serializer.data)
 
     def moim_update():
@@ -107,7 +107,7 @@ def get_waiting_moim(request):
     '''
     # TODO: author_id를 request.user에서 가져오기. 현재 2번 user로 TEST 중.
     moims = get_list_or_404(Moim.objects.filter(mate__user=2, mate__mate_status=0))
-    serializer = MoimDetailSerializer(moims, many=True)
+    serializer = MoimDetailSerializer(moims, context={'user': user}, many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
@@ -116,7 +116,7 @@ def get_joined_moim(request):
     GET: 유저가 게스트로 합류중인 모임 리스트 조회
     ''' 
     moims = get_list_or_404(Moim.objects.filter(mate__user=2, mate__mate_status=1).exclude(author_id=2))
-    serializer = MoimDetailSerializer(moims, many=True)
+    serializer = MoimDetailSerializer(moims, context={'user': user}, many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
@@ -125,7 +125,7 @@ def get_opened_moim(request):
     GET: 유저가 호스트로 개설한 모임 리스트 조회
     '''
     moims = get_list_or_404(Moim.objects.filter(author_id=2, status__lt=2))
-    serializer = MoimAllSerializer(moims, many=True) 
+    serializer = MoimAllSerializer(moims, context={'user': user}, many=True) 
     return Response(serializer.data)
 
 @api_view(['GET'])
@@ -134,5 +134,5 @@ def get_finished_moim(request):
     GET: 유저가 호스트 / 게스트로 참여한 종료된 모임 리스트 조회
     '''
     moims = get_list_or_404(Moim.objects.filter(mate__user=2, mate__mate_status=4))
-    serializer = MoimDetailSerializer(moims, many=True)
+    serializer = MoimDetailSerializer(moims, context={'user': user}, many=True)
     return Response(serializer.data)
