@@ -82,11 +82,11 @@ urlpatterns = [
 
 
     # 3
-    path('restaurants/all/', restaurant.get_restaurant_list),
+    path('restaurant/all/', restaurant.get_restaurant_list),
     path('restaurant/search/', restaurant.search),
-
-
-
+    path('restaurant/<int:restaurant_id>/', restaurant.get_simple_info),
+    path('restaurant/detail/<int:restaurant_id>/', restaurant.get_detail_info),
+    path('restaurant/like/<int:restaurant_id>/', restaurant.like_restaurant),
 
 
 

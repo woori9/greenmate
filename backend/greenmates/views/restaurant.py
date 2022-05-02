@@ -9,11 +9,13 @@ from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
     HTTP_401_UNAUTHORIZED,
 )
-from .community import detectLangs
-from ..models import Restaurant, RestaurantInfo
+
+from accounts.views.token import get_request_user
+from ..models import Restaurant
 from ..serializers.restaurant import (
-    RestaurantSerializer,
-    RestaurantMapSerializer
+    RestaurantMapSerializer,
+    RestaurantSimpleSerializer,
+    RestaurantDetailSerializer,
 )
 
 
@@ -25,47 +27,95 @@ def get_restaurant_list(request):
     '''
     GET: 지도에 표시될 식당 정보를 조회
     '''
+    # user = get_object_or_404(User, pk=1)
+    user = get_request_user(request)
+    if not user:
+        return Response(status=HTTP_401_UNAUTHORIZED)
+    elif user == 'EXPIRED_TOKEN':
+        return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
+
     restaurant_list = get_list_or_404(Restaurant)
-    serializer = RestaurantMapSerializer(restaurant_list, many=True)
+    serializer = RestaurantMapSerializer(restaurant_list, context={'user':user}, many=True)
     return Response(serializer.data)
 
 
 @api_view(['GET'])
 def search(request):
     '''
-    수정예정 (모델 수정 전 코드)
     GET: 식당 검색
         { "word": "검색어" }
     '''
-    vege_type_en = {
-        'vegan': '비건', 'lacto': '락토', 'ovo': '오보',
-        'lacto-ovo': '락토 오보', 'pesco': '페스코', 'pollo': '폴로'
-    }
-
-    word = request.GET.get('word')
-    lan = detectLangs(word)
-    if lan == 'ko':
-        restaurant_list = Restaurant.objects.filter(
-            Q(name_kr__contailns=word) | 
-            Q(address_kr__contains=word) | 
-            Q(menus_kr__contains=word) |
-            Q(vege_types__contains=word) 
-            )
-    elif lan == 'en':
-        try:
-            vege = vege_type_en[word.lower()]
-        except:
-            vege = word
-        restaurant_list = Restaurant.objects.filter(
-            Q(name_en__icontailns=word) | 
-            Q(address_en__icontains=word) | 
-            Q(menus_en__icontains=word) |
-            Q(vege_type__contains=vege)
-            )
-    else:
-        return Response(data='지원하지 않는 언어입니다.', status=HTTP_400_BAD_REQUEST)
+    # user = get_object_or_404(User, pk=1)
+    user = get_request_user(request)
+    if not user:
+        return Response(status=HTTP_401_UNAUTHORIZED)
+    elif user == 'EXPIRED_TOKEN':
+        return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
     
-    serializer = RestaurantSerializer(restaurant_list, many=True)
+    word = request.GET.get('word')
+    restaurant_list = Restaurant.objects.filter(
+        Q(restaurantinfo__language=0) &
+        Q(restaurantinfo__name__icontains=word) | 
+        Q(restaurantinfo__address__icontains=word) | 
+        Q(restaurantinfo__menus__icontains=word) |
+        Q(restaurantinfo__vege_types__icontains=word)
+    )
+
+    serializer = RestaurantSimpleSerializer(restaurant_list, context={'user':user}, many=True)
     return Response(serializer.data)
 
 
+@api_view(['GET'])
+def get_simple_info(request, restaurant_id):
+    '''
+    GET: {restaurant_id}번 식당 기본 정보 조회
+    '''
+    # user = get_object_or_404(User, pk=1)
+    user = get_request_user(request)
+    if not user:
+        return Response(status=HTTP_401_UNAUTHORIZED)
+    elif user == 'EXPIRED_TOKEN':
+        return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
+
+    restaurant = get_object_or_404(Restaurant, pk=restaurant_id)
+    serializer = RestaurantSimpleSerializer(restaurant, context={'user':user})
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def get_detail_info(request, restaurant_id):
+    '''
+    GET: {restaurant_id}번 식당 상세 정보 조회
+    '''
+    # user = get_object_or_404(User, pk=1)
+    user = get_request_user(request)
+    if not user:
+        return Response(status=HTTP_401_UNAUTHORIZED)
+    elif user == 'EXPIRED_TOKEN':
+        return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
+
+    restaurant = get_object_or_404(Restaurant, pk=restaurant_id)
+    serializer = RestaurantDetailSerializer(restaurant, context={'user':user})
+    return Response(serializer.data)
+
+
+@api_view(['POST'])
+def like_restaurant(request, restaurant_id):
+    '''
+    POST: {restaurant_id}번 식당에 좋아요/좋아요 취소
+    '''
+    # user = get_object_or_404(User, pk=1)
+    user = get_request_user(request)
+    if not user:
+        return Response(status=HTTP_401_UNAUTHORIZED)
+    elif user == 'EXPIRED_TOKEN':
+        return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
+    
+    restaurant = get_object_or_404(Restaurant, pk=restaurant_id)
+
+    if restaurant.like_users.filter(pk=user.id).exists():
+        restaurant.like_users.remove(user)
+        return Response(data=f'{restaurant_id}번 식당 좋아요 취소', status=HTTP_204_NO_CONTENT)
+    else:
+        restaurant.like_users.add(user)
+        return Response(data=f'{restaurant_id}번 식당 좋아요', status=HTTP_201_CREATED)
