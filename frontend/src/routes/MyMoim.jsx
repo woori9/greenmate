@@ -1,32 +1,10 @@
 import styled from 'styled-components';
 import { useAtom } from 'jotai';
-import AddIcon from '@mui/icons-material/Add';
-import { useNavigate } from 'react-router-dom';
 import ResponsiveNavbar from '../components/common/navbar/ResponsiveNavbar';
+import FloatingActionBtn from '../components/common/FloatingActionBtn';
 import MoimCategory from '../components/moim/MoimCategory';
 import MoimInfo from '../components/moim/MoimInfo';
 import moim from '../atoms/moim';
-
-const FloatButton = styled.button`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  right: 1rem;
-  bottom: 5rem;
-  color: #fff;
-  background-color: #fcb448;
-  border: none;
-  border-radius: 20px;
-  padding: 0.5rem;
-  cursor: pointer;
-`;
-
-const Title = styled.h1`
-  font-size: 1.5rem;
-  font-weight: 400;
-  margin: 1rem 0.5rem;
-`;
 
 const CategoryDiv = styled.ul`
   display: flex;
@@ -36,7 +14,6 @@ const CategoryDiv = styled.ul`
 `;
 
 function MyMoim() {
-  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useAtom(moim);
   const moimCategories = ['대기', '참여', '진행', '완료'];
 
@@ -48,9 +25,11 @@ function MyMoim() {
         nameKr: '야채 식당',
         addressKr: '대전시 유성구 oo동',
       },
-      author: 1,
-      authorNickname: '김싸피',
-      authorVegeType: '락토오보',
+      author: {
+        id: 1,
+        nickname: '김싸피',
+        vegeType: '락토오보',
+      },
       title: '야채 식당 가실 분!',
       content: '이번주에 야채 식당 가실 분 구해요',
       time: new Date(),
@@ -96,11 +75,7 @@ function MyMoim() {
   return (
     <>
       <ResponsiveNavbar />
-      <FloatButton type="button" onClick={() => navigate('/moim/create')}>
-        <AddIcon />
-        모임 열기
-      </FloatButton>
-      <Title>그린메이트</Title>
+      <FloatingActionBtn isForMoim />
       <CategoryDiv>
         {moimCategories.map((category, index) => (
           <MoimCategory
