@@ -8,7 +8,12 @@ import {
 } from 'firebase/firestore';
 import ChatRoom from '../components/chat/ChatRoom';
 import app from '../service/firebase';
-import { signIn, getRoomId, sendMessage } from '../service/chat_service';
+import {
+  signIn,
+  getRoomId,
+  sendMessage,
+  getChatRoomIdList,
+} from '../service/chat_service';
 
 const db = getFirestore(app);
 
@@ -18,6 +23,17 @@ function Chat() {
   const [user, setUser] = useState('');
   const [room, setRoom] = useState('');
   const [messages, setMessages] = useState([]);
+  const [chatRoomList, setChatRoomList] = useState([]);
+
+  useEffect(() => {
+    if (!user) return;
+    const getRoomList = async () => {
+      const roomList = await getChatRoomIdList(user);
+      setChatRoomList(roomList);
+    };
+
+    getRoomList();
+  }, [user]);
 
   useEffect(() => {
     if (!room) return () => {};
@@ -44,7 +60,14 @@ function Chat() {
     <>
       <h1>chat</h1>
       {user ? (
-        <h3>접속한 유저: {user}</h3>
+        <>
+          <h3>접속한 유저: {user}</h3>
+
+          <h3>{user}의 채팅방 리스트(개인, 그룹 전부)</h3>
+          {chatRoomList.map(chatRoom => (
+            <h5 key={chatRoom.roomId}>chatroom</h5>
+          ))}
+        </>
       ) : (
         <>
           <input ref={userRef} type="text" placeholder="user" />
@@ -59,6 +82,7 @@ function Chat() {
           </button>
         </>
       )}
+
       <input ref={moimRef} type="text" placeholder="room" />
       <button
         type="button"

@@ -6,6 +6,7 @@ import {
   collection,
   serverTimestamp,
   addDoc,
+  getDocs,
 } from 'firebase/firestore';
 import app from './firebase';
 
@@ -49,12 +50,12 @@ const getRoomId = async (moimId, userId) => {
     await setDoc(userRoomRef, {
       moimId,
       joinDate: serverTimestamp(),
-      updatedAt: serverTimestamp(),
     });
 
     const newRoom = {
-      id: newRoomRef.id,
       moimId,
+      id: newRoomRef.id,
+      updatedAt: serverTimestamp(),
     };
 
     await setDoc(newRoomRef, newRoom);
@@ -81,4 +82,15 @@ const sendMessage = async (roomId, content, user) => {
   }
 };
 
-export { signIn, getRoomId, sendMessage };
+const getChatRoomIdList = async userId => {
+  const collectionRoom = await getDocs(
+    collection(db, 'users', userId, 'rooms'),
+  );
+
+  return collectionRoom.docs.map(docRoom => ({
+    ...docRoom.data(),
+    roomId: docRoom.id,
+  }));
+};
+
+export { signIn, getRoomId, sendMessage, getChatRoomIdList };
