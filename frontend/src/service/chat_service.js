@@ -30,7 +30,7 @@ const signIn = async userId => {
   }
 };
 
-const getRoomId = async moimId => {
+const getRoomId = async (moimId, userId) => {
   const moimRef = doc(db, 'moims', moimId);
   const docSnap = await getDoc(moimRef);
 
@@ -45,6 +45,13 @@ const getRoomId = async moimId => {
       roomId: newRoomRef.id,
     });
 
+    const userRoomRef = doc(db, 'users', userId, 'rooms', newRoomRef.id);
+    await setDoc(userRoomRef, {
+      moimId,
+      joinDate: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+
     const newRoom = {
       id: newRoomRef.id,
       moimId,
@@ -53,7 +60,7 @@ const getRoomId = async moimId => {
     await setDoc(newRoomRef, newRoom);
     return newRoomRef.id;
   } catch (e) {
-    return e;
+    throw new Error(e);
   }
 };
 

@@ -12,7 +12,10 @@ Message.propTypes = {
   message: PropTypes.shape({
     author: PropTypes.string,
     content: PropTypes.string,
-    timestamp: PropTypes.instanceOf(Date),
+    timestamp: PropTypes.shape({
+      seconds: PropTypes.number,
+      nanoseconds: PropTypes.number,
+    }),
   }).isRequired,
 };
 

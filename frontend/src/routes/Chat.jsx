@@ -24,6 +24,7 @@ function Chat() {
     const q = query(
       collection(db, 'rooms', room, 'messages'),
       // 내가 join 한 시점 이후의 메세지만
+      // where('timestamp', '>', 'joinTimestamp'),
       orderBy('timestamp'),
     );
 
@@ -63,7 +64,7 @@ function Chat() {
         type="button"
         onClick={async () => {
           if (!moimRef.current.value) return;
-          const roomId = await getRoomId(moimRef.current.value);
+          const roomId = await getRoomId(moimRef.current.value, user);
           setRoom(roomId);
         }}
       >
