@@ -10,6 +10,7 @@ import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import { timestampNextDay, timestamp1YearLater } from '../utils/timestamp';
 import RestaurantSearch from '../components/common/RestaurantSearch';
+import GoBackBar from '../components/common/GoBackBar';
 
 const Form = styled.form`
   display: flex;
@@ -25,6 +26,7 @@ const Form = styled.form`
 
   .submit-btn {
     position: fixed;
+    left: 1rem;
     bottom: 5rem;
     width: 90%;
     color: #fff;
@@ -51,55 +53,58 @@ function MoimForm() {
   }
 
   return (
-    <Form onSubmit={event => handleSubmit(event)}>
-      <label htmlFor="title">모임 제목</label>
-      <TextField id="title" name="title" margin="normal" variant="standard" />
-      <RestaurantSearch setSelectedRestaurantId={setSelectedRestaurantId} />
-      <label htmlFor="datetime">날짜</label>
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DateTimePicker
-          value={datetimeValue}
-          onChange={handleChange}
-          ampm
-          inputFormat="YYYY-MM-DD hh:mm A"
-          mask="____-__-__ __:__ __"
-          minutesStep={10}
-          minDate={dayjs(timestampNextDay())}
-          maxDate={dayjs(timestamp1YearLater())}
-          renderInput={params => <TextField {...params} margin="normal" />}
+    <>
+      <GoBackBar title="메이트 구하기" />
+      <Form onSubmit={event => handleSubmit(event)}>
+        <label htmlFor="title">모임 제목</label>
+        <TextField id="title" name="title" margin="normal" variant="standard" />
+        <RestaurantSearch setSelectedRestaurantId={setSelectedRestaurantId} />
+        <label htmlFor="datetime">날짜</label>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DateTimePicker
+            value={datetimeValue}
+            onChange={handleChange}
+            ampm
+            inputFormat="YYYY-MM-DD hh:mm A"
+            mask="____-__-__ __:__ __"
+            minutesStep={10}
+            minDate={dayjs(timestampNextDay())}
+            maxDate={dayjs(timestamp1YearLater())}
+            renderInput={params => <TextField {...params} margin="normal" />}
+          />
+        </LocalizationProvider>
+        <label htmlFor="count" className="input-label">
+          인원 (본인 포함)
+        </label>
+        <Input
+          id="count"
+          name="count"
+          onChange={console.log('change')}
+          margin="dense"
+          endAdornment={<InputAdornment position="end">명</InputAdornment>}
+          inputProps={{
+            min: 2,
+            'aria-label': 'count',
+          }}
+          sx={{
+            width: '6rem',
+          }}
         />
-      </LocalizationProvider>
-      <label htmlFor="count" className="input-label">
-        인원 (본인 포함)
-      </label>
-      <Input
-        id="count"
-        name="count"
-        value={2}
-        onChange={console.log('change')}
-        margin="dense"
-        endAdornment={<InputAdornment position="end">명</InputAdornment>}
-        inputProps={{
-          'aria-label': 'count',
-        }}
-        sx={{
-          width: '6rem',
-        }}
-      />
-      <label htmlFor="content">내용</label>
-      <TextField
-        id="content"
-        name="content"
-        placeholder="내용을 입력해주세요."
-        multiline
-        minRows="5"
-        margin="normal"
-        variant="outlined"
-      />
-      <button type="submit" className="submit-btn">
-        작성
-      </button>
-    </Form>
+        <label htmlFor="content">내용</label>
+        <TextField
+          id="content"
+          name="content"
+          placeholder="내용을 입력해주세요."
+          multiline
+          minRows="5"
+          margin="normal"
+          variant="outlined"
+        />
+        <button type="submit" className="submit-btn">
+          작성
+        </button>
+      </Form>
+    </>
   );
 }
 
