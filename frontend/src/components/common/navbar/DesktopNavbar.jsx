@@ -77,6 +77,7 @@ const StyledLink = styled(Link)`
 `;
 
 function DesktopNavbar() {
+  const accessToken = sessionStorage.getItem('Authorization');
   const { pathname } = useLocation();
   const links = [
     {
@@ -107,13 +108,17 @@ function DesktopNavbar() {
           <img src={logo} alt="logo-img" />
         </div>
         <AlertMenus>
-          <li>
-            <a href={KAKAO_URL}>
-              <KakaoImg>
-                <img src={KakaoLoginImg} alt="kakao-login" />
-              </KakaoImg>
-            </a>
-          </li>
+          {accessToken === null ? (
+            <li>
+              <a href={KAKAO_URL}>
+                <KakaoImg>
+                  <img src={KakaoLoginImg} alt="kakao-login" />
+                </KakaoImg>
+              </a>
+            </li>
+          ) : (
+            <p>로그인완료</p>
+          )}
           <li>
             <NotificationsNoneOutlinedIcon
               sx={{ color: 'black', fontSize: 30 }}

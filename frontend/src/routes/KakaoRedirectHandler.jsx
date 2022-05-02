@@ -18,6 +18,10 @@ function KakaoRedirectHandler() {
         const accessToken = response.data.access_token;
         apiLogin({ access_token: accessToken }, res => {
           sessionStorage.setItem('Authorization', res.data.access_token);
+          sessionStorage.setItem(
+            'AuthorizationRefresh',
+            res.data.refresh_token,
+          );
           if (res.data.vege_type === null) {
             navigate('/signup');
           } else {

@@ -63,6 +63,7 @@ const NavTop = styled.div`
 `;
 
 function MobileNavbar() {
+  const accessToken = sessionStorage.getItem('Authorization');
   const { pathname } = useLocation();
   const links = [
     {
@@ -96,11 +97,15 @@ function MobileNavbar() {
     <>
       <NavTop>
         <p>그린메이트</p>
-        <a href={KAKAO_URL}>
-          <KakaoImg>
-            <img src={KakaoLoginImg} alt="kakao-login" />
-          </KakaoImg>
-        </a>
+        {accessToken === null ? (
+          <a href={KAKAO_URL}>
+            <KakaoImg>
+              <img src={KakaoLoginImg} alt="kakao-login" />
+            </KakaoImg>
+          </a>
+        ) : (
+          <p>로그인완료</p>
+        )}
         <NotificationsNoneOutlinedIcon sx={{ color: 'black', fontSize: 30 }} />
       </NavTop>
       <NavBottom>
