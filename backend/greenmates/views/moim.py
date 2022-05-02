@@ -18,6 +18,7 @@ from rest_framework.status import (
     HTTP_405_METHOD_NOT_ALLOWED,
 )
 import datetime
+from django.db.models import Q
 from django.contrib.auth import get_user_model
 User = get_user_model()
 user = User.objects.get(pk=2)   # TODO: request.user로 변경 (현재 pk=2로 TEST중)
@@ -135,4 +136,43 @@ def get_finished_moim(request):
     '''
     moims = get_list_or_404(Moim.objects.filter(mate__user=2, mate__mate_status=4))
     serializer = MoimDetailSerializer(moims, context={'user': user}, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def search_moim(request):
+    '''
+    GET: 모임 검색
+        {"host": "호스트 닉네임", "restaurant": "식당 상호명"}
+    '''
+    host = request.GET.get('host', None)
+    restaurant = request.GET.get('restaurant', None)
+    q = Q(status=0) # 모집 중인 모임만 검색
+    if host:
+        q &= Q(author__nickname__icontains=host)
+    if restaurant:
+        q &= Q(restaurant__restaurantinfo__name__icontains=restaurant)       
+    moim_list = Moim.objects.filter(q)
+    serializer = MoimSimpleSerializer(moim_list, context={'user': user}, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def filter_moim(request):
+    '''
+    GET: 모임 필터
+        {"region": "지역", "period": "기간", "day": "요일"}
+    '''
+    region = request.GET.get('region', None)
+    period = request.GET.get('period', None)
+    day = request.GET.get('day', None)
+    q = Q()
+    if region:
+        q &= Q(restaurant__restaurantinfo__address__icontains=region)
+    if period:
+        startdate = datetime.datetime.now()
+        enddate = startdate + datetime.timedelta(days=int(period)) # 마지막날 미포함
+        q &= Q(time__range=[startdate, enddate])   
+    if day:
+        q &= Q(time__week_day=int(day))     
+    moim_list = Moim.objects.filter(q)
+    serializer = MoimSimpleSerializer(moim_list, context={'user': user}, many=True)
     return Response(serializer.data)
