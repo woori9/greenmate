@@ -11,3 +11,11 @@ export function timestamp1YearLater() {
   today.setFullYear(today.getFullYear() + 1);
   return today.toISOString().substring(0, 10);
 }
+
+export function diff2hour(start, now) {
+  const diff = (start.getTime() - now.getTime()) / (1000 * 60); // 분 단위로 계산
+  if (diff > 120) {
+    return true;
+  }
+  return false;
+}
