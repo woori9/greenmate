@@ -15,7 +15,7 @@ function App() {
         <Route path="/community" element={<Community />} />
         <Route path="/map" element={<Map />} />
         <Route path="/mymoim" element={<MyMoim />} />
-        <Route path="/mymoim/create" element={<MoimForm />} />
+        <Route path="/mymoim/form" element={<MoimForm />} />
         <Route path="/mypage" element={<MyPage />} />
       </Routes>
     </BrowserRouter>
