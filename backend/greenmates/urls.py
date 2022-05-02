@@ -1,7 +1,7 @@
 from django.urls import path
 # ★★★★엔터 금지★★★★
 # 1
-
+from .views import moim
 
 
 
@@ -13,18 +13,20 @@ from .views import community
 
 
 # 3
-
+from .views import restaurant
 
 
 
 
 urlpatterns = [
     # 1
-
-
-
-
-
+    path('mates/', moim.get_create_moim_list),
+    path('mates/<int:moim_id>/', moim.get_update_moim_detail),
+    path('mates/translate/<int:moim_id>/', moim.get_trans_moim),
+    path('mates/wait/', moim.get_waiting_moim),
+    path('mates/join/', moim.get_joined_moim),
+    path('mates/myopen/', moim.get_opened_moim),
+    path('mates/finished/', moim.get_finished_moim),
 
 
 
@@ -35,8 +37,6 @@ urlpatterns = [
 
 
     
-
-
 
 
 
@@ -82,8 +82,8 @@ urlpatterns = [
 
 
     # 3
-
-
+    path('restaurants/all/', restaurant.get_restaurant_list),
+    path('restaurant/search/', restaurant.search),
 
 
 
