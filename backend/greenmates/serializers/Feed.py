@@ -55,3 +55,21 @@ class FeedTransSerializer(serializers.ModelSerializer):
     class Meta:
         model = Feed
         fields = ('content_trans', )
+
+
+class FeedReviewSerializer(serializers.ModelSerializer):
+    like_cnt = serializers.IntegerField(source='like_users.count', read_only=True)
+    img_paths = serializers.SerializerMethodField()
+
+    def get_img_paths(self, obj):
+        img = obj.feedimage_set.all()
+        return FeedImageSerializer(instance=img, many=True).data
+
+    class Meta:
+        model = Feed
+        fields = ('id', 'score', 'like_users_count', 'img_paths', 'content', 'created_at', 'updated_at')
+
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['author'] = UserSerializer(instance.author).data
+        return response

@@ -1,24 +1,60 @@
-from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
+from django.db.models import Avg
 from rest_framework import serializers
-from ..models import Restaurant, RestaurantInfo
-from accounts.views.token import get_request_user
+from ..models import Feed, Restaurant, RestaurantInfo
 
 
-# TODO: user 변경
-User = get_user_model()
-user = get_object_or_404(User, pk=1)
+class RestaurantInfoSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = RestaurantInfo
+        fields = ('name', 'address', 'menus', 'vege_types',)
+        read_only_fields = ('id', 'language', 'restaurant',)
 
 
 class RestaurantSerializer(serializers.ModelSerializer):
+    score = serializers.SerializerMethodField()
+    is_like = serializers.SerializerMethodField()
 
     class Meta:
         model = Restaurant
-        fields = '__all__'
+        fields = ('id', 'category', 'call', 'score', 'is_like')
 
     def to_representation(self, instance):
-        response = super().to_representation(instance)    
-        response['res_info'] = RestaurantInfo.objects.filter(restaurant=instance.id, language=user.language)
+        response = super().to_representation(instance)   
+        res_info = RestaurantInfo.objects.filter(restaurant=instance.id, language=self.context['user'].language)
+        response['res_info'] = RestaurantInfoSerializer(res_info, many=True).data[0]
+        return response
+
+    def get_score(self, obj):
+        try:
+            score = obj.feed_set.aggregate(Avg('score'))['score__avg']
+            return '{:.1f}'.format(score)
+        except:
+            return 0
+
+    def get_is_like(self, obj):
+        return Restaurant.objects.filter(pk=obj.id, like_users=self.context['user'].id).exists()
+    
+
+class RestaurantSimpleSerializer(RestaurantSerializer):
+
+    class Meta:
+        model = Restaurant
+        fields = ('id', 'category', 'score', 'is_like')
+
+
+class RestaurantDetailSerializer(RestaurantSerializer):
+
+    class Meta:
+        model = Restaurant
+        fields = ('id', 'category', 'call', 'score', 'is_like')
+
+    def to_representation(self, instance):
+        from .Feed import FeedReviewSerializer
+
+        response = super().to_representation(instance)   
+        feed_list = Feed.objects.filter(restaurant=instance.id)
+        response['review'] = FeedReviewSerializer(feed_list, many=True).data
         return response
 
 class RestaurantMapSerializer(serializers.ModelSerializer):
@@ -30,7 +66,7 @@ class RestaurantMapSerializer(serializers.ModelSerializer):
 
     def get_name(self, obj):
         try:
-            data = obj.restaurantinfo_set.filter(language=user.language).values('name')[0]['name']
+            data = obj.restaurantinfo_set.filter(language=self.context['user'].language).values('name')[0]['name']
         except:
             data = '준비중입니다.'
         return data
@@ -49,7 +85,7 @@ class RestaurantMoimDataSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         response = super().to_representation(instance)    
-        data = RestaurantInfo.objects.filter(restaurant=instance.id, language=user.language)[0]
+        data = RestaurantInfo.objects.filter(restaurant=instance.id, language=self.context['user'].language)[0]
         response['id'] = data.restaurant.pk
         response['name'] = data.name
         response['address'] = data.address

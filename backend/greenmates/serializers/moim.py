@@ -18,7 +18,7 @@ class MoimSerializer(serializers.ModelSerializer):
         return now_cnt
 
 # 기본 모임 정보
-class MoimSerializer(serializers.ModelSerializer):
+class MoimBaseSerializer(serializers.ModelSerializer):
     now_cnt = serializers.SerializerMethodField() 
 
     class Meta:
@@ -35,7 +35,7 @@ class MoimSerializer(serializers.ModelSerializer):
         return now_cnt
        
 # 기본 모임 정보 + 식당정보 (모임 list) 
-class MoimSimpleSerializer(MoimSerializer):
+class MoimSimpleSerializer(MoimBaseSerializer):
     class Meta:
         model = Moim
         fields = (
@@ -102,3 +102,19 @@ class MoimPostPutSerializer(serializers.ModelSerializer):
             mate_status=1
         )
         return moim
+
+class MoimOutSerializer(serializers.ModelSerializer):
+    now_cnt = serializers.SerializerMethodField() 
+    mates = serializers.SerializerMethodField() 
+    class Meta:
+        model = Moim
+        fields = (
+            'id', 'status', 'time', 'head_cnt', 'now_cnt', 'mates'
+            )
+
+    def get_now_cnt(self, obj):
+        now_cnt = obj.mate_set.filter(mate_status=1).count()
+        return now_cnt
+    
+    def get_mates(self, obj):
+        return MateSerializer(obj.mate_set, many=True).data

@@ -1,9 +1,10 @@
 from django.shortcuts import get_list_or_404, get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from uritemplate import partial
 from ..models import Moim, Mate
-from ..serializers.moim import MoimSerializer
+from ..serializers.moim import (
+    MoimSerializer, 
+    MoimOutSerializer)
 from ..serializers.mate import (
     MatePutPostSerializer
 )
@@ -26,14 +27,14 @@ def apply_mate(request, moim_id):
     POST: 해당 모임에 대기 신청
     ''' 
     moim = get_object_or_404(Moim, pk=moim_id)
-    user_in_mate = moim.mate_set.values('user').filter(user=user.pk)
+    user_in_mate = moim.mate_set.values('user').filter(user=3)
     if len(user_in_mate): # 호스트 or 이전에 거절/합류 된 유저라면 대기 신청 못함
         return Response(
             data='이 모임에 대기 신청이 불가합니다.',
             status=HTTP_409_CONFLICT
         )
 
-    serializer = MatePutPostSerializer(data={'moim': moim_id, 'user': user.pk, 'mate_staus': 0})
+    serializer = MatePutPostSerializer(data={'moim': moim_id, 'user': 3, 'mate_staus': 0})
     if serializer.is_valid(raise_exception=True):
         serializer.save()
         return Response(
@@ -71,7 +72,7 @@ def accept_mate(request, mate_id):
     '''
     mate = get_object_or_404(Mate, pk=mate_id)
     moim = mate.moim
-    if moim.author.pk != 3: # 모임의 호스트가 아닌 경우
+    if moim.author.pk != user.pk: # 모임의 호스트가 아닌 경우
         return Response(
             data='접근 권한이 없습니다.',
             status=HTTP_403_FORBIDDEN
@@ -120,12 +121,71 @@ def decline_mate(request, mate_id):
 def out_mate(request, mate_id):
     '''
     DELETE: 모임 나가기
-      case1: 참여 수락된 게스트가 모임 나감
-      case2: 호스트가 모임 2시간이 되기 전에 모임을 취소
-      case3: 모임 2시간 전까지 인원 모집이 안됨
+      case1: 호스트가 아직 참여한 게스트가 0명일 때, 모임 2시간이 되기 전에 모임을 취소 
+      case2: 참여 수락된 게스트가 모임 나감
     '''
-    pass
+    def out_host():
+        moim_serializer = MoimOutSerializer(moim).data
+        if two_hrs < appointment and moim_serializer['now_cnt'] == 1:
+            mate.delete()
+            moim.status = 2
+            moim.save()
+            return Response(
+                data='모임을 나갔습니다.',
+                status=HTTP_204_NO_CONTENT
+            )
+        return Response(
+                data='모임 나가기가 불가합니다.',
+                status=HTTP_405_METHOD_NOT_ALLOWED
+            )
+
+    def out_guest():
+        if mate.mate_status != 1: # 참여 수락된 게스트만 나갈 수 있음
+            return Response(
+                data='모임 나가기가 불가합니다.',
+                status=HTTP_409_CONFLICT
+            )
+
+        if two_hrs >= appointment: # 2시간 전인지 확인
+            return Response(
+                data='모임 시간 2시간 이전부터는 모임 나가기가 불가합니다.',
+                status=HTTP_405_METHOD_NOT_ALLOWED
+            )
+
+        mate.delete()
+        moim_serializer = MoimSerializer(moim).data
+        if moim_serializer['now_cnt'] < moim_serializer['head_cnt'] and moim.status == 1:
+            moim.status = 0
+            moim.save()
+        return Response(
+            data='모임을 나갔습니다.',
+            status=HTTP_204_NO_CONTENT
+        )
+
+    mate = get_object_or_404(Mate, pk=mate_id)
+    moim = mate.moim
+    two_hrs = datetime.datetime.now() + datetime.timedelta(hours=2) 
+    appointment = moim.time
+    
+    # case1. 호스트인 경우
+    if moim.author.pk == user.pk:
+        return out_host()
+    
+    # case2. 게스트인 경우
+    elif mate.user.pk == user.pk:
+        return out_guest()
+        
+    return Response(
+        data='접근 권한이 없습니다.',
+        status=HTTP_403_FORBIDDEN
+    )
 
 @api_view(['PUT'])
 def evaluate_mate(request, moim_id):
     pass
+
+
+
+
+
+
