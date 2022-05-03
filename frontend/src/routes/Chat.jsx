@@ -118,7 +118,7 @@ function Chat() {
           if (roomId) {
             setRoom(roomId);
           } else {
-            const createdRoomId = createPrivateRoom('5', user);
+            const createdRoomId = await createPrivateRoom('5', user);
             setRoom(createdRoomId);
           }
         }}
