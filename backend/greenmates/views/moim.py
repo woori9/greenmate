@@ -22,6 +22,8 @@ from django.db.models import Q
 from django.contrib.auth import get_user_model
 from accounts.views.token import get_request_user
 
+from .community import n2mt
+
 User = get_user_model()
 # user = User.objects.get(pk=2)
 @api_view(['GET', 'POST'])
@@ -38,14 +40,14 @@ def get_create_moim_list(request):
     def moim_create():
         serializer = MoimPostPutSerializer(data=request.data, context={'user': user}) 
         author = user
-        content_trans = 'English version of context' # TODO: community 번역 함수 활용예정
+        content_trans = n2mt(request.data['content'])
         if serializer.is_valid(raise_exception=True):
             serializer.save(author=author, content_trans=content_trans)
-        return Response(
-            data='모임이 정상적으로 작성되었습니다.',
-            status=HTTP_201_CREATED
-        )
-    
+            return Response(
+                data='모임이 정상적으로 작성되었습니다.',
+                status=HTTP_201_CREATED
+            )
+
     user = get_request_user(request)
     if not user:
         return Response(status=HTTP_401_UNAUTHORIZED)
@@ -181,12 +183,13 @@ def search_moim(request):
         return Response(status=HTTP_401_UNAUTHORIZED)
     elif user == 'EXPIRED_TOKEN':
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
-    
+
     word = request.GET.get('word', None)
     q = Q()
     if word:
         q = Q(author__nickname__icontains=word)
-        q |= Q(restaurant__restaurantinfo__name__icontains=word)    
+        q |= Q(restaurant__restaurantinfo__name__icontains=word)  
+        q |= Q(restaurant__restaurantinfo__address__icontains=word)  
     q &= Q(status=0)   
     moim_list = Moim.objects.filter(q).distinct()
     serializer = MoimSimpleSerializer(moim_list, context={'user': user}, many=True)
@@ -196,7 +199,7 @@ def search_moim(request):
 def filter_moim(request):
     '''
     GET: 모임 필터
-        {"region": "지역", "period": "기간", "day": "요일"}
+        {"period": "기간", "day": "요일"}
     '''
     user = get_request_user(request)
     if not user:
@@ -204,12 +207,10 @@ def filter_moim(request):
     elif user == 'EXPIRED_TOKEN':
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
 
-    region = request.GET.get('region', None)
     period = request.GET.get('period', None)
     day = request.GET.get('day', None)
     q = Q(status=0)
-    if region:
-        q &= Q(restaurant__restaurantinfo__address__icontains=region)
+
     if period:
         startdate = datetime.datetime.now()
         enddate = startdate + datetime.timedelta(days=int(period) + 1)
