@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     # 3rd
     'rest_framework',
     'drf_yasg',
+    'corsheaders',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -49,6 +50,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware', # CORS middleware
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -153,3 +155,5 @@ SWAGGER_SETTINGS = {
          }
       }
    }
+
+CORS_ORIGIN_ALLOW_ALL = True
