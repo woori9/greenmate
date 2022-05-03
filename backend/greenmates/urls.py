@@ -33,13 +33,13 @@ urlpatterns = [
     path('mates/decline/<int:mate_id>/', mate.decline_mate),
     path('mates/out/<int:mate_id>/', mate.out_mate),
     path('mates/evaluate/<int:moim_id>/', mate.evaluate_mate),
-
+    path('mates/search/', moim.search_moim),
+    path('mates/filter/', moim.filter_moim),
 
 
 
 
     
-
 
 
 
