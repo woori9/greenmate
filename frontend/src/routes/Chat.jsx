@@ -14,6 +14,7 @@ import {
   getRoomId,
   sendMessage,
   getPrivateRoomId,
+  createPrivateRoom,
 } from '../service/chat_service';
 
 const db = getFirestore(app);
@@ -33,6 +34,7 @@ function Chat() {
     const q = query(
       roomsRef,
       where('members', 'array-contains', user),
+      where('type', '==', 1),
       orderBy('recentMessage.sentAt'),
     );
 
@@ -113,7 +115,12 @@ function Chat() {
         onClick={async () => {
           // 임시로 상대방을 5번 유저로 설정
           const roomId = await getPrivateRoomId('5', user);
-          setRoom(roomId);
+          if (roomId) {
+            setRoom(roomId);
+          } else {
+            const createdRoomId = createPrivateRoom('5', user);
+            setRoom(createdRoomId);
+          }
         }}
       >
         5번 유저와 채팅하기(상대 프로필의 메세지 아이콘)
