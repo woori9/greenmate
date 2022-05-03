@@ -41,10 +41,10 @@ def get_create_moim_list(request):
         content_trans = 'English version of context' # TODO: community 번역 함수 활용예정
         if serializer.is_valid(raise_exception=True):
             serializer.save(author=author, content_trans=content_trans)
-        return Response(
-            data='모임이 정상적으로 작성되었습니다.',
-            status=HTTP_201_CREATED
-        )
+            return Response(
+                data='모임이 정상적으로 작성되었습니다.',
+                status=HTTP_201_CREATED
+            )
     
     user = get_request_user(request)
     if not user:

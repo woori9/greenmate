@@ -67,7 +67,7 @@ class UserReview(models.Model):
     score: 0(별로)/1(좋아요)/2(최고)
     '''
     me = models.ManyToManyField(settings.AUTH_USER_MODEL, symmetrical=False, related_name='you') 
-    moim = models.ForeignKey(Moim, on_delete=models.PROTECT)
+    mate = models.ForeignKey(Mate, on_delete=models.PROTECT)
     score = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     # me = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='evaluator')
