@@ -80,7 +80,7 @@ function Chat() {
 
           <h3>{user}의 채팅방 리스트(개인, 그룹 전부)</h3>
           {chatRoomList.map(chatRoom => (
-            <h5 key={chatRoom.roomId}>chatroom</h5>
+            <h5 key={chatRoom.id}>chatroom</h5>
           ))}
         </>
       ) : (
