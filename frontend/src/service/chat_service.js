@@ -6,7 +6,8 @@ import {
   collection,
   serverTimestamp,
   addDoc,
-  getDocs,
+  updateDoc,
+  arrayUnion,
 } from 'firebase/firestore';
 import app from './firebase';
 
@@ -22,7 +23,6 @@ const signIn = async userId => {
   try {
     await setDoc(doc(db, 'users', userId), {
       id: userId,
-      rooms: [],
       vaganType: userId,
       nickname: `random${userId}`,
     });
@@ -36,27 +36,49 @@ const getRoomId = async (moimId, userId) => {
   const docSnap = await getDoc(moimRef);
 
   if (docSnap.exists()) {
+    // 맴버로 추가되어 있나 확인
+    const chatRoomId = docSnap.data().roomId;
+    const roomRef = doc(db, 'rooms', chatRoomId);
+    const roomDocSnap = await getDoc(roomRef);
+    const { members } = roomDocSnap.data();
+    const targetMember = members.find(member => member === userId);
+
+    if (!targetMember) {
+      await updateDoc(roomRef, {
+        members: arrayUnion(userId),
+      });
+
+      const userRoomRef = doc(db, 'users', userId, 'rooms', chatRoomId);
+      await setDoc(userRoomRef, {
+        moimId,
+        joinDate: Date.now(),
+      });
+    }
     return docSnap.data().roomId;
   }
 
+  // create moim and chat room
   try {
+    // new chat room id
     const newRoomRef = doc(collection(db, 'rooms'));
+
+    // new moim
     await setDoc(doc(db, 'moims', moimId), {
       id: moimId,
       roomId: newRoomRef.id,
     });
 
-    const userRoomRef = doc(db, 'users', userId, 'rooms', newRoomRef.id);
-    await setDoc(userRoomRef, {
-      moimId,
-      joinDate: serverTimestamp(),
-    });
-
     const newRoom = {
       moimId,
       id: newRoomRef.id,
-      updatedAt: serverTimestamp(),
+      members: [userId],
     };
+
+    const userRoomRef = doc(db, 'users', userId, 'rooms', newRoomRef.id);
+    await setDoc(userRoomRef, {
+      moimId,
+      joinDate: Date.now(),
+    });
 
     await setDoc(newRoomRef, newRoom);
     return newRoomRef.id;
@@ -67,8 +89,8 @@ const getRoomId = async (moimId, userId) => {
 
 const sendMessage = async (roomId, content, user) => {
   try {
-    const roomRef = doc(db, 'rooms', roomId);
-    const messagesRef = collection(roomRef, 'messages');
+    const messageRef = doc(db, 'message', roomId);
+    const messagesRef = collection(messageRef, 'messages');
 
     const newMessage = {
       author: user,
@@ -82,15 +104,4 @@ const sendMessage = async (roomId, content, user) => {
   }
 };
 
-const getChatRoomIdList = async userId => {
-  const collectionRoom = await getDocs(
-    collection(db, 'users', userId, 'rooms'),
-  );
-
-  return collectionRoom.docs.map(docRoom => ({
-    ...docRoom.data(),
-    roomId: docRoom.id,
-  }));
-};
-
-export { signIn, getRoomId, sendMessage, getChatRoomIdList };
+export { signIn, getRoomId, sendMessage };
