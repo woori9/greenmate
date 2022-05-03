@@ -218,12 +218,11 @@ def evaluate_mate(request):
         score: 0(별로)/1(좋아요)/2(최고),
         evaluation: 평가(int)
     '''
-    user = User.objects.get(pk=2)
-    # user = get_request_user(request)
-    # if not user:
-    #     return Response(status=HTTP_401_UNAUTHORIZED)
-    # elif user == 'EXPIRED_TOKEN':
-    #     return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
+    user = get_request_user(request)
+    if not user:
+        return Response(status=HTTP_401_UNAUTHORIZED)
+    elif user == 'EXPIRED_TOKEN':
+        return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
     mate = get_object_or_404(Mate, pk=request.data['mate']) 
     moim = mate.moim
  
