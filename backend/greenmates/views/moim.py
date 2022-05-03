@@ -22,6 +22,8 @@ from django.db.models import Q
 from django.contrib.auth import get_user_model
 from accounts.views.token import get_request_user
 
+from .community import n2mt
+
 User = get_user_model()
 # user = User.objects.get(pk=2)
 @api_view(['GET', 'POST'])
@@ -38,19 +40,19 @@ def get_create_moim_list(request):
     def moim_create():
         serializer = MoimPostPutSerializer(data=request.data, context={'user': user}) 
         author = user
-        content_trans = 'English version of context' # TODO: community 번역 함수 활용예정
+        content_trans = n2mt(request.data['content'])
         if serializer.is_valid(raise_exception=True):
             serializer.save(author=author, content_trans=content_trans)
             return Response(
                 data='모임이 정상적으로 작성되었습니다.',
                 status=HTTP_201_CREATED
             )
-    
-    user = get_request_user(request)
-    if not user:
-        return Response(status=HTTP_401_UNAUTHORIZED)
-    elif user == 'EXPIRED_TOKEN':
-        return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
+    user = get_object_or_404(User, pk=3)    
+    # user = get_request_user(request)
+    # if not user:
+    #     return Response(status=HTTP_401_UNAUTHORIZED)
+    # elif user == 'EXPIRED_TOKEN':
+    #     return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
     
     if request.method == 'GET':
         return moim_list()
