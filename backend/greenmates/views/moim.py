@@ -136,8 +136,8 @@ def get_joined_moim(request):
     elif user == 'EXPIRED_TOKEN':
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
 
-    moims = get_list_or_404(Moim.objects.filter(mate__user=user.id, mate__mate_status=1).exclude(author_id=user.id))
-    serializer = MoimDetailSerializer(moims, context={'user': user}, many=True)
+    moims_list = get_list_or_404(Moim.objects.filter(mate__user=user.id, mate__mate_status=1).exclude(author_id=user.id))
+    serializer = MoimDetailSerializer(moims_list, context={'user': user}, many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
@@ -166,8 +166,8 @@ def get_finished_moim(request):
     elif user == 'EXPIRED_TOKEN':
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
 
-    moims = get_list_or_404(Moim.objects.filter(mate__user=user.id, mate__mate_status=4))
-    serializer = MoimDetailSerializer(moims, context={'user': user}, many=True)
+    moims_list = get_list_or_404(Moim.objects.filter(mate__user=user.id, mate__mate_status=4))
+    serializer = MoimDetailSerializer(moims_list, context={'user': user}, many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])

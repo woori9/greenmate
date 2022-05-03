@@ -152,9 +152,7 @@ def out_mate(request, mate_id):
     def out_host():
         moim_serializer = MoimSerializer(moim).data
         if two_hrs < appointment and moim_serializer['now_cnt'] == 1:
-            mate.delete()
-            moim.status = 2
-            moim.save() 
+            moim.delete() # host가 모임을 나가면 모임을 db에서 삭제
             return Response(
                 data='모임을 나갔습니다.',
                 status=HTTP_204_NO_CONTENT
