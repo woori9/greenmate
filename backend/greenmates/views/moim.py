@@ -164,7 +164,7 @@ def filter_moim(request):
     region = request.GET.get('region', None)
     period = request.GET.get('period', None)
     day = request.GET.get('day', None)
-    q = Q()
+    q = Q(status=0)
     if region:
         q &= Q(restaurant__restaurantinfo__address__icontains=region)
     if period:
