@@ -7,6 +7,8 @@ import {
   orderBy,
   where,
 } from 'firebase/firestore';
+import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
+import styled from 'styled-components';
 import ChatRoom from '../components/chat/ChatRoom';
 import app from '../service/firebase';
 import {
@@ -16,16 +18,25 @@ import {
   getPrivateRoomId,
   createPrivateRoom,
 } from '../service/chat_service';
+import GoBackBar from '../components/common/GoBackBar';
+import useWindowDimensions from '../utils/windowDimension';
+import DesktopNavbar from '../components/common/navbar/DesktopNavbar';
+import ChatList from '../components/chat/ChatList';
 
 const db = getFirestore(app);
 
+const StyledDiv = styled.div`
+  padding-top: 100px;
+`;
+
 function Chat() {
+  const isDesktop = useWindowDimensions().width > 1024;
   const userRef = useRef();
   const moimRef = useRef();
   const [user, setUser] = useState('');
   const [room, setRoom] = useState('');
   const [messages, setMessages] = useState([]);
-  const [chatRoomList, setChatRoomList] = useState([]);
+  const [chatList, setChatList] = useState([]);
 
   useEffect(() => {
     if (!user) return () => {};
@@ -39,7 +50,7 @@ function Chat() {
     );
 
     const unsubscribe = onSnapshot(q, snapshot => {
-      setChatRoomList(
+      setChatList(
         snapshot.docs.map(docChatRoom => ({
           ...docChatRoom.data(),
           id: docChatRoom.id,
@@ -72,16 +83,17 @@ function Chat() {
   }, [room]);
 
   return (
-    <>
-      <h1>chat</h1>
+    <StyledDiv>
+      {isDesktop && <DesktopNavbar />}
+      <GoBackBar title="채팅">
+        <ForwardToInboxIcon sx={{ fontSize: 30 }} />
+      </GoBackBar>
       {user ? (
         <>
           <h3>접속한 유저: {user}</h3>
 
-          <h3>{user}의 채팅방 리스트(개인, 그룹 전부)</h3>
-          {chatRoomList.map(chatRoom => (
-            <h5 key={chatRoom.id}>chatroom</h5>
-          ))}
+          <h3>{user}의 개인 채팅방 리스트</h3>
+          <ChatList chats={chatList} />
         </>
       ) : (
         <>
@@ -114,6 +126,7 @@ function Chat() {
         type="button"
         onClick={async () => {
           // 임시로 상대방을 5번 유저로 설정
+          // 현재 유저를 설정하지 않으면 에러남..
           const roomId = await getPrivateRoomId('5', user);
           if (roomId) {
             setRoom(roomId);
@@ -134,7 +147,7 @@ function Chat() {
           messages={messages}
         />
       )}
-    </>
+    </StyledDiv>
   );
 }
 
