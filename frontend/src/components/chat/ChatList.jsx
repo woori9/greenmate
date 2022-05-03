@@ -4,15 +4,15 @@ import ChatItem from './ChatItem';
 
 const StyledChatList = styled.ul`
   list-style: none;
-  padding-top: 50px;
+  padding: 0;
   margin: 0;
 `;
 
-function ChatList({ chats }) {
+function ChatList({ chats, onChatClick }) {
   return (
     <StyledChatList>
       {chats.map(chat => (
-        <ChatItem key={chat.id} chat={chat} />
+        <ChatItem key={chat.id} chat={chat} onChatClick={onChatClick} />
       ))}
     </StyledChatList>
   );
@@ -32,6 +32,7 @@ ChatList.propTypes = {
       type: PropTypes.number,
     }),
   ).isRequired,
+  onChatClick: PropTypes.func.isRequired,
 };
 
 export default ChatList;

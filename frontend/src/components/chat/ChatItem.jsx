@@ -1,15 +1,15 @@
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
-const StyledChatItem = styled.ul`
+const StyledChatItem = styled.li`
   margin: 0;
 `;
 
-function ChatItem({ chat }) {
-  console.log('chatItem', chat);
+function ChatItem({ chat, onChatClick }) {
   return (
-    <StyledChatItem>
-      <li>CHAT ITEM</li>
+    <StyledChatItem onClick={() => onChatClick(chat.id)}>
+      <img src={`${process.env.PUBLIC_URL}/logo192.png`} alt="sample" />
+      CHAT ITEM
     </StyledChatItem>
   );
 }
@@ -26,6 +26,7 @@ ChatItem.propTypes = {
     }),
     type: PropTypes.number,
   }).isRequired,
+  onChatClick: PropTypes.func.isRequired,
 };
 
 export default ChatItem;

@@ -34,7 +34,7 @@ function Chat() {
   const userRef = useRef();
   const moimRef = useRef();
   const [user, setUser] = useState('');
-  const [room, setRoom] = useState('');
+  const [selectedChat, setSelectedChat] = useState('');
   const [messages, setMessages] = useState([]);
   const [chatList, setChatList] = useState([]);
 
@@ -62,9 +62,9 @@ function Chat() {
   }, [user]);
 
   useEffect(() => {
-    if (!room) return () => {};
+    if (!selectedChat) return () => {};
     const q = query(
-      collection(db, 'message', room, 'messages'),
+      collection(db, 'message', selectedChat, 'messages'),
       // 내가 join 한 시점 이후의 메세지만
       // where('timestamp', '>', 'joinTimestamp'),
       orderBy('sentAt'),
@@ -80,7 +80,11 @@ function Chat() {
     });
 
     return unsubscribe;
-  }, [room]);
+  }, [selectedChat]);
+
+  const selectChat = chatRoomId => {
+    setSelectedChat(chatRoomId);
+  };
 
   return (
     <StyledDiv>
@@ -93,7 +97,7 @@ function Chat() {
           <h3>접속한 유저: {user}</h3>
 
           <h3>{user}의 개인 채팅방 리스트</h3>
-          <ChatList chats={chatList} />
+          <ChatList chats={chatList} onChatClick={selectChat} />
         </>
       ) : (
         <>
@@ -116,7 +120,7 @@ function Chat() {
         onClick={async () => {
           if (!moimRef.current.value) return;
           const roomId = await getRoomId(moimRef.current.value, user);
-          setRoom(roomId);
+          setSelectedChat(roomId);
         }}
       >
         채팅방 입장
@@ -129,19 +133,19 @@ function Chat() {
           // 현재 유저를 설정하지 않으면 에러남..
           const roomId = await getPrivateRoomId('5', user);
           if (roomId) {
-            setRoom(roomId);
+            setSelectedChat(roomId);
           } else {
             const createdRoomId = await createPrivateRoom('5', user);
-            setRoom(createdRoomId);
+            setSelectedChat(createdRoomId);
           }
         }}
       >
         5번 유저와 채팅하기(상대 프로필의 메세지 아이콘)
       </button>
 
-      {user && room && (
+      {user && selectedChat && (
         <ChatRoom
-          roomId={room}
+          roomId={selectedChat}
           user={user}
           sendMessage={sendMessage}
           messages={messages}
