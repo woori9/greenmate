@@ -10,29 +10,38 @@ from ..serializers.mate import (
 from rest_framework.status import (
     HTTP_201_CREATED,
     HTTP_204_NO_CONTENT,
+    HTTP_400_BAD_REQUEST,
+    HTTP_401_UNAUTHORIZED,
     HTTP_403_FORBIDDEN,
     HTTP_405_METHOD_NOT_ALLOWED,
     HTTP_409_CONFLICT,
 )
 import datetime
 from django.contrib.auth import get_user_model
+from accounts.views.token import get_request_user
+
 User = get_user_model()
-user = User.objects.get(pk=2) 
 
 @api_view(['POST'])
 def apply_mate(request, moim_id):
     '''
     POST: 해당 모임에 대기 신청
     ''' 
+    user = get_request_user(request)
+    if not user:
+        return Response(status=HTTP_401_UNAUTHORIZED)
+    elif user == 'EXPIRED_TOKEN':
+        return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
+
     moim = get_object_or_404(Moim, pk=moim_id)
-    user_in_mate = moim.mate_set.values('user').filter(user=3)
+    user_in_mate = moim.mate_set.values('user').filter(user=user.id)
     if len(user_in_mate): # 호스트 or 이전에 거절/합류 된 유저라면 대기 신청 못함
         return Response(
             data='이 모임에 대기 신청이 불가합니다.',
             status=HTTP_409_CONFLICT
         )
 
-    serializer = MatePutPostSerializer(data={'moim': moim_id, 'user': 3, 'mate_staus': 0})
+    serializer = MatePutPostSerializer(data={'moim': moim_id, 'user': user.id, 'mate_staus': 0})
     if serializer.is_valid(raise_exception=True):
         serializer.save()
         return Response(
@@ -45,8 +54,14 @@ def cancle_mate(request, mate_id):
     '''
     DELETE: 게스트가 대기 신청을 취소
     '''
+    user = get_request_user(request)
+    if not user:
+        return Response(status=HTTP_401_UNAUTHORIZED)
+    elif user == 'EXPIRED_TOKEN':
+        return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
+    
     mate = get_object_or_404(Mate, pk=mate_id)
-    if mate.user.pk != user.pk: # 대기 신청자 본인이 아닌 경우
+    if mate.user.pk != user.id: # 대기 신청자 본인이 아닌 경우
         return Response(
             data='접근 권한이 없습니다.',
             status=HTTP_403_FORBIDDEN
@@ -68,9 +83,15 @@ def accept_mate(request, mate_id):
     '''
     PUT: 해당 모임의 호스트가 게스트의 참여를 수락
     '''
+    user = get_request_user(request)
+    if not user:
+        return Response(status=HTTP_401_UNAUTHORIZED)
+    elif user == 'EXPIRED_TOKEN':
+        return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
+
     mate = get_object_or_404(Mate, pk=mate_id)
     moim = mate.moim
-    if moim.author.pk != user.pk: # 모임의 호스트가 아닌 경우
+    if moim.author.pk != user.id: # 모임의 호스트가 아닌 경우
         return Response(
             data='접근 권한이 없습니다.',
             status=HTTP_403_FORBIDDEN
@@ -96,9 +117,15 @@ def decline_mate(request, mate_id):
     '''
     PUT: 호스트가 게스트의 참여를 거절
     '''
+    user = get_request_user(request)
+    if not user:
+        return Response(status=HTTP_401_UNAUTHORIZED)
+    elif user == 'EXPIRED_TOKEN':
+        return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
+
     mate = get_object_or_404(Mate, pk=mate_id)
     moim = mate.moim
-    if moim.author.pk != user.pk: # 모임의 호스트가 아닌 경우
+    if moim.author.pk != user.id: # 모임의 호스트가 아닌 경우
         return Response(
             data='접근 권한이 없습니다.',
             status=HTTP_403_FORBIDDEN
@@ -160,17 +187,23 @@ def out_mate(request, mate_id):
             status=HTTP_204_NO_CONTENT
         )
 
+    user = get_request_user(request)
+    if not user:
+        return Response(status=HTTP_401_UNAUTHORIZED)
+    elif user == 'EXPIRED_TOKEN':
+        return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
+
     mate = get_object_or_404(Mate, pk=mate_id)
     moim = mate.moim
     two_hrs = datetime.datetime.now() + datetime.timedelta(hours=2) 
     appointment = moim.time
     
     # case1. 호스트인 경우
-    if moim.author.pk == user.pk:
+    if moim.author.pk == user.id:
         return out_host()
     
     # case2. 게스트인 경우
-    elif mate.user.pk == user.pk:
+    elif mate.user.pk == user.id:
         return out_guest()
         
     return Response(
