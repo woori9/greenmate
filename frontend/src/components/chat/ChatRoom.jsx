@@ -40,12 +40,9 @@ ChatRoom.propTypes = {
   messages: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string,
-      author: PropTypes.string,
+      sentBy: PropTypes.string,
       content: PropTypes.string,
-      timestamp: PropTypes.shape({
-        seconds: PropTypes.number,
-        nanoseconds: PropTypes.number,
-      }),
+      sentAt: PropTypes.number,
     }),
   ).isRequired,
 };

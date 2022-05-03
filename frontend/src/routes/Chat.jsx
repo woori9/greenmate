@@ -33,7 +33,7 @@ function Chat() {
     const q = query(
       roomsRef,
       where('members', 'array-contains', user),
-      orderBy('lastMessage.sentAt'),
+      orderBy('recentMessage.sentAt'),
     );
 
     const unsubscribe = onSnapshot(q, snapshot => {
@@ -50,12 +50,11 @@ function Chat() {
 
   useEffect(() => {
     if (!room) return () => {};
-
     const q = query(
       collection(db, 'message', room, 'messages'),
       // 내가 join 한 시점 이후의 메세지만
       // where('timestamp', '>', 'joinTimestamp'),
-      orderBy('timestamp'),
+      orderBy('sentAt'),
     );
 
     const unsubscribe = onSnapshot(q, snapshot => {
