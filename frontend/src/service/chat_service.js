@@ -152,8 +152,14 @@ const createPrivateRoom = async (pairId, userId) => {
 
     // user's rooms: collection
     const userRoomRef = doc(db, 'users', userId, 'rooms', newRoomRef.id);
+    const pairRoomRef = doc(db, 'users', pairId, 'rooms', newRoomRef.id);
     await setDoc(userRoomRef, {
       pairId,
+      type: 1,
+      joinDate: Date.now(),
+    });
+    await setDoc(pairRoomRef, {
+      userId,
       type: 1,
       joinDate: Date.now(),
     });
