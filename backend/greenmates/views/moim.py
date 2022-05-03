@@ -23,7 +23,7 @@ from django.contrib.auth import get_user_model
 from accounts.views.token import get_request_user
 
 User = get_user_model()
-
+# user = User.objects.get(pk=2)
 @api_view(['GET', 'POST'])
 def get_create_moim_list(request):
     '''
@@ -121,8 +121,8 @@ def get_waiting_moim(request):
     elif user == 'EXPIRED_TOKEN':
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
 
-    moims = get_list_or_404(Moim.objects.filter(mate__user=user.id, mate__mate_status=0))
-    serializer = MoimDetailSerializer(moims, context={'user': user}, many=True)
+    moims_list = get_list_or_404(Moim.objects.filter(mate__user=user.id, mate__mate_status=0))
+    serializer = MoimDetailSerializer(moims_list, context={'user': user}, many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
@@ -151,8 +151,8 @@ def get_opened_moim(request):
     elif user == 'EXPIRED_TOKEN':
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
 
-    moims = get_list_or_404(Moim.objects.filter(author_id=user.id, status__lt=2))
-    serializer = MoimAllSerializer(moims, context={'user': user}, many=True) 
+    moims_list = get_list_or_404(Moim.objects.filter(author_id=user.id, status__lt=2))
+    serializer = MoimAllSerializer(moims_list, context={'user': user}, many=True) 
     return Response(serializer.data)
 
 @api_view(['GET'])
@@ -174,22 +174,21 @@ def get_finished_moim(request):
 def search_moim(request):
     '''
     GET: 모임 검색
-        {"host": "호스트 닉네임", "restaurant": "식당 상호명"}
+        {"word": "검색어"}
     '''
     user = get_request_user(request)
     if not user:
         return Response(status=HTTP_401_UNAUTHORIZED)
     elif user == 'EXPIRED_TOKEN':
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
-
-    host = request.GET.get('host', None)
-    restaurant = request.GET.get('restaurant', None)
-    q = Q(status=0) # 모집 중인 모임만 검색
-    if host:
-        q &= Q(author__nickname__icontains=host)
-    if restaurant:
-        q &= Q(restaurant__restaurantinfo__name__icontains=restaurant)       
-    moim_list = Moim.objects.filter(q)
+    
+    word = request.GET.get('word', None)
+    q = Q()
+    if word:
+        q = Q(author__nickname__icontains=word)
+        q |= Q(restaurant__restaurantinfo__name__icontains=word)    
+    q &= Q(status=0)   
+    moim_list = Moim.objects.filter(q).distinct()
     serializer = MoimSimpleSerializer(moim_list, context={'user': user}, many=True)
     return Response(serializer.data)
 
@@ -213,7 +212,7 @@ def filter_moim(request):
         q &= Q(restaurant__restaurantinfo__address__icontains=region)
     if period:
         startdate = datetime.datetime.now()
-        enddate = startdate + datetime.timedelta(days=int(period)) # 마지막날 미포함
+        enddate = startdate + datetime.timedelta(days=int(period) + 1)
         q &= Q(time__range=[startdate, enddate])   
     if day:
         q &= Q(time__week_day=int(day))     
