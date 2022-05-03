@@ -1,10 +1,11 @@
-import ResponsiveNavbar from '../components/common/navbar/ResponsiveNavbar';
+import ResponsiveMapNavbar from '../components/common/navbar/ResponsiveMapNavbar';
+import KakaoMap from '../components/map/KakaoMap';
 
 function Map() {
   return (
     <>
-      <h1>지도</h1>
-      <ResponsiveNavbar />
+      <ResponsiveMapNavbar />
+      <KakaoMap />
     </>
   );
 }
