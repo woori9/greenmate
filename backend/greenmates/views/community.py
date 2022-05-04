@@ -17,7 +17,7 @@ from ..models import (
     Restaurant,
     Comment,
 )
-from ..serializers.Feed import (
+from ..serializers.feed import (
     FeedSerializer,
     FeedPostPutSerializer,
     FeedTransSerializer,
@@ -85,7 +85,6 @@ def get_create_feedlist(request):
     GET: 모든 피드를 조회한다.
     POST: 새로운 피드를 작성한다.
     '''
-    # user = get_object_or_404(User, pk=1)
     user = get_request_user(request)
 
     if not user:
@@ -95,7 +94,7 @@ def get_create_feedlist(request):
 
     if request.method == 'GET':
         feed_list = get_list_or_404(Feed)
-        serializer = FeedSerializer(feed_list, many=True)
+        serializer = FeedSerializer(feed_list, context={'user': user}, many=True)
         return Response(serializer.data)
     
     elif request.method == 'POST':
@@ -184,7 +183,7 @@ def get_create_comment(request, feed_id):
 
     if request.method == 'GET':
         comment = get_list_or_404(Comment, feed_id=feed_id)
-        serializer = CommentSerializer(comment, many=True)
+        serializer = CommentSerializer(comment, context={'user': user}, many=True)
         return Response(serializer.data)
 
     elif request.method == 'POST':
@@ -264,7 +263,7 @@ def like_feed(request, feed_id):
         feed.like_users.remove(user)
     else:
         feed.like_users.add(user)
-    serializer = FeedSerializer(feed)
+    serializer = FeedSerializer(feed, context={'user': user})
     return Response(serializer.data)
 
 
@@ -285,7 +284,7 @@ def like_comment(request, comment_id):
         comment.like_users.remove(user)
     else:
         comment.like_users.add(user)
-    serializer = CommentSerializer(comment)
+    serializer = CommentSerializer(comment, context={'user': user},)
     return Response(serializer.data)
 
 
