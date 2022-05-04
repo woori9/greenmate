@@ -59,7 +59,7 @@ def search(request):
         Q(restaurantinfo__address__icontains=word) | 
         Q(restaurantinfo__menus__icontains=word) |
         Q(restaurantinfo__vege_types__icontains=word)
-    )
+    ).distinct()
 
     serializer = RestaurantSimpleSerializer(restaurant_list, context={'user':user}, many=True)
     return Response(serializer.data)
