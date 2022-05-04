@@ -19,14 +19,12 @@ code {
 
 @media screen and (min-width: 1025px) {
   body {
-    padding: 60px 16px 5rem 146px;
     min-height: 100vh;
     min-width: 100vw;
   }
 }
 @media screen and (max-width: 1024px) {
   body {
-    padding: 5rem 1rem 5rem 1rem;
     min-height: 100vh;
     min-width: 100vw;
   }

@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import styled from 'styled-components';
-import ResponseiveSideSheet from './SideSheet/ResponseiveSideSheet';
 
 const { kakao } = window;
 
@@ -42,12 +41,7 @@ function KakaoMap() {
     }
   }, []);
 
-  return (
-    <>
-      <ResponseiveSideSheet />
-      <Map id="myMap" />
-    </>
-  );
+  return <Map id="myMap" />;
 }
 
 export default KakaoMap;
