@@ -19,7 +19,7 @@ from django.contrib.auth import get_user_model
 from accounts.views.token import get_request_user
 
 User = get_user_model()
-
+# user = User.objects.get(pk=2)
 @api_view(['POST'])
 def apply_mate(request, moim_id):
     '''
