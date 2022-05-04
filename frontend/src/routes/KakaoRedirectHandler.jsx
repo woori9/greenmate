@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getToken, apiLogin } from '../api/accounts';
+import apiInstance from '../utils/apiInstance';
 
 function KakaoRedirectHandler() {
   const navigate = useNavigate();
@@ -18,10 +19,7 @@ function KakaoRedirectHandler() {
         const accessToken = response.data.access_token;
         apiLogin({ access_token: accessToken }, res => {
           sessionStorage.setItem('Authorization', res.data.access_token);
-          sessionStorage.setItem(
-            'AuthorizationRefresh',
-            res.data.refresh_token,
-          );
+          apiInstance.defaults.headers.common.Authorization = `Bearer ${res.data.access_token}`;
           if (res.data.vege_type === null) {
             navigate('/signup');
           } else {

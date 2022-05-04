@@ -1,6 +1,6 @@
 import { useAtom } from 'jotai';
 import styled from 'styled-components';
-import moim from '../../atoms/moim';
+import { categoryAtom } from '../../atoms/moim';
 
 const ButtonDiv = styled.div`
   display: flex;
@@ -19,7 +19,7 @@ const Button = styled.button`
 `;
 
 function MoimButtons() {
-  const [selectedCategory] = useAtom(moim);
+  const [selectedCategory] = useAtom(categoryAtom);
   const buttonsList = [
     <ButtonDiv>
       <Button type="button">호스트 문의</Button>

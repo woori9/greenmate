@@ -17,7 +17,7 @@ from ..models import (
     Restaurant,
     Comment,
 )
-from ..serializers.Feed import (
+from ..serializers.feed import (
     FeedSerializer,
     FeedPostPutSerializer,
     FeedTransSerializer,
@@ -85,23 +85,21 @@ def get_create_feedlist(request):
     GET: 모든 피드를 조회한다.
     POST: 새로운 피드를 작성한다.
     '''
+    user = get_request_user(request)
+
+    if not user:
+        return Response(status=HTTP_401_UNAUTHORIZED)
+    elif user == 'EXPIRED_TOKEN':
+        return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
+
     if request.method == 'GET':
-        # 로그인 기능 구현 시 필요!
-        # # user = get_object_or_404(User, pk=1)
-        # user = get_request_user(request)
-
-        # if not user:
-        #     return Response(status=HTTP_401_UNAUTHORIZED)
-        # elif user == 'EXPIRED_TOKEN':
-        #     return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
-
         feed_list = get_list_or_404(Feed)
-        serializer = FeedSerializer(feed_list, many=True)
+        serializer = FeedSerializer(feed_list, context={'user': user}, many=True)
         return Response(serializer.data)
     
     elif request.method == 'POST':
         serializer = FeedPostPutSerializer(data=request.data, context={"request": request})
-        author = User.objects.get(pk=1)
+        author = User.objects.get(pk=user.id)
         content_trans = n2mt(request.data['content'])
         if 'restaurant_id' in request.data:
             restaurant = Restaurant.objects.get(pk=request.data['restaurant_id'])
@@ -123,9 +121,17 @@ def update_delete_feed(request, feed_id):
     PUT: 해당 피드를 수정한다.
     DELETE: 해당 피드를 삭제한다.
     '''
+    user = get_request_user(request)
+
+    if not user:
+        return Response(status=HTTP_401_UNAUTHORIZED)
+    elif user == 'EXPIRED_TOKEN':
+        return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
+
     feed = get_object_or_404(Feed, pk=feed_id)
+
     # if request.user.id != feed.author.id:
-    if 1 != feed.author.id:
+    if user.id != feed.author.id:
         return Response(
             data='피드에 접근 권한이 없습니다.',
             status=HTTP_403_FORBIDDEN
@@ -150,7 +156,7 @@ def update_delete_feed(request, feed_id):
     
     elif request.method == 'DELETE':
         # if request.user.id != feed.author.id:
-        if 1 != feed.author.id:
+        if user.id != feed.author.id:
             return Response(
                 data='피드에 접근 권한이 없습니다.',
                 status=HTTP_403_FORBIDDEN
@@ -168,14 +174,21 @@ def get_create_comment(request, feed_id):
     GET: 해당 피드의 댓글들을 모두 조회한다.
     POST: 해당 피드에 새로운 댓글을 작성한다.
     '''
+    user = get_request_user(request)
+
+    if not user:
+        return Response(status=HTTP_401_UNAUTHORIZED)
+    elif user == 'EXPIRED_TOKEN':
+        return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
+
     if request.method == 'GET':
         comment = get_list_or_404(Comment, feed_id=feed_id)
-        serializer = CommentSerializer(comment, many=True)
+        serializer = CommentSerializer(comment, context={'user': user}, many=True)
         return Response(serializer.data)
 
     elif request.method == 'POST':
         serializer = CommentPostPutSerializer(data=request.data)
-        author = User.objects.get(pk=1)
+        author = User.objects.get(pk=user.id)
         feed = Feed.objects.get(pk=feed_id)
         content_trans = n2mt(request.data['content'])
         if 'parent_id' in request.data:
@@ -198,10 +211,17 @@ def update_delete_comment(request, comment_id):
     PUT: 해당 댓글을 수정한다.
     DELETE: 해당 댓글을 삭제한다.
     '''
+    user = get_request_user(request)
+
+    if not user:
+        return Response(status=HTTP_401_UNAUTHORIZED)
+    elif user == 'EXPIRED_TOKEN':
+        return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
+
     comment = get_object_or_404(Comment, pk=comment_id)
     if request.method == 'PUT':
         # if request.user.id != feed.author.id:
-        if 1 != comment.author.id:
+        if user.id != comment.author.id:
             return Response(
                 data='댓글에 접근 권한이 없습니다.',
                 status=HTTP_403_FORBIDDEN
@@ -214,7 +234,7 @@ def update_delete_comment(request, comment_id):
 
     elif request.method == 'DELETE':
         # if request.user.id != feed.author.id:
-        if 1 != comment.author.id:
+        if user.id != comment.author.id:
             return Response(
                 data='댓글에 접근 권한이 없습니다.',
                 status=HTTP_403_FORBIDDEN
@@ -231,13 +251,19 @@ def like_feed(request, feed_id):
     '''
     POST: 해당 피드에 좋아요를 표시하거나 지운다.
     '''
+    user = get_request_user(request)
+
+    if not user:
+        return Response(status=HTTP_401_UNAUTHORIZED)
+    elif user == 'EXPIRED_TOKEN':
+        return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
+
     feed = get_object_or_404(Feed, pk=feed_id)
-    user = User.objects.get(pk=1)
-    if feed.like_users.filter(pk=1).exists():
+    if feed.like_users.filter(pk=user.id).exists():
         feed.like_users.remove(user)
     else:
         feed.like_users.add(user)
-    serializer = FeedSerializer(feed)
+    serializer = FeedSerializer(feed, context={'user': user})
     return Response(serializer.data)
 
 
@@ -246,13 +272,19 @@ def like_comment(request, comment_id):
     '''
     POST: 해당 댓글에 좋아요를 표시하거나 지운다.
     '''
+    user = get_request_user(request)
+
+    if not user:
+        return Response(status=HTTP_401_UNAUTHORIZED)
+    elif user == 'EXPIRED_TOKEN':
+        return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
+
     comment = get_object_or_404(Comment, pk=comment_id)
-    user = User.objects.get(pk=1)
-    if comment.like_users.filter(pk=1).exists():
+    if comment.like_users.filter(pk=user.id).exists():
         comment.like_users.remove(user)
     else:
         comment.like_users.add(user)
-    serializer = CommentSerializer(comment)
+    serializer = CommentSerializer(comment, context={'user': user},)
     return Response(serializer.data)
 
 

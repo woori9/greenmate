@@ -36,7 +36,8 @@ function GoBackBar({ title, children }) {
 
 GoBackBar.propTypes = {
   title: PropTypes.string.isRequired,
-  children: PropTypes.node.isRequired,
+  // eslint-disable-next-line react/require-default-props
+  children: PropTypes.node,
 };
 
 export default GoBackBar;

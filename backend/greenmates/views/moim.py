@@ -1,8 +1,7 @@
 from django.shortcuts import get_list_or_404, get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from django.db.models import Prefetch
-from ..models import Moim, Mate
+from ..models import Moim
 from ..serializers.moim import (
     MoimSimpleSerializer,
     MoimDetailSerializer, 
@@ -13,19 +12,20 @@ from ..serializers.moim import (
 
 from rest_framework.status import (
     HTTP_201_CREATED,
-    HTTP_204_NO_CONTENT,
+    HTTP_400_BAD_REQUEST,
+    HTTP_401_UNAUTHORIZED,
     HTTP_403_FORBIDDEN,
     HTTP_405_METHOD_NOT_ALLOWED,
 )
 import datetime
+from django.db.models import Q
 from django.contrib.auth import get_user_model
-User = get_user_model()
-user = User.objects.get(pk=2)   # TODO: request.user로 변경 (현재 pk=2로 TEST중)
-# TODO: 유저정보
-# 1. request.user 언어정보
-# 2. login_required
-# 3. 
+from accounts.views.token import get_request_user
 
+from .community import n2mt
+
+User = get_user_model()
+# user = get_object_or_404(User, pk=2)
 @api_view(['GET', 'POST'])
 def get_create_moim_list(request):
     '''
@@ -33,20 +33,26 @@ def get_create_moim_list(request):
     POST: 새로운 모임 글을 작성
     '''
     def moim_list():
-        moims = Moim.objects.filter(status=0)
-        serializer = MoimSimpleSerializer(moims, many=True)
+        moims = Moim.objects.filter(status=0).order_by('time')
+        serializer = MoimSimpleSerializer(moims, context={'user': user}, many=True)
         return Response(serializer.data)
 
     def moim_create():
         serializer = MoimPostPutSerializer(data=request.data, context={'user': user}) 
         author = user
-        content_trans = 'English version of context' # TODO: community 번역 함수 활용예정
+        content_trans = n2mt(request.data['content'])
         if serializer.is_valid(raise_exception=True):
             serializer.save(author=author, content_trans=content_trans)
-        return Response(
-            data='모임이 정상적으로 작성되었습니다.',
-            status=HTTP_201_CREATED
-        )
+            return Response(
+                data='모임이 정상적으로 작성되었습니다.',
+                status=HTTP_201_CREATED
+            )
+    
+    user = get_request_user(request)
+    if not user:
+        return Response(status=HTTP_401_UNAUTHORIZED)
+    elif user == 'EXPIRED_TOKEN':
+        return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
     
     if request.method == 'GET':
         return moim_list()
@@ -61,7 +67,7 @@ def get_update_moim_detail(request, moim_id):
     PUT : 해당 모임 글의 날짜, 시간 수정 (2시간 전까지)
     '''
     def moim_detail():
-        serializer = MoimDetailSerializer(moim)
+        serializer = MoimDetailSerializer(moim, context={'user': user},)
         return Response(serializer.data)
 
     def moim_update():
@@ -83,7 +89,13 @@ def get_update_moim_detail(request, moim_id):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
-    
+
+    user = get_request_user(request)
+    if not user:
+        return Response(status=HTTP_401_UNAUTHORIZED)
+    elif user == 'EXPIRED_TOKEN':
+        return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
+
     moim = get_object_or_404(Moim, pk=moim_id)
     if request.method == 'GET':
         return moim_detail()
@@ -105,9 +117,14 @@ def get_waiting_moim(request):
     '''
     GET: 유저가 게스트로 대기중인 모임 리스트 조회
     '''
-    # TODO: author_id를 request.user에서 가져오기. 현재 2번 user로 TEST 중.
-    moims = get_list_or_404(Moim.objects.filter(mate__user=2, mate__mate_status=0))
-    serializer = MoimDetailSerializer(moims, many=True)
+    user = get_request_user(request)
+    if not user:
+        return Response(status=HTTP_401_UNAUTHORIZED)
+    elif user == 'EXPIRED_TOKEN':
+        return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
+
+    moims_list = Moim.objects.filter(mate__user=user.id, mate__mate_status=0).order_by('time')
+    serializer = MoimDetailSerializer(moims_list, context={'user': user}, many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
@@ -115,8 +132,14 @@ def get_joined_moim(request):
     '''
     GET: 유저가 게스트로 합류중인 모임 리스트 조회
     ''' 
-    moims = get_list_or_404(Moim.objects.filter(mate__user=2, mate__mate_status=1).exclude(author_id=2))
-    serializer = MoimDetailSerializer(moims, many=True)
+    user = get_request_user(request)
+    if not user:
+        return Response(status=HTTP_401_UNAUTHORIZED)
+    elif user == 'EXPIRED_TOKEN':
+        return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
+
+    moims_list = Moim.objects.filter(mate__user=user.id, mate__mate_status=1).exclude(author_id=user.id).order_by('time')
+    serializer = MoimDetailSerializer(moims_list, context={'user': user}, many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
@@ -124,8 +147,14 @@ def get_opened_moim(request):
     '''
     GET: 유저가 호스트로 개설한 모임 리스트 조회
     '''
-    moims = get_list_or_404(Moim.objects.filter(author_id=2, status__lt=2))
-    serializer = MoimAllSerializer(moims, many=True) 
+    user = get_request_user(request)
+    if not user:
+        return Response(status=HTTP_401_UNAUTHORIZED)
+    elif user == 'EXPIRED_TOKEN':
+        return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
+
+    moims_list = Moim.objects.filter(author_id=user.id, status__lt=2).order_by('time')
+    serializer = MoimAllSerializer(moims_list, context={'user': user}, many=True) 
     return Response(serializer.data)
 
 @api_view(['GET'])
@@ -133,6 +162,61 @@ def get_finished_moim(request):
     '''
     GET: 유저가 호스트 / 게스트로 참여한 종료된 모임 리스트 조회
     '''
-    moims = get_list_or_404(Moim.objects.filter(mate__user=2, mate__mate_status=4))
-    serializer = MoimDetailSerializer(moims, many=True)
+    user = get_request_user(request)
+    if not user:
+        return Response(status=HTTP_401_UNAUTHORIZED)
+    elif user == 'EXPIRED_TOKEN':
+        return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
+
+    moims_list = Moim.objects.filter(mate__user=user.id, mate__mate_status=4).order_by('-time')
+    serializer = MoimAllSerializer(moims_list, context={'user': user}, many=True) 
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def search_moim(request):
+    '''
+    GET: 모임 검색
+        {"word": "검색어"}
+    '''
+    user = get_request_user(request)
+    if not user:
+        return Response(status=HTTP_401_UNAUTHORIZED)
+    elif user == 'EXPIRED_TOKEN':
+        return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
+
+    word = request.GET.get('word', None)
+    q = Q()
+    if word:
+        q = Q(author__nickname__icontains=word)
+        q |= Q(restaurant__restaurantinfo__name__icontains=word)  
+        q |= Q(restaurant__restaurantinfo__address__icontains=word)  
+    q &= Q(status=0)   
+    moim_list = Moim.objects.filter(q).distinct().order_by('time')
+    serializer = MoimSimpleSerializer(moim_list, context={'user': user}, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def filter_moim(request):
+    '''
+    GET: 모임 필터
+        {"period": "기간", "day": "요일"}
+    '''
+    user = get_request_user(request)
+    if not user:
+        return Response(status=HTTP_401_UNAUTHORIZED)
+    elif user == 'EXPIRED_TOKEN':
+        return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
+
+    period = request.GET.get('period', None)
+    day = request.GET.get('day', None)
+    q = Q(status=0)
+
+    if period:
+        startdate = datetime.datetime.today()
+        enddate = startdate + datetime.timedelta(days=int(period))
+        q &= Q(time__range=[startdate, enddate])   
+    if day:
+        q &= Q(time__week_day=int(day))     
+    moim_list = Moim.objects.filter(q).order_by('time')
+    serializer = MoimSimpleSerializer(moim_list, context={'user': user}, many=True)
     return Response(serializer.data)

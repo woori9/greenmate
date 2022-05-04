@@ -50,7 +50,7 @@ class RestaurantDetailSerializer(RestaurantSerializer):
         fields = ('id', 'category', 'call', 'score', 'is_like')
 
     def to_representation(self, instance):
-        from .Feed import FeedReviewSerializer
+        from .feed import FeedReviewSerializer
 
         response = super().to_representation(instance)   
         feed_list = Feed.objects.filter(restaurant=instance.id)
@@ -72,13 +72,11 @@ class RestaurantMapSerializer(serializers.ModelSerializer):
             data = '준비중입니다.'
         return data
 
-
 # 모임 글 조회 시 보여 질 식당 정보
 class RestaurantInfoMoimSerializer(serializers.ModelSerializer):
     class Meta:
         model = RestaurantInfo
         fields = ('restaurant', 'name', 'address')
-
 
 # 모임 글에 보일 식당 정보
 class RestaurantMoimDataSerializer(serializers.ModelSerializer):
@@ -93,3 +91,10 @@ class RestaurantMoimDataSerializer(serializers.ModelSerializer):
         response['name'] = data.name
         response['address'] = data.address
         return response
+
+
+class RestaurantLikeSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = RestaurantInfo
+        fields = ('restaurant', 'name', 'vege_types')
