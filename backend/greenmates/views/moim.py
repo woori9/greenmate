@@ -123,7 +123,7 @@ def get_waiting_moim(request):
     elif user == 'EXPIRED_TOKEN':
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
 
-    moims_list = get_list_or_404(Moim.objects.filter(mate__user=user.id, mate__mate_status=0).order_by('time'))
+    moims_list = Moim.objects.filter(mate__user=user.id, mate__mate_status=0).order_by('time')
     serializer = MoimDetailSerializer(moims_list, context={'user': user}, many=True)
     return Response(serializer.data)
 
@@ -138,7 +138,7 @@ def get_joined_moim(request):
     elif user == 'EXPIRED_TOKEN':
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
 
-    moims_list = get_list_or_404(Moim.objects.filter(mate__user=user.id, mate__mate_status=1).exclude(author_id=user.id).order_by('time'))
+    moims_list = Moim.objects.filter(mate__user=user.id, mate__mate_status=1).exclude(author_id=user.id).order_by('time')
     serializer = MoimDetailSerializer(moims_list, context={'user': user}, many=True)
     return Response(serializer.data)
 
@@ -153,7 +153,7 @@ def get_opened_moim(request):
     elif user == 'EXPIRED_TOKEN':
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
 
-    moims_list = get_list_or_404(Moim.objects.filter(author_id=user.id, status__lt=2).order_by('time'))
+    moims_list = Moim.objects.filter(author_id=user.id, status__lt=2).order_by('time')
     serializer = MoimAllSerializer(moims_list, context={'user': user}, many=True) 
     return Response(serializer.data)
 
@@ -168,7 +168,7 @@ def get_finished_moim(request):
     elif user == 'EXPIRED_TOKEN':
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
 
-    moims_list = get_list_or_404(Moim.objects.filter(mate__user=user.id, mate__mate_status=4).order_by('-time'))
+    moims_list = Moim.objects.filter(mate__user=user.id, mate__mate_status=4).order_by('-time')
     serializer = MoimAllSerializer(moims_list, context={'user': user}, many=True) 
     return Response(serializer.data)
 

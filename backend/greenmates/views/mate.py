@@ -225,7 +225,7 @@ def evaluate_mate(request):
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
     mate = get_object_or_404(Mate, pk=request.data['mate']) 
     moim = mate.moim
- 
+    print(mate.user)
     # 1/ 자기 자신을 평가하는 경우
     if mate.user.pk == user.id:
         return Response(
@@ -251,7 +251,7 @@ def evaluate_mate(request):
 
     serializer = UserReviewPostSerializer(
         data=request.data, 
-        context={'user':user.id, 'evaluation': request.data['evaluation']}
+        context={'user':user, 'evaluation': request.data['evaluation']}
     )
     if serializer.is_valid(raise_exception=True):
         serializer.save()
