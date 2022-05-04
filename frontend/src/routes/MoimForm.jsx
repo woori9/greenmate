@@ -56,7 +56,7 @@ function MoimForm() {
 
     createMoim(
       {
-        restaurant_id: selectedRestaurantId,
+        restaurant: selectedRestaurantId,
         time: datetimeValue,
         head_cnt: count,
         title,

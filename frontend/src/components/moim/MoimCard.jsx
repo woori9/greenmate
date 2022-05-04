@@ -77,7 +77,7 @@ function MoimCard({ moimInfo, hasBorder, showStatus }) {
               <dd>
                 <StorefrontIcon />
               </dd>
-              <dd>{moimInfo.restaurant.nameKr}</dd>
+              <dd>{moimInfo.restaurant.name}</dd>
             </div>
 
             <div className="info-data">
@@ -111,7 +111,10 @@ MoimCard.propTypes = {
     status: PropTypes.number.isRequired,
     headCnt: PropTypes.number.isRequired,
     nowCnt: PropTypes.number.isRequired,
-    mates: PropTypes.arrayOf(PropTypes.any).isRequired,
+    mates: PropTypes.oneOfType([
+      PropTypes.objectOf(PropTypes.any),
+      PropTypes.arrayOf(PropTypes.any),
+    ]),
     restaurant: PropTypes.objectOf(PropTypes.any).isRequired,
   }).isRequired,
   hasBorder: PropTypes.bool.isRequired,
