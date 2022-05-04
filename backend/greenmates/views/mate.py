@@ -1,12 +1,10 @@
 from django.shortcuts import get_list_or_404, get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from ..models import Moim, Mate
-from ..serializers.moim import MoimSerializer
-from ..serializers.mate import (
-    MatePutPostSerializer
-)
-
+from ..models import Moim, Mate, UserReview
+from ..serializers.moim import MoimDetailSerializer, MoimSerializer
+from ..serializers.mate import MatePutPostSerializer
+from ..serializers.evaluation import UserReviewPostSerializer
 from rest_framework.status import (
     HTTP_201_CREATED,
     HTTP_204_NO_CONTENT,
@@ -212,12 +210,49 @@ def out_mate(request, mate_id):
         status=HTTP_403_FORBIDDEN
     )
 
-@api_view(['PUT'])
-def evaluate_mate(request, moim_id):
-    pass
+@api_view(['POST'])
+def evaluate_mate(request):
+    '''
+    POST: 유저 평가
+        user_id: user_id,(평가 대상 게스트)
+        score: 0(별로)/1(좋아요)/2(최고),
+        evaluation: 평가(int)
+    '''
+    user = get_request_user(request)
+    if not user:
+        return Response(status=HTTP_401_UNAUTHORIZED)
+    elif user == 'EXPIRED_TOKEN':
+        return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
+    mate = get_object_or_404(Mate, pk=request.data['mate']) 
+    moim = mate.moim
+ 
+    # 1/ 자기 자신을 평가하는 경우
+    if mate.user.pk == user.id:
+        return Response(
+            data='접근 권한이 없습니다.',
+            status=HTTP_403_FORBIDDEN
+        )
 
+    # 2/ 이 모임에 참여한 유저가 아닌 경우,
+    user_in_moim = Mate.objects.filter(moim=moim.pk, user=user.id, mate_status=4) 
+    if len(user_in_moim) == 0:
+        return Response(
+            data='접근 권한이 없습니다.',
+            status=HTTP_403_FORBIDDEN
+        )
+    
+    # 3/ 이미 평가한 경우
+    user_in_review = UserReview.objects.filter(mate=request.data['mate'], me=user.id)
+    if len(user_in_review):
+        return Response(
+            data='접근 권한이 없습니다.',
+            status=HTTP_403_FORBIDDEN
+        )
 
-
-
-
-
+    serializer = UserReviewPostSerializer(
+        data=request.data, 
+        context={'user':user.id, 'evaluation': request.data['evaluation']}
+    )
+    if serializer.is_valid(raise_exception=True):
+        serializer.save()
+        return Response(status=HTTP_201_CREATED)

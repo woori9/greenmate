@@ -39,7 +39,7 @@ function RestaurantSearch({ setSelectedRestaurantId }) {
   function onKeyUp(e) {
     if (e.keyCode === 13 && searchKeyword.length > 0) {
       setIsSearch(true);
-      setSelectedRestaurantId(1);
+      setSearchKeyword(e.target.value);
     }
   }
 
@@ -68,22 +68,26 @@ function RestaurantSearch({ setSelectedRestaurantId }) {
             width: '100%',
           }}
         />
-        <SearchList>
-          {searchResult.length > 0 && isSearch ? (
-            searchResult.map(searchItem => (
-              <li
-                key={searchItem.restaurantId}
-                onClick={() => {
-                  setSelectedRestaurantId(searchItem.restaurantId);
-                }}
-              >
-                {searchItem.name}
-              </li>
-            ))
-          ) : (
-            <li>검색 결과가 없습니다.</li>
-          )}
-        </SearchList>
+        {isSearch && (
+          <SearchList>
+            {searchResult.length > 0 ? (
+              searchResult.map(searchItem => (
+                <li
+                  key={searchItem.restaurantId}
+                  onClick={() => {
+                    setSelectedRestaurantId(searchItem.restaurantId);
+                    setSearchKeyword(searchItem.name);
+                    setIsSearch(false);
+                  }}
+                >
+                  {searchItem.name}
+                </li>
+              ))
+            ) : (
+              <li>검색 결과가 없습니다.</li>
+            )}
+          </SearchList>
+        )}
       </div>
     </>
   );
