@@ -53,7 +53,7 @@ const getRoomId = async (moimId, userId) => {
       await updateDoc(roomRef, {
         membersInfo: arrayUnion({
           id: userId,
-          joinDate: Date.now(),
+          joinDate: new Date(),
           nickname: `nickname${userId}`,
           veganType: userId,
         }),
@@ -80,7 +80,7 @@ const getRoomId = async (moimId, userId) => {
         // 추후 실제 데이터로 수정
         {
           id: userId,
-          joinDate: Date.now(),
+          joinDate: new Date(),
           nickname: `nickname${userId}`,
           veganType: userId,
         },
@@ -115,7 +115,7 @@ const sendMessage = async (roomId, content, user) => {
     const newMessage = {
       content,
       sentBy: user,
-      sentAt: Date.now(),
+      sentAt: new Date(),
     };
 
     await addDoc(messagesRef, newMessage);
@@ -155,13 +155,13 @@ const createPrivateRoom = async (pairId, userId) => {
         // 추후 실제 데이터로 수정
         {
           id: userId,
-          joinDate: Date.now(),
+          joinDate: new Date(),
           nickname: `nickname${userId}`,
           veganType: userId,
         },
         {
           id: pairId,
-          joinDate: Date.now(),
+          joinDate: new Date(),
           nickname: `nickname${pairId}`,
           veganType: pairId,
         },
