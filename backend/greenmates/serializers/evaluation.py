@@ -8,10 +8,11 @@ class UserReviewPostSerializer(serializers.ModelSerializer):
         read_only_fields = ('me',)
     
     def create(self, validated_data):
+        validated_data['me'] = self.context['user']
         user_review = UserReview.objects.create(**validated_data)
-        user_review.me.add(self.context['user'])
-        UserEvaluation.objects.create(
-            user_review = user_review,
-            evaluation=self.context['evaluation']
-        )
+        for evaluation in self.context['evaluation']:
+            UserEvaluation.objects.create(
+                user_review = user_review,
+                evaluation=evaluation
+            )
         return user_review
