@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import ProfileImage from '../common/ProfileImage';
 import MoimButtons from './MoimButtons';
-import formattedDatetime from '../../utils/formattedDate';
+import { formattedDatetime } from '../../utils/formattedDate';
 
 const Card = styled.div`
   ${props =>
