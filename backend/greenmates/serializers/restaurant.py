@@ -50,12 +50,13 @@ class RestaurantDetailSerializer(RestaurantSerializer):
         fields = ('id', 'category', 'call', 'score', 'is_like')
 
     def to_representation(self, instance):
-        from .Feed import FeedReviewSerializer
+        from .feed import FeedReviewSerializer
 
         response = super().to_representation(instance)   
         feed_list = Feed.objects.filter(restaurant=instance.id)
         response['review'] = FeedReviewSerializer(feed_list, many=True).data
         return response
+
 
 class RestaurantMapSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
@@ -90,3 +91,10 @@ class RestaurantMoimDataSerializer(serializers.ModelSerializer):
         response['name'] = data.name
         response['address'] = data.address
         return response
+
+
+class RestaurantLikeSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = RestaurantInfo
+        fields = ('restaurant', 'name', 'vege_types')
