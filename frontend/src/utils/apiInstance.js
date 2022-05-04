@@ -8,8 +8,5 @@ const apiInstance = axios.create({
     'Content-type': 'application/json',
   },
 });
-apiInstance.defaults.headers.common.Authorization = `Bearer ${sessionStorage.getItem(
-  'Authorization',
-)}`;
 
 export default apiInstance;
