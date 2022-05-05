@@ -12,21 +12,23 @@ const Bar = styled.div`
   height: 52px;
   background-color: white;
   z-index: 3;
+  justify-content: space-between;
 
   p {
-    align-self: center;
     font-size: 1.25rem;
   }
 `;
 
-function GoBackBar({ title, children }) {
+function GoBackBar({ title, children, handleOnClick }) {
   const navigate = useNavigate();
+  const goBack = () => navigate(-1);
+  const onClickHander = handleOnClick || goBack;
 
   return (
     <Bar>
       <ChevronLeftIcon
         sx={{ width: '35px', height: '35px' }}
-        onClick={() => navigate(-1)}
+        onClick={onClickHander}
       />
       <p>{title}</p>
       {children}
@@ -37,6 +39,11 @@ function GoBackBar({ title, children }) {
 GoBackBar.propTypes = {
   title: PropTypes.string.isRequired,
   children: PropTypes.node.isRequired,
+  handleOnClick: PropTypes.func,
+};
+
+GoBackBar.defaultProps = {
+  handleOnClick: undefined,
 };
 
 export default GoBackBar;
