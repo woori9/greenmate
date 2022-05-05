@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { styled as muiStyled } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
@@ -76,13 +77,13 @@ const Button = styled.button`
     cursor: pointer;
   }
 `;
-export default function MiniDrawer() {
+function DesktopSideSheet({ setMapSearchKeyword }) {
   const [open, setOpen] = useState(true);
   return (
     <SideSheet variant="permanent" open={open}>
       <SheetContent>
         <Body>
-          <SearchBox />
+          <SearchBox setMapSearchKeyword={setMapSearchKeyword} />
         </Body>
         <Button
           type="button"
@@ -95,3 +96,7 @@ export default function MiniDrawer() {
     </SideSheet>
   );
 }
+DesktopSideSheet.propTypes = {
+  setMapSearchKeyword: PropTypes.func.isRequired,
+};
+export default DesktopSideSheet;
