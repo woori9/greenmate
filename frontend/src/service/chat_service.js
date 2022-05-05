@@ -7,6 +7,7 @@ import {
   addDoc,
   updateDoc,
   arrayUnion,
+  arrayRemove,
   query,
   where,
   getDocs,
@@ -31,6 +32,28 @@ const signIn = async userId => {
   } catch (e) {
     throw new Error('firebase에 회원 정보를 저장하지 못했습니다.');
   }
+};
+
+const addRoomToUser = async (userId, chatRoomId) => {
+  const userRoomRef = doc(db, 'users', userId, 'rooms', chatRoomId);
+  await setDoc(userRoomRef, {
+    countUnreadMessage: 0,
+  });
+};
+
+const activateChatRoom = async (userId, chatRoomId) => {
+  const userRef = doc(db, 'users', userId);
+  await updateDoc(userRef, {
+    activatedChatRooms: arrayUnion(chatRoomId),
+  });
+};
+
+// 채팅방이 unmount 될 때 비활성화
+const deactivateChatRoom = async (userId, chatRoomId) => {
+  const userRef = doc(db, 'users', userId);
+  await updateDoc(userRef, {
+    activatedChatRooms: arrayRemove(chatRoomId),
+  });
 };
 
 const getRoomId = async (moimId, userId) => {
@@ -58,8 +81,10 @@ const getRoomId = async (moimId, userId) => {
           veganType: userId,
         }),
       });
+
+      await addRoomToUser(userId, chatRoomId);
     }
-    return docSnap.data().roomId;
+    return chatRoomId;
   }
 
   // create moim and chat room
@@ -77,7 +102,6 @@ const getRoomId = async (moimId, userId) => {
       id: newRoomRef.id,
       members: [userId],
       membersInfo: [
-        // 추후 실제 데이터로 수정
         {
           id: userId,
           joinDate: new Date(),
@@ -89,6 +113,7 @@ const getRoomId = async (moimId, userId) => {
     };
 
     await setDoc(newRoomRef, newRoom);
+    await addRoomToUser(userId, newRoomRef.id);
     return newRoomRef.id;
   } catch (e) {
     throw new Error(e);
@@ -169,10 +194,20 @@ const createPrivateRoom = async (pairId, userId) => {
     };
 
     await setDoc(newRoomRef, newRoom);
+    await addRoomToUser(userId, newRoomRef.id);
+    await addRoomToUser(pairId, newRoomRef.id);
     return newRoomRef.id;
   } catch (e) {
     throw new Error(e);
   }
 };
 
-export { signIn, getRoomId, sendMessage, getPrivateRoomId, createPrivateRoom };
+export {
+  signIn,
+  getRoomId,
+  sendMessage,
+  getPrivateRoomId,
+  createPrivateRoom,
+  activateChatRoom,
+  deactivateChatRoom,
+};
