@@ -4,7 +4,8 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import PropTypes from 'prop-types';
 
 const Bar = styled.div`
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   align-items: center;
   position: fixed;
   top: 0px;
@@ -12,10 +13,14 @@ const Bar = styled.div`
   height: 52px;
   background-color: white;
   z-index: 3;
-  justify-content: space-between;
 
   p {
     font-size: 1.25rem;
+    text-align: center;
+  }
+
+  div {
+    margin-left: auto;
   }
 `;
 
@@ -31,7 +36,7 @@ function GoBackBar({ title, children, handleOnClick }) {
         onClick={onClickHander}
       />
       <p>{title}</p>
-      {children}
+      <div>{children}</div>
     </Bar>
   );
 }
