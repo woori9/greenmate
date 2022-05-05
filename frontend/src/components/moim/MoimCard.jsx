@@ -115,7 +115,7 @@ MoimCard.propTypes = {
       PropTypes.objectOf(PropTypes.any),
       PropTypes.arrayOf(PropTypes.any),
     ]),
-    restaurant: PropTypes.objectOf(PropTypes.number).isRequired,
+    restaurant: PropTypes.objectOf(PropTypes.any).isRequired,
   }).isRequired,
   hasBorder: PropTypes.bool.isRequired,
   showStatus: PropTypes.bool.isRequired,
