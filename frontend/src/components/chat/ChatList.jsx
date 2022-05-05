@@ -8,11 +8,17 @@ const StyledChatList = styled.ul`
   margin: 0;
 `;
 
-function ChatList({ chats, onChatClick }) {
+function ChatList({ chats, onChatClick, user, unreadMessage }) {
   return (
     <StyledChatList>
       {chats.map(chat => (
-        <ChatItem key={chat.id} chat={chat} onChatClick={onChatClick} />
+        <ChatItem
+          key={chat.id}
+          chat={chat}
+          onChatClick={onChatClick}
+          user={user}
+          countUnreadMessage={unreadMessage[chat.id]}
+        />
       ))}
     </StyledChatList>
   );
@@ -25,14 +31,23 @@ ChatList.propTypes = {
       members: PropTypes.arrayOf(PropTypes.string),
       recentMessage: PropTypes.shape({
         content: PropTypes.string,
-        sentAt: PropTypes.number,
         sentBy: PropTypes.string,
         readBy: PropTypes.arrayOf(PropTypes.string),
+        sentAt: PropTypes.shape({
+          nanoseconds: PropTypes.number,
+          seconds: PropTypes.number,
+        }),
       }),
       type: PropTypes.number,
     }),
   ).isRequired,
   onChatClick: PropTypes.func.isRequired,
+  user: PropTypes.string.isRequired,
+  unreadMessage: PropTypes.objectOf(PropTypes.number.isRequired),
+};
+
+ChatList.defaultProps = {
+  unreadMessage: {},
 };
 
 export default ChatList;

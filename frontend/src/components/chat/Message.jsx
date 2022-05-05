@@ -12,7 +12,10 @@ Message.propTypes = {
   message: PropTypes.shape({
     sentBy: PropTypes.string,
     content: PropTypes.string,
-    sentAt: PropTypes.number,
+    sentAt: PropTypes.shape({
+      nanoseconds: PropTypes.number,
+      seconds: PropTypes.number,
+    }),
   }).isRequired,
 };
 
