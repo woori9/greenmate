@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import styled from 'styled-components';
 import logo from '../assets/logo.png';
 import ResponsiveMapNavbar from '../components/common/navbar/ResponsiveMapNavbar';
-import ResponseiveSideSheet from '../components/map/SideSheet/ResponseiveSideSheet';
+import ResponsiveSideSheet from '../components/map/SideSheet/ResponsiveSideSheet';
 
 const { kakao } = window;
 const KakaoMap = styled.div`
@@ -81,7 +81,7 @@ function Map() {
   return (
     <>
       <ResponsiveMapNavbar />
-      <ResponseiveSideSheet setMapSearchKeyword={setMapSearchKeyword} />
+      <ResponsiveSideSheet setMapSearchKeyword={setMapSearchKeyword} />
       <KakaoMap id="myMap" />
     </>
   );

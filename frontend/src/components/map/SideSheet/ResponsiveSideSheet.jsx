@@ -3,7 +3,7 @@ import MobileBottomSheet from './MobileBottomSheet';
 import DesktopSideSheet from './DesktopSideSheet';
 import useWindowDimensions from '../../../utils/windowDimension';
 
-function ResponseiveSideSheet({ setMapSearchKeyword }) {
+function ResponsiveSideSheet({ setMapSearchKeyword }) {
   const { width } = useWindowDimensions();
 
   return (
@@ -16,8 +16,8 @@ function ResponseiveSideSheet({ setMapSearchKeyword }) {
     </div>
   );
 }
-ResponseiveSideSheet.propTypes = {
+ResponsiveSideSheet.propTypes = {
   setMapSearchKeyword: PropTypes.func.isRequired,
 };
 
-export default ResponseiveSideSheet;
+export default ResponsiveSideSheet;
