@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   getFirestore,
   collection,
@@ -12,12 +12,9 @@ import styled from 'styled-components';
 import ChatRoom from '../components/chat/ChatRoom';
 import app from '../service/firebase';
 import {
-  signIn,
-  getRoomId,
-  getPrivateRoomId,
+  findPrivateChatRoom,
   createPrivateRoom,
   activateChatRoom,
-  // deactivateChatRoom,
 } from '../service/chat_service';
 import GoBackBar from '../components/common/GoBackBar';
 import useWindowDimensions from '../utils/windowDimension';
@@ -37,9 +34,16 @@ const GridChatContainer = styled.div`
 
 function Chat() {
   const isDesktop = useWindowDimensions().width > 1024;
-  const userRef = useRef();
-  const moimRef = useRef();
-  const [user, setUser] = useState('');
+  const user = {
+    id: '1',
+    veganType: 1,
+    nickname: '1번유저',
+  };
+  const otherUser = {
+    id: '2',
+    veganType: 2,
+    nickname: '2번유저',
+  };
   const [selectedChat, setSelectedChat] = useState(null);
   const [chatList, setChatList] = useState([]);
   const [unreadMessage, setUnreadMessage] = useState({});
@@ -50,12 +54,12 @@ function Chat() {
   };
 
   useEffect(() => {
-    if (!user) return () => {};
+    if (!user.id) return () => {};
 
     const roomsRef = collection(db, 'rooms');
     const q = query(
       roomsRef,
-      where('members', 'array-contains', user),
+      where('members', 'array-contains', user.id),
       where('type', '==', 1),
       orderBy('recentMessage.sentAt'),
     );
@@ -70,12 +74,12 @@ function Chat() {
     });
 
     return unsubscribe;
-  }, [user]);
+  }, []);
 
   useEffect(() => {
-    if (!user) return () => {};
+    if (!user.id) return () => {};
     const q = query(
-      collection(db, 'users', user, 'rooms'),
+      collection(db, 'users', user.id, 'rooms'),
       where('type', '==', 1),
     );
 
@@ -90,14 +94,29 @@ function Chat() {
     });
 
     return unsubscribe;
-  }, [user]);
+  }, []);
 
   const selectChat = chatRoomId => {
     setSelectedChat(chatRoomId);
   };
 
+  const chatWithOtherUser = async (you, me) => {
+    const chatRoom = await findPrivateChatRoom(you.id, me.id);
+    if (chatRoom) {
+      await activateChatRoom(user.id, chatRoom.id);
+      setSelectedChat(chatRoom);
+    } else {
+      const createdRoom = await createPrivateRoom(you, me);
+      await activateChatRoom(me.id, createdRoom.id);
+      setSelectedChat(createdRoom);
+    }
+  };
+
   return (
     <StyledDiv>
+      <button type="button" onClick={() => chatWithOtherUser(otherUser, user)}>
+        2번 유저와 대화하기
+      </button>
       {isDesktop ? (
         <>
           <DesktopNavbar />
@@ -105,7 +124,7 @@ function Chat() {
             <ChatList
               chats={chatList}
               onChatClick={selectChat}
-              user={user}
+              user={user.id}
               unreadMessage={unreadMessage}
             />
             <ChatRoom selectedChat={selectedChat} user={user} />
@@ -124,58 +143,12 @@ function Chat() {
             <ChatList
               chats={chatList}
               onChatClick={selectChat}
-              user={user}
+              user={user.id}
               unreadMessage={unreadMessage}
             />
           ) : (
-            <ChatRoom selectedChat={selectedChat} user={user} />
+            <ChatRoom selectedChat={selectedChat} user={user.id} />
           )}
-        </>
-      )}
-
-      {user ? null : (
-        <>
-          <input ref={userRef} type="text" placeholder="user" />
-          <button
-            type="button"
-            onClick={() => {
-              setUser(userRef.current.value);
-              signIn(userRef.current.value);
-            }}
-          >
-            set User
-          </button>
-          <input ref={moimRef} type="text" placeholder="room" />
-          <button
-            type="button"
-            onClick={async () => {
-              if (!moimRef.current.value) return;
-              const roomId = await getRoomId(moimRef.current.value, user);
-              await activateChatRoom(user, roomId);
-              setSelectedChat(roomId);
-            }}
-          >
-            채팅방 입장
-          </button>
-
-          <button
-            type="button"
-            onClick={async () => {
-              // 임시로 상대방을 5번 유저로 설정
-              // 현재 유저를 설정하지 않으면 에러남..
-              const roomId = await getPrivateRoomId('5', user);
-              if (roomId) {
-                await activateChatRoom(user, roomId);
-                setSelectedChat(roomId);
-              } else {
-                const createdRoomId = await createPrivateRoom('5', user);
-                await activateChatRoom(user, createdRoomId);
-                setSelectedChat(createdRoomId);
-              }
-            }}
-          >
-            5번 유저와 채팅하기(상대 프로필의 메세지 아이콘)
-          </button>
         </>
       )}
     </StyledDiv>

@@ -154,7 +154,7 @@ const sendMessage = async (roomId, content, user) => {
 };
 
 // 채팅 목록이 아닌 상대방 프로필의 메세지 아이콘을 눌렀을 때, 유저를 검색해서 눌렀을 때
-const getPrivateRoomId = async (pairId, userId) => {
+const findPrivateChatRoom = async (pairId, userId) => {
   const roomsRef = collection(db, 'rooms');
   const q = query(
     roomsRef,
@@ -167,39 +167,35 @@ const getPrivateRoomId = async (pairId, userId) => {
     const roomData = docRoom.data();
     return roomData.members.includes(pairId);
   });
-
-  return targetRoom ? targetRoom.id : null;
+  return targetRoom ? targetRoom.data() : null;
 };
 
-const createPrivateRoom = async (pairId, userId) => {
+const createPrivateRoom = async (pair, user) => {
+  console.log(pair, user);
   try {
     const newRoomRef = doc(collection(db, 'rooms'));
 
     const newRoom = {
       id: newRoomRef.id,
       type: 1, // type 0: moim, 1: private,
-      members: [userId, pairId],
+      members: [pair.id, user.id],
       membersInfo: [
-        // 추후 실제 데이터로 수정
         {
-          id: userId,
+          ...user,
           joinDate: new Date(),
-          nickname: `nickname${userId}`,
-          veganType: userId,
         },
         {
-          id: pairId,
+          ...pair,
           joinDate: new Date(),
-          nickname: `nickname${pairId}`,
-          veganType: pairId,
         },
       ],
     };
 
-    await setDoc(newRoomRef, newRoom);
-    await addRoomToUser(userId, newRoomRef.id, 1);
-    await addRoomToUser(pairId, newRoomRef.id, 1);
-    return newRoomRef.id;
+    await setDoc(newRoomRef, newRoom); // 방 생성
+    await addRoomToUser(user.id, newRoomRef.id, 1);
+    await addRoomToUser(pair.id, newRoomRef.id, 1);
+    const querySnapshot = await getDoc(doc(db, 'rooms', newRoomRef.id));
+    return querySnapshot.data();
   } catch (e) {
     throw new Error(e);
   }
@@ -222,7 +218,7 @@ export {
   signIn,
   getRoomId,
   sendMessage,
-  getPrivateRoomId,
+  findPrivateChatRoom,
   createPrivateRoom,
   activateChatRoom,
   deactivateChatRoom,

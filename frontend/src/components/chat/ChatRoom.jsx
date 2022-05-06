@@ -50,10 +50,10 @@ function ChatRoom({ selectedChat, user }) {
       );
     };
 
-    const unsubscribe = getMessages(selectedChat, callback);
+    const unsubscribe = getMessages(selectedChat.id, callback);
 
     return unsubscribe;
-  }, [selectedChat]);
+  }, [selectedChat.id]);
 
   return (
     <StyledChatRoom className="room">
@@ -76,7 +76,21 @@ function ChatRoom({ selectedChat, user }) {
 }
 
 ChatRoom.propTypes = {
-  selectedChat: PropTypes.string,
+  selectedChat: PropTypes.shape({
+    id: PropTypes.string,
+    members: PropTypes.arrayOf(PropTypes.string),
+    membersInfo: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string,
+        nickname: PropTypes.string,
+        veganType: PropTypes.number,
+        joinDate: PropTypes.shape({
+          nanoseconds: PropTypes.number,
+          seconds: PropTypes.number,
+        }),
+      }),
+    ),
+  }),
   user: PropTypes.string.isRequired,
 };
 
