@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'greenmates',
 
     # 3rd
+    'storages',
     'rest_framework',
     'drf_yasg',
     'corsheaders',
@@ -157,3 +158,17 @@ SWAGGER_SETTINGS = {
    }
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+AWS_ACCESS_KEY_ID = 'AKIAQ2GQBIRG5WOCLXEF'
+AWS_SECRET_ACCESS_KEY = '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'
+AWS_REGION = 'ap-northeast-2'
+
+AWS_STORAGE_BUCKET_NAME = 'greenmate-ssafy'
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.%s.amazonaws.com' % (AWS_STORAGE_BUCKET_NAME,AWS_REGION)
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'path/to/store/my/files/')
