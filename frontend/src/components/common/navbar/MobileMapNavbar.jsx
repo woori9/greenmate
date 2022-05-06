@@ -6,16 +6,6 @@ import WysiwygIcon from '@mui/icons-material/Wysiwyg';
 import EcoIcon from '@mui/icons-material/EnergySavingsLeaf';
 import PersonIcon from '@mui/icons-material/Person';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
-import KakaoLoginImg from '../../../assets/kakao_login.png';
-
-const REDIRECT_URI = 'http://localhost:3000/oauth/callback/kakao';
-const KAKAO_URL = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${process.env.REACT_APP_REST_API_KEY}&redirect_uri=${REDIRECT_URI}`;
-const KakaoImg = styled.div`
-  height: 1rem;
-  img {
-    height: 100%;
-  }
-`;
 
 const defaultColor = '#a9a9a9';
 const selectedColor = '#fcb448';
@@ -23,6 +13,7 @@ const NavBottom = styled.div`
   position: fixed;
   bottom: 0;
   left: 0;
+  z-index: 5;
   width: 100%;
   height: 62px;
   background-color: #ffffff;
@@ -50,20 +41,17 @@ const NavTop = styled.div`
   position: fixed;
   top: 0;
   left: 0;
+  z-index: 1;
   width: 100%;
   height: 56px;
   padding: 0 1rem;
   display: flex;
-  justify-content: space-between;
+  justify-content: end;
   align-items: center;
-  p {
-    font-size: 28px;
-    color: #a9a9a9;
-  }
+  background-color: transparent;
 `;
 
-function MobileNavbar() {
-  const accessToken = sessionStorage.getItem('Authorization');
+function MobileMapNavbar() {
   const { pathname } = useLocation();
   const links = [
     {
@@ -96,16 +84,6 @@ function MobileNavbar() {
   return (
     <>
       <NavTop>
-        <p>그린메이트</p>
-        {accessToken === null ? (
-          <a href={KAKAO_URL}>
-            <KakaoImg>
-              <img src={KakaoLoginImg} alt="kakao-login" />
-            </KakaoImg>
-          </a>
-        ) : (
-          <p>로그인완료</p>
-        )}
         <NotificationsNoneOutlinedIcon sx={{ color: 'black', fontSize: 30 }} />
       </NavTop>
       <NavBottom>
@@ -124,4 +102,4 @@ function MobileNavbar() {
   );
 }
 
-export default MobileNavbar;
+export default MobileMapNavbar;

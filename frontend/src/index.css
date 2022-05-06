@@ -19,7 +19,6 @@ code {
 
 @media screen and (min-width: 1025px) {
   body {
-    padding: 60px 16px 5rem 146px;
     min-height: 100vh;
     min-width: 100vw;
   }
