@@ -22,7 +22,7 @@ function Home() {
   const [moimList, setMoimList] = useAtom(moimListAtom);
 
   useEffect(() => {
-    setSelectedCategory(null);
+    setSelectedCategory(6);
     getMoimList(
       res => {
         const formattedData = res.data.map(item => ({

@@ -21,12 +21,12 @@ const Button = styled.button`
   }
 `;
 
-function MoimCategory({ name, index, isSelected, setSelectedCategory }) {
+function MoimCategory({ name, value, isSelected, setSelectedCategory }) {
   return (
     <li>
       <Button
         isSelected={isSelected}
-        onClick={() => setSelectedCategory(index)}
+        onClick={() => setSelectedCategory(value)}
       >
         {name}
       </Button>
@@ -36,7 +36,7 @@ function MoimCategory({ name, index, isSelected, setSelectedCategory }) {
 
 MoimCategory.propTypes = {
   name: PropTypes.string.isRequired,
-  index: PropTypes.number.isRequired,
+  value: PropTypes.number.isRequired,
   isSelected: PropTypes.bool.isRequired,
   setSelectedCategory: PropTypes.func.isRequired,
 };
