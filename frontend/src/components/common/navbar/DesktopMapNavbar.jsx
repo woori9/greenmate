@@ -9,7 +9,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import logo from '../../../assets/logo.png';
 import KakaoLoginImg from '../../../assets/kakao_login.png';
 
-const REDIRECT_URI = 'http://localhost:3000/oauth/callback/kakao';
+const REDIRECT_URI = 'https://k6b105.p.ssafy.io/oauth/callback/kakao';
 const KAKAO_URL = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${process.env.REACT_APP_REST_API_KEY}&redirect_uri=${REDIRECT_URI}`;
 const KakaoImg = styled.div`
   height: 30px;
