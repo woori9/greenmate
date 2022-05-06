@@ -98,3 +98,10 @@ class RestaurantLikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = RestaurantInfo
         fields = ('restaurant', 'name', 'vege_types')
+
+
+class RestaurantNameSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = RestaurantInfo
+        fields = ('restaurant', 'name',)
