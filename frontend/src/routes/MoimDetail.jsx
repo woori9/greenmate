@@ -9,7 +9,7 @@ import styled from 'styled-components';
 import GoBackBar from '../components/common/GoBackBar';
 import UserInfo from '../components/moim/UserInfo';
 import ProfileImage from '../components/common/ProfileImage';
-import formattedDatetime from '../utils/formattedDate';
+import { formattedDatetime } from '../utils/formattedDate';
 import { categoryAtom } from '../atoms/moim';
 import { diff2hour } from '../utils/timestamp';
 

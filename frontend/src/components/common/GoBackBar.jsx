@@ -4,7 +4,8 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import PropTypes from 'prop-types';
 
 const Bar = styled.div`
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   align-items: center;
   position: fixed;
   top: 0px;
@@ -14,22 +15,28 @@ const Bar = styled.div`
   z-index: 3;
 
   p {
-    align-self: center;
     font-size: 1.25rem;
+    text-align: center;
+  }
+
+  div {
+    margin-left: auto;
   }
 `;
 
-function GoBackBar({ title, children }) {
+function GoBackBar({ title, children, handleOnClick }) {
   const navigate = useNavigate();
+  const goBack = () => navigate(-1);
+  const onClickHander = handleOnClick || goBack;
 
   return (
     <Bar>
       <ChevronLeftIcon
         sx={{ width: '35px', height: '35px' }}
-        onClick={() => navigate(-1)}
+        onClick={onClickHander}
       />
       <p>{title}</p>
-      {children}
+      <div>{children}</div>
     </Bar>
   );
 }
@@ -37,7 +44,12 @@ function GoBackBar({ title, children }) {
 GoBackBar.propTypes = {
   title: PropTypes.string.isRequired,
   // eslint-disable-next-line react/require-default-props
-  children: PropTypes.node,
+  children: PropTypes.node.isRequired,
+  handleOnClick: PropTypes.func,
+};
+
+GoBackBar.defaultProps = {
+  handleOnClick: undefined,
 };
 
 export default GoBackBar;
