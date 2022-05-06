@@ -11,6 +11,8 @@ import {
   query,
   where,
   getDocs,
+  orderBy,
+  onSnapshot,
 } from 'firebase/firestore';
 import app from './firebase';
 
@@ -34,10 +36,11 @@ const signIn = async userId => {
   }
 };
 
-const addRoomToUser = async (userId, chatRoomId) => {
+const addRoomToUser = async (userId, chatRoomId, type) => {
   const userRoomRef = doc(db, 'users', userId, 'rooms', chatRoomId);
   await setDoc(userRoomRef, {
     countUnreadMessage: 0,
+    type,
   });
 };
 
@@ -82,7 +85,7 @@ const getRoomId = async (moimId, userId) => {
         }),
       });
 
-      await addRoomToUser(userId, chatRoomId);
+      await addRoomToUser(userId, chatRoomId, 0);
     }
     return chatRoomId;
   }
@@ -113,7 +116,7 @@ const getRoomId = async (moimId, userId) => {
     };
 
     await setDoc(newRoomRef, newRoom);
-    await addRoomToUser(userId, newRoomRef.id);
+    await addRoomToUser(userId, newRoomRef.id, 0);
     return newRoomRef.id;
   } catch (e) {
     throw new Error(e);
@@ -194,12 +197,25 @@ const createPrivateRoom = async (pairId, userId) => {
     };
 
     await setDoc(newRoomRef, newRoom);
-    await addRoomToUser(userId, newRoomRef.id);
-    await addRoomToUser(pairId, newRoomRef.id);
+    await addRoomToUser(userId, newRoomRef.id, 1);
+    await addRoomToUser(pairId, newRoomRef.id, 1);
     return newRoomRef.id;
   } catch (e) {
     throw new Error(e);
   }
+};
+
+const getMessages = (selectedChat, callback) => {
+  const q = query(
+    collection(db, 'message', selectedChat, 'messages'),
+    // 내가 join 한 시점 이후의 메세지만
+    // where('timestamp', '>', 'joinTimestamp'),
+    orderBy('sentAt'),
+  );
+
+  const unsubscribe = onSnapshot(q, callback);
+
+  return unsubscribe;
 };
 
 export {
@@ -210,4 +226,5 @@ export {
   createPrivateRoom,
   activateChatRoom,
   deactivateChatRoom,
+  getMessages,
 };
