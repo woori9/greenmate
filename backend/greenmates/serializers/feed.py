@@ -2,7 +2,8 @@ from rest_framework import serializers
 from ..models import Feed, FeedImage, RestaurantInfo, Comment
 from .restaurant import (
     RestaurantSerializer,
-    RestaurantInfoSerializer
+    RestaurantInfoSerializer,
+    RestaurantNameSerializer
 )
 from .comment import CommentSerializer
 from accounts.serializers import UserSerializer
@@ -99,7 +100,7 @@ class FeedCommentSerializer(FeedSimpleSerializer):
                 restaurant=instance.restaurant,
                 language=self.context['user'].language
                 )[0]
-            response['restaurant'] = RestaurantInfoSerializer(res_info).data
+            response['res_info'] = RestaurantNameSerializer(res_info).data
         comment_list = Comment.objects.filter(feed=instance.id, parent__isnull=True)[:2]
         response['comments'] = CommentSerializer(comment_list, context={'user': self.context['user']}, many=True).data
         return response
