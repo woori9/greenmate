@@ -25,17 +25,22 @@ const StyledChatItem = styled.li`
     font-weight: 500;
   }
 
+  .horizon-align {
+    margin: auto 0;
+  }
+
   .color-gray {
     color: #a9a9a9;
   }
 
-  .data-unread {
-    display: inline-block;
+  .circle-red {
     background-color: #f9795d;
-    color: white;
     border-radius: 50%;
-    min-width: 20px;
     text-align: center;
+    width: 100%;
+    height: 0;
+    padding-top: 100%;
+    position: relative;
   }
 
   .text-right {
@@ -44,6 +49,26 @@ const StyledChatItem = styled.li`
 
   .m-5 {
     margin: 5px;
+  }
+
+  .temp {
+    width: 40%;
+    max-width: 20px;
+    margin-left: auto;
+    position: relative;
+  }
+
+  .count {
+    position: absolute;
+    color: white;
+    font-size: 14px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .font-12 {
+    font-size: 12px;
   }
 `;
 
@@ -54,12 +79,16 @@ function ChatItem({ chat, onChatClick, user, countUnreadMessage }) {
   return (
     <StyledChatItem onClick={() => onChatClick(chat.id)}>
       <img src={`${process.env.PUBLIC_URL}/logo192.png`} alt="sample" />
-      <p className="nickname">{pair.nickname}</p>
-      <p className="color-gray text-right m-5">{time}</p>
+      <p className="nickname horizon-align">{pair.nickname}</p>
+      <p className="color-gray text-right font-12 horizon-align">{time}</p>
       <p className="color-gray">{recentMessage.content}</p>
-      {!countUnreadMessage && (
-        <div className="text-right m-5">
-          <span className="data-unread">5</span>
+      {countUnreadMessage !== 0 && (
+        <div className="m-5">
+          <div className="temp">
+            <div className="circle-red">
+              <p className="count">{countUnreadMessage}</p>
+            </div>
+          </div>
         </div>
       )}
     </StyledChatItem>
