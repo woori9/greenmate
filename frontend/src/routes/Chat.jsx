@@ -7,25 +7,47 @@ import {
   orderBy,
   where,
 } from 'firebase/firestore';
+import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
+import styled from 'styled-components';
 import ChatRoom from '../components/chat/ChatRoom';
 import app from '../service/firebase';
 import {
   signIn,
   getRoomId,
-  sendMessage,
   getPrivateRoomId,
   createPrivateRoom,
+  activateChatRoom,
+  // deactivateChatRoom,
 } from '../service/chat_service';
+import GoBackBar from '../components/common/GoBackBar';
+import useWindowDimensions from '../utils/windowDimension';
+import DesktopNavbar from '../components/common/navbar/DesktopNavbar';
+import ChatList from '../components/chat/ChatList';
 
 const db = getFirestore(app);
 
+const StyledDiv = styled.div`
+  padding-top: 52px;
+`;
+
+const GridChatContainer = styled.div`
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+`;
+
 function Chat() {
+  const isDesktop = useWindowDimensions().width > 1024;
   const userRef = useRef();
   const moimRef = useRef();
   const [user, setUser] = useState('');
-  const [room, setRoom] = useState('');
-  const [messages, setMessages] = useState([]);
-  const [chatRoomList, setChatRoomList] = useState([]);
+  const [selectedChat, setSelectedChat] = useState(null);
+  const [chatList, setChatList] = useState([]);
+  const [unreadMessage, setUnreadMessage] = useState({});
+  const goBackHandler = () => {
+    if (selectedChat) {
+      setSelectedChat(null);
+    }
+  };
 
   useEffect(() => {
     if (!user) return () => {};
@@ -39,7 +61,7 @@ function Chat() {
     );
 
     const unsubscribe = onSnapshot(q, snapshot => {
-      setChatRoomList(
+      setChatList(
         snapshot.docs.map(docChatRoom => ({
           ...docChatRoom.data(),
           id: docChatRoom.id,
@@ -51,39 +73,67 @@ function Chat() {
   }, [user]);
 
   useEffect(() => {
-    if (!room) return () => {};
+    if (!user) return () => {};
     const q = query(
-      collection(db, 'message', room, 'messages'),
-      // 내가 join 한 시점 이후의 메세지만
-      // where('timestamp', '>', 'joinTimestamp'),
-      orderBy('sentAt'),
+      collection(db, 'users', user, 'rooms'),
+      where('type', '==', 1),
     );
 
     const unsubscribe = onSnapshot(q, snapshot => {
-      setMessages(
-        snapshot.docs.map(docMessage => ({
-          ...docMessage.data(),
-          id: docMessage.id,
-        })),
-      );
+      const unreadMessageObj = snapshot.docs.reduce((obj, docUserRoom) => {
+        const copyObj = { ...obj };
+        copyObj[docUserRoom.id] = docUserRoom.data().countUnreadMessage;
+        return copyObj;
+      }, {});
+
+      setUnreadMessage(unreadMessageObj);
     });
 
     return unsubscribe;
-  }, [room]);
+  }, [user]);
+
+  const selectChat = chatRoomId => {
+    setSelectedChat(chatRoomId);
+  };
 
   return (
-    <>
-      <h1>chat</h1>
-      {user ? (
+    <StyledDiv>
+      {isDesktop ? (
         <>
-          <h3>접속한 유저: {user}</h3>
-
-          <h3>{user}의 채팅방 리스트(개인, 그룹 전부)</h3>
-          {chatRoomList.map(chatRoom => (
-            <h5 key={chatRoom.id}>chatroom</h5>
-          ))}
+          <DesktopNavbar />
+          <GridChatContainer>
+            <ChatList
+              chats={chatList}
+              onChatClick={selectChat}
+              user={user}
+              unreadMessage={unreadMessage}
+            />
+            <ChatRoom selectedChat={selectedChat} user={user} />
+          </GridChatContainer>
         </>
       ) : (
+        <>
+          <GoBackBar title="채팅" handleOnClick={selectChat && goBackHandler}>
+            {!selectedChat && (
+              <ForwardToInboxIcon
+                sx={{ fontSize: 28, marginRight: '1rem', marginTop: '0.5rem' }}
+              />
+            )}
+          </GoBackBar>
+          {!selectedChat ? (
+            <ChatList
+              chats={chatList}
+              onChatClick={selectChat}
+              user={user}
+              unreadMessage={unreadMessage}
+            />
+          ) : (
+            <ChatRoom selectedChat={selectedChat} user={user} />
+          )}
+        </>
+      )}
+
+      {user ? null : (
         <>
           <input ref={userRef} type="text" placeholder="user" />
           <button
@@ -95,46 +145,40 @@ function Chat() {
           >
             set User
           </button>
+          <input ref={moimRef} type="text" placeholder="room" />
+          <button
+            type="button"
+            onClick={async () => {
+              if (!moimRef.current.value) return;
+              const roomId = await getRoomId(moimRef.current.value, user);
+              await activateChatRoom(user, roomId);
+              setSelectedChat(roomId);
+            }}
+          >
+            채팅방 입장
+          </button>
+
+          <button
+            type="button"
+            onClick={async () => {
+              // 임시로 상대방을 5번 유저로 설정
+              // 현재 유저를 설정하지 않으면 에러남..
+              const roomId = await getPrivateRoomId('5', user);
+              if (roomId) {
+                await activateChatRoom(user, roomId);
+                setSelectedChat(roomId);
+              } else {
+                const createdRoomId = await createPrivateRoom('5', user);
+                await activateChatRoom(user, createdRoomId);
+                setSelectedChat(createdRoomId);
+              }
+            }}
+          >
+            5번 유저와 채팅하기(상대 프로필의 메세지 아이콘)
+          </button>
         </>
       )}
-
-      <input ref={moimRef} type="text" placeholder="room" />
-      <button
-        type="button"
-        onClick={async () => {
-          if (!moimRef.current.value) return;
-          const roomId = await getRoomId(moimRef.current.value, user);
-          setRoom(roomId);
-        }}
-      >
-        채팅방 입장
-      </button>
-
-      <button
-        type="button"
-        onClick={async () => {
-          // 임시로 상대방을 5번 유저로 설정
-          const roomId = await getPrivateRoomId('5', user);
-          if (roomId) {
-            setRoom(roomId);
-          } else {
-            const createdRoomId = await createPrivateRoom('5', user);
-            setRoom(createdRoomId);
-          }
-        }}
-      >
-        5번 유저와 채팅하기(상대 프로필의 메세지 아이콘)
-      </button>
-
-      {user && room && (
-        <ChatRoom
-          roomId={room}
-          user={user}
-          sendMessage={sendMessage}
-          messages={messages}
-        />
-      )}
-    </>
+    </StyledDiv>
   );
 }
 
