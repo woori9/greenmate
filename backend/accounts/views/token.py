@@ -18,17 +18,17 @@ User = get_user_model()
 
 def create_token(payload, type):
 
-    iat = datetime.datetime.utcnow()
+    iat = datetime.datetime.now()
 
     if type == 'access':
         exp = iat + datetime.timedelta(hours=12)
 
-    elif type == "refresh":
+    elif type == 'refresh':
         exp = iat + datetime.timedelta(weeks=2)
 
     else:
         raise Exception("INVALID TOKENTYPE")
-    
+        
     payload['iat'] = iat
     payload['exp'] = exp
     encoded = jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
@@ -55,6 +55,7 @@ def get_request_user(request):
 
     except User.DoesNotExist:
         return False
+
 
 
 @api_view(['GET'])

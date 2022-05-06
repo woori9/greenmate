@@ -25,7 +25,7 @@ from accounts.views.token import get_request_user
 from .community import n2mt
 
 User = get_user_model()
-# user = User.objects.get(pk=2)
+# user = get_object_or_404(User, pk=2)
 @api_view(['GET', 'POST'])
 def get_create_moim_list(request):
     '''
@@ -33,7 +33,7 @@ def get_create_moim_list(request):
     POST: 새로운 모임 글을 작성
     '''
     def moim_list():
-        moims = Moim.objects.filter(status=0)
+        moims = Moim.objects.filter(status=0).order_by('time')
         serializer = MoimSimpleSerializer(moims, context={'user': user}, many=True)
         return Response(serializer.data)
 
@@ -47,7 +47,7 @@ def get_create_moim_list(request):
                 data='모임이 정상적으로 작성되었습니다.',
                 status=HTTP_201_CREATED
             )
-
+    
     user = get_request_user(request)
     if not user:
         return Response(status=HTTP_401_UNAUTHORIZED)
@@ -89,7 +89,7 @@ def get_update_moim_detail(request, moim_id):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
-    
+
     user = get_request_user(request)
     if not user:
         return Response(status=HTTP_401_UNAUTHORIZED)
@@ -123,7 +123,7 @@ def get_waiting_moim(request):
     elif user == 'EXPIRED_TOKEN':
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
 
-    moims_list = get_list_or_404(Moim.objects.filter(mate__user=user.id, mate__mate_status=0))
+    moims_list = Moim.objects.filter(mate__user=user.id, mate__mate_status=0).order_by('time')
     serializer = MoimDetailSerializer(moims_list, context={'user': user}, many=True)
     return Response(serializer.data)
 
@@ -138,7 +138,7 @@ def get_joined_moim(request):
     elif user == 'EXPIRED_TOKEN':
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
 
-    moims_list = get_list_or_404(Moim.objects.filter(mate__user=user.id, mate__mate_status=1).exclude(author_id=user.id))
+    moims_list = Moim.objects.filter(mate__user=user.id, mate__mate_status=1).exclude(author_id=user.id).order_by('time')
     serializer = MoimDetailSerializer(moims_list, context={'user': user}, many=True)
     return Response(serializer.data)
 
@@ -153,7 +153,7 @@ def get_opened_moim(request):
     elif user == 'EXPIRED_TOKEN':
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
 
-    moims_list = get_list_or_404(Moim.objects.filter(author_id=user.id, status__lt=2))
+    moims_list = Moim.objects.filter(author_id=user.id, status__lt=2).order_by('time')
     serializer = MoimAllSerializer(moims_list, context={'user': user}, many=True) 
     return Response(serializer.data)
 
@@ -168,8 +168,8 @@ def get_finished_moim(request):
     elif user == 'EXPIRED_TOKEN':
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
 
-    moims_list = get_list_or_404(Moim.objects.filter(mate__user=user.id, mate__mate_status=4))
-    serializer = MoimDetailSerializer(moims_list, context={'user': user}, many=True)
+    moims_list = Moim.objects.filter(mate__user=user.id, mate__mate_status=4).order_by('-time')
+    serializer = MoimAllSerializer(moims_list, context={'user': user}, many=True) 
     return Response(serializer.data)
 
 @api_view(['GET'])
@@ -191,7 +191,7 @@ def search_moim(request):
         q |= Q(restaurant__restaurantinfo__name__icontains=word)  
         q |= Q(restaurant__restaurantinfo__address__icontains=word)  
     q &= Q(status=0)   
-    moim_list = Moim.objects.filter(q).distinct()
+    moim_list = Moim.objects.filter(q).distinct().order_by('time')
     serializer = MoimSimpleSerializer(moim_list, context={'user': user}, many=True)
     return Response(serializer.data)
 
@@ -212,11 +212,11 @@ def filter_moim(request):
     q = Q(status=0)
 
     if period:
-        startdate = datetime.datetime.now()
-        enddate = startdate + datetime.timedelta(days=int(period) + 1)
+        startdate = datetime.datetime.today()
+        enddate = startdate + datetime.timedelta(days=int(period))
         q &= Q(time__range=[startdate, enddate])   
     if day:
         q &= Q(time__week_day=int(day))     
-    moim_list = Moim.objects.filter(q)
+    moim_list = Moim.objects.filter(q).order_by('time')
     serializer = MoimSimpleSerializer(moim_list, context={'user': user}, many=True)
     return Response(serializer.data)

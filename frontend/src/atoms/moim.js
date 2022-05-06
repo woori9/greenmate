@@ -1,10 +1,7 @@
 import { atom } from 'jotai';
 
-const baseCategoryAtom = atom(0);
+// 내 모임 카테고리
+export const categoryAtom = atom(0);
 
-const categoryAtom = atom(
-  get => get(baseCategoryAtom),
-  (_get, set, selected) => set(baseCategoryAtom, selected),
-);
-
-export default categoryAtom;
+// 현재 사용자에게 보여지는 모임 리스트
+export const moimListAtom = atom([]);

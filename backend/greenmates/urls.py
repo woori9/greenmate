@@ -1,25 +1,16 @@
 from django.urls import path
-# ★★★★엔터 금지★★★★
-# 1
-from .views import moim
-from .views import mate
 
-
-
-# 2
-from .views import community
-
-
-
-
-# 3
-from .views import restaurant
-
-
+from .views import (
+    community,
+    mate,
+    moim,
+    profile,
+    restaurant,
+)
 
 
 urlpatterns = [
-    # 1
+    # moim
     path('mates/', moim.get_create_moim_list),
     path('mates/<int:moim_id>/', moim.get_update_moim_detail),
     path('mates/translate/<int:moim_id>/', moim.get_trans_moim),
@@ -36,22 +27,7 @@ urlpatterns = [
     path('mates/search/', moim.search_moim),
     path('mates/filter/', moim.filter_moim),
 
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-    # 2
+    # community
     path('community/feeds/', community.get_create_feedlist),
     path('community/feed/<int:feed_id>/', community.update_delete_feed),
     path('community/comment/<int:feed_id>/', community.get_create_comment),
@@ -61,57 +37,18 @@ urlpatterns = [
     path('community/feed/<int:feed_id>/trans/', community.get_trans_feed),
     path('community/comment/<int:comment_id>/trans/', community.get_trans_comment),
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # 3
+    # restaurant
     path('restaurant/all/', restaurant.get_restaurant_list),
     path('restaurant/search/', restaurant.search),
     path('restaurant/<int:restaurant_id>/', restaurant.get_simple_info),
     path('restaurant/detail/<int:restaurant_id>/', restaurant.get_detail_info),
     path('restaurant/like/<int:restaurant_id>/', restaurant.like_restaurant),
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    # profile
+    path('profile/<int:user_id>/', profile.get_profile),
+    path('profile/evaluation/<int:user_id>/', profile.get_evaluation_list),
+    path('profile/feed/<str:type>/<int:user_id>/', profile.get_feed_list),
+    path('profile/like/restaurant/', profile.get_like_restaurant),
+    path('profile/like/feed/<str:type>/', profile.get_like_feed),
+    path('profile/request/restaurant/', profile.create_user_request),
 ]

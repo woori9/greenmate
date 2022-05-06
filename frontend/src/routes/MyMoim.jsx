@@ -5,7 +5,9 @@ import ResponsiveNavbar from '../components/common/navbar/ResponsiveNavbar';
 import FloatingActionBtn from '../components/common/FloatingActionBtn';
 import MoimCategory from '../components/moim/MoimCategory';
 import MoimCard from '../components/moim/MoimCard';
-import moim from '../atoms/moim';
+import { categoryAtom, moimListAtom } from '../atoms/moim';
+import { getWaitMoimList } from '../api/moim';
+import { snakeToCamel } from '../utils/formatKey';
 
 const CategoryDiv = styled.ul`
   display: flex;
@@ -15,7 +17,8 @@ const CategoryDiv = styled.ul`
 `;
 
 function MyMoim() {
-  const [selectedCategory, setSelectedCategory] = useAtom(moim);
+  const [selectedCategory, setSelectedCategory] = useAtom(categoryAtom);
+  const [moimList, setMoimList] = useAtom(moimListAtom);
   const moimCategories = ['대기', '참여', '진행', '완료'];
 
   useEffect(() => {
@@ -24,69 +27,24 @@ function MyMoim() {
     }
   }, []);
 
-  const data = [
-    {
-      id: 1,
-      restaurant: {
-        restaurantId: 1,
-        nameKr: '야채 식당',
-        addressKr: '대전시 유성구 oo동',
+  useEffect(() => {
+    getWaitMoimList(
+      selectedCategory || 0,
+      res => {
+        const formattedData = res.data.map(item => ({
+          ...snakeToCamel(item),
+          time: new Date(item.time),
+        }));
+        setMoimList(formattedData);
       },
-      author: {
-        id: 1,
-        nickname: '김싸피',
-        vegeType: 3,
+      err => {
+        // TODO: 백엔드에서 404 대신 빈 배열로 변경될 경우 res에서 처리
+        if (err.response.status === 404) {
+          setMoimList([]);
+        }
       },
-      title: '야채 식당 가실 분!',
-      content:
-        '제주 여행 중인데 야채 식당 가보고 싶어서 글 올려요! 여러 메뉴 시켜서 같이 맛보면 너무 좋을 것 같아요',
-      time: new Date('2022-06-02T19:35:00'),
-      headCnt: 4,
-      nowCnt: 2,
-      status: 0,
-      mates: [
-        {
-          userId: 2,
-          nickname: '이이이',
-          vegeType: 4,
-          mateStatus: 1,
-        },
-        {
-          userId: 3,
-          nickname: '박박박',
-          vegeType: 2,
-          mateStatus: 1,
-        },
-      ],
-    },
-    {
-      id: 2,
-      restaurant: {
-        restaurantId: 1,
-        nameKr: '채소 식당',
-        addressKr: '대전시 유성구 oo동',
-      },
-      author: {
-        id: 2,
-        nickname: '박싸피',
-        vegeType: 4,
-      },
-      title: '야채 식당 가실 분!',
-      content: '이번주에 야채 식당 가실 분 구해요',
-      time: new Date(),
-      headCnt: 4,
-      nowCnt: 2,
-      status: 0,
-      mates: [
-        {
-          userId: 4,
-          nickname: '최싸피',
-          vegeType: 3,
-          mateStatus: 1,
-        },
-      ],
-    },
-  ];
+    );
+  }, [selectedCategory]);
 
   return (
     <>
@@ -104,14 +62,15 @@ function MyMoim() {
         ))}
       </CategoryDiv>
       <hr />
-      {data.map(moimInfo => (
-        <MoimCard
-          key={moimInfo.id}
-          moimInfo={moimInfo}
-          hasBorder={false}
-          showStatus
-        />
-      ))}
+      {moimList.length > 0 &&
+        moimList.map(moimInfo => (
+          <MoimCard
+            key={moimInfo.id}
+            moimInfo={moimInfo}
+            hasBorder={false}
+            showStatus
+          />
+        ))}
     </>
   );
 }
