@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -8,11 +8,11 @@ import dayjs from 'dayjs';
 import Input from '@mui/material/Input';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { timestampNextDay, timestamp1YearLater } from '../utils/timestamp';
 import RestaurantSearch from '../components/common/RestaurantSearch';
 import GoBackBar from '../components/common/GoBackBar';
-import { createMoim } from '../api/moim';
+import { createMoim, updateMoim } from '../api/moim';
 
 const Form = styled.form`
   display: flex;
@@ -41,12 +41,39 @@ const Form = styled.form`
 `;
 
 function MoimForm() {
+  const [isForUpdate, setIsForUpdate] = useState(false);
+  const [moimId, setMoimId] = useState(null);
   const [title, setTitle] = useState('');
+  const [selectedRestaurantId, setSelectedRestaurantId] = useState(null);
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const [datetimeValue, setDatetimeValue] = useState(timestampNextDay);
   const [count, setCount] = useState(2);
   const [content, setContent] = useState('');
-  const [datetimeValue, setDatetimeValue] = useState(timestampNextDay);
-  const [selectedRestaurantId, setSelectedRestaurantId] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state) {
+      const {
+        id,
+        restaurantId,
+        restaurantName,
+        originalTitle,
+        originalContent,
+        originalTime,
+        originalHeadCnt,
+      } = location.state;
+
+      setIsForUpdate(true);
+      setMoimId(id);
+      setTitle(originalTitle);
+      setSelectedRestaurantId(restaurantId);
+      setSearchKeyword(restaurantName);
+      setDatetimeValue(originalTime);
+      setCount(originalHeadCnt);
+      setContent(originalContent);
+    }
+  }, []);
 
   function handleSubmit() {
     if (!title || !count || !content || !selectedRestaurantId) {
@@ -54,17 +81,30 @@ function MoimForm() {
       return;
     }
 
-    createMoim(
-      {
-        restaurant: selectedRestaurantId,
-        time: datetimeValue,
-        head_cnt: count,
-        title,
-        content,
-      },
-      () => navigate('/'),
-      err => console.log(err),
-    );
+    const datetimeLocaleKo = new Date(datetimeValue);
+    datetimeLocaleKo.setHours(datetimeLocaleKo.getHours() + 9);
+
+    if (isForUpdate) {
+      // TODO: 수정 불가능한 시간 에러 처리
+      updateMoim(
+        moimId,
+        { time: datetimeLocaleKo },
+        res => console.log(res),
+        err => console.log(err),
+      );
+    } else {
+      createMoim(
+        {
+          restaurant: selectedRestaurantId,
+          time: datetimeLocaleKo,
+          head_cnt: count,
+          title,
+          content,
+        },
+        () => navigate('/'),
+        err => console.log(err),
+      );
+    }
   }
 
   return (
@@ -73,14 +113,20 @@ function MoimForm() {
       <Form>
         <label htmlFor="title">모임 제목</label>
         <TextField
-          value={title}
-          onChange={e => setTitle(e.target.value)}
           id="title"
           name="title"
+          value={title}
+          onChange={e => setTitle(e.target.value)}
+          disabled={!!isForUpdate}
           margin="normal"
           variant="standard"
         />
-        <RestaurantSearch setSelectedRestaurantId={setSelectedRestaurantId} />
+        <RestaurantSearch
+          isForUpdate={isForUpdate}
+          searchKeyword={searchKeyword}
+          setSearchKeyword={setSearchKeyword}
+          setSelectedRestaurantId={setSelectedRestaurantId}
+        />
         <label htmlFor="datetime">날짜</label>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DateTimePicker
@@ -103,6 +149,7 @@ function MoimForm() {
           name="count"
           value={count}
           onChange={e => setCount(e.target.value)}
+          disabled={!!isForUpdate}
           margin="dense"
           endAdornment={<InputAdornment position="end">명</InputAdornment>}
           inputProps={{
@@ -119,6 +166,7 @@ function MoimForm() {
           name="content"
           value={content}
           onChange={e => setContent(e.target.value)}
+          disabled={!!isForUpdate}
           placeholder="내용을 입력해주세요."
           multiline
           minRows="5"

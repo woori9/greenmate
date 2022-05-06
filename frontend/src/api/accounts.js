@@ -21,6 +21,20 @@ export function apiLogin(data, res, err) {
   apiInstance.post('/accounts/kakao/login/', data).then(res).catch(err);
 }
 
+/* 로그인 > 토큰 유효성 검사 */
+export function apiVerifyToken(res, err) {
+  apiInstance
+    .get('/accounts/token/', {
+      headers: {
+        AuthorizationRefresh: `Bearer ${sessionStorage.getItem(
+          'AuthorizationRefresh',
+        )}`,
+      },
+    })
+    .then(res)
+    .catch(err);
+}
+
 /* 닉네임 중복 검사 */
 export function apiCheckNickname(data, res, err) {
   apiInstance.get('/accounts/userinfo/', data).then(res).catch(err);

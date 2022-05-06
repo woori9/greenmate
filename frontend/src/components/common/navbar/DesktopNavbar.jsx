@@ -55,6 +55,7 @@ const NavSide = styled.div`
   position: fixed;
   top: 0;
   left: 0;
+  z-index: 1;
   height: 100%;
   width: 130px;
   background-color: #f1f1f1;
@@ -77,6 +78,7 @@ const StyledLink = styled(Link)`
 `;
 
 function DesktopNavbar() {
+  const accessToken = sessionStorage.getItem('Authorization');
   const { pathname } = useLocation();
   const links = [
     {
@@ -102,18 +104,33 @@ function DesktopNavbar() {
   ];
   return (
     <>
+      <NavSide>
+        <ul>
+          {links.map(link => (
+            <li key={link.path}>
+              <StyledLink to={link.path} selected={pathname === `${link.path}`}>
+                {link.icon}
+              </StyledLink>
+            </li>
+          ))}
+        </ul>
+      </NavSide>
       <NavTop>
         <div className="logo-box">
           <img src={logo} alt="logo-img" />
         </div>
         <AlertMenus>
-          <li>
-            <a href={KAKAO_URL}>
-              <KakaoImg>
-                <img src={KakaoLoginImg} alt="kakao-login" />
-              </KakaoImg>
-            </a>
-          </li>
+          {accessToken === null ? (
+            <li>
+              <a href={KAKAO_URL}>
+                <KakaoImg>
+                  <img src={KakaoLoginImg} alt="kakao-login" />
+                </KakaoImg>
+              </a>
+            </li>
+          ) : (
+            <p>로그인완료</p>
+          )}
           <li>
             <NotificationsNoneOutlinedIcon
               sx={{ color: 'black', fontSize: 30 }}
@@ -126,17 +143,6 @@ function DesktopNavbar() {
           </li>
         </AlertMenus>
       </NavTop>
-      <NavSide>
-        <ul>
-          {links.map(link => (
-            <li key={link.path}>
-              <StyledLink to={link.path} selected={pathname === `${link.path}`}>
-                {link.icon}
-              </StyledLink>
-            </li>
-          ))}
-        </ul>
-      </NavSide>
     </>
   );
 }
