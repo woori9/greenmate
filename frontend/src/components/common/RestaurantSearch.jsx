@@ -25,8 +25,12 @@ const SearchList = styled.ul`
   }
 `;
 
-function RestaurantSearch({ setSelectedRestaurantId }) {
-  const [searchKeyword, setSearchKeyword] = useState('');
+function RestaurantSearch({
+  isForUpdate,
+  searchKeyword,
+  setSearchKeyword,
+  setSelectedRestaurantId,
+}) {
   const [isSearch, setIsSearch] = useState(false);
 
   const searchResult = [
@@ -59,6 +63,7 @@ function RestaurantSearch({ setSelectedRestaurantId }) {
           value={searchKeyword}
           onChange={event => handleChange(event)}
           onKeyUp={event => onKeyUp(event)}
+          disabled={!!isForUpdate}
           margin="dense"
           startAdornment={<InputAdornment position="start">@</InputAdornment>}
           inputProps={{
@@ -94,6 +99,9 @@ function RestaurantSearch({ setSelectedRestaurantId }) {
 }
 
 RestaurantSearch.propTypes = {
+  isForUpdate: PropTypes.bool.isRequired,
+  searchKeyword: PropTypes.string.isRequired,
+  setSearchKeyword: PropTypes.func.isRequired,
   setSelectedRestaurantId: PropTypes.func.isRequired,
 };
 
