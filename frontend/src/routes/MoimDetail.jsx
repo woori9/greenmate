@@ -12,7 +12,7 @@ import ProfileImage from '../components/common/ProfileImage';
 import formattedDatetime from '../utils/formattedDate';
 import { categoryAtom } from '../atoms/moim';
 import { diff2hour } from '../utils/timestamp';
-// import { applyMoim, exitMoim } from '../api/moim';
+import { applyMoim, exitMoim } from '../api/moim';
 
 // 모임 상세 api 수정된 후 수정 필요!!!!
 // 응답으로 받은 userMateStatus 값에 따라 버튼 다르게 보여주기
@@ -138,7 +138,19 @@ function MoimDetail() {
   // TODO: 대기 취소, 참여 취소 api 연결
   const bottomButtons = [
     <button type="button">대기 취소하기</button>,
-    <button type="button">참여 취소하기</button>,
+    <button
+      type="button"
+      onClick={() =>
+        exitMoim(
+          // TODO : mate id 추가
+          1,
+          res => console.log(res),
+          err => console.log(err),
+        )
+      }
+    >
+      참여 취소하기
+    </button>,
     <button
       type="button"
       onClick={() =>
@@ -158,7 +170,19 @@ function MoimDetail() {
       수정하기
     </button>,
     null,
-    <button type="button">참여하기</button>,
+    <button
+      type="button"
+      onClick={() => {
+        applyMoim(
+          id,
+          () => {},
+          // TODO : 409 (이미 거절된 게스트) 처리
+          err => console.log(err),
+        );
+      }}
+    >
+      참여하기
+    </button>,
   ];
 
   return (

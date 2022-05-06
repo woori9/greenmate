@@ -49,3 +49,18 @@ export function filterMoim(period, day, res, err) {
     .then(res)
     .catch(err);
 }
+
+/* 모임 대기 신청 */
+export function applyMoim(moimId, res, err) {
+  apiInstance.post(`/greenmates/mates/apply/${moimId}/`, res, err);
+}
+
+/* 모임 대기 취소 */
+export function cancleApplyMoim(mateId, res, err) {
+  apiInstance.delete(`/greenmates/mates/cancle/${mateId}/`, res, err);
+}
+
+/* 모임 나가기 */
+export function exitMoim(mateId, res, err) {
+  apiInstance.delete(`/greenmates/mates/out/${mateId}/`, res, err);
+}
