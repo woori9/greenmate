@@ -12,6 +12,10 @@ import ProfileImage from '../components/common/ProfileImage';
 import { formattedDatetime } from '../utils/formattedDate';
 import { categoryAtom } from '../atoms/moim';
 import { diff2hour } from '../utils/timestamp';
+import { applyMoim, exitMoim } from '../api/moim';
+
+// 모임 상세 api 수정된 후 수정 필요!!!!
+// 응답으로 받은 userMateStatus 값에 따라 버튼 다르게 보여주기
 
 const OrangeBack = styled.div`
   position: absolute;
@@ -49,6 +53,15 @@ const MainBox = styled.div`
     margin-bottom: 1.2rem;
     order: 2;
   }
+`;
+
+const DeleteBtn = styled.button`
+  position: absolute;
+  right: 2rem;
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: none;
 `;
 
 const DataList = styled.dl`
@@ -108,38 +121,90 @@ const ButtonDiv = styled.div`
 
 function MoimDetail() {
   const location = useLocation();
-  const { moimInfo } = location.state;
-  const { restaurant, author, title, content, time, nowCnt, headCnt, mates } =
-    moimInfo;
+  const {
+    id,
+    restaurant,
+    author,
+    title,
+    content,
+    time,
+    nowCnt,
+    headCnt,
+    mates,
+  } = location.state.moimInfo;
   const [selectedCategory] = useAtom(categoryAtom);
   const navigate = useNavigate();
 
-  // TODO: 대기 취소, 참여 취소, 수정 api 연결
-  // TODO: 수정 navigate에 restaurant.restaurantId, title, content, time, headCnt 넘겨주기 & 날짜, 시간 제외 disabled 처리
+  // TODO: 대기 취소, 참여 취소 api 연결
   const bottomButtons = [
     <button type="button">대기 취소하기</button>,
-    <button type="button">참여 취소하기</button>,
-    <button type="button" onClick={() => navigate('/moim/form')}>
+    <button
+      type="button"
+      onClick={() =>
+        exitMoim(
+          // TODO : mate id 추가
+          1,
+          res => console.log(res),
+          err => console.log(err),
+        )
+      }
+    >
+      참여 취소하기
+    </button>,
+    <button
+      type="button"
+      onClick={() =>
+        navigate('/moim/form', {
+          state: {
+            id,
+            restaurantId: restaurant.id,
+            restaurantName: restaurant.name,
+            originalTitle: title,
+            originalContent: content,
+            originalTime: time,
+            originalHeadCnt: headCnt,
+          },
+        })
+      }
+    >
       수정하기
+    </button>,
+    null,
+    <button
+      type="button"
+      onClick={() => {
+        applyMoim(
+          id,
+          () => {},
+          // TODO : 409 (이미 거절된 게스트) 처리
+          err => console.log(err),
+        );
+      }}
+    >
+      참여하기
     </button>,
   ];
 
   return (
     <>
       <GoBackBar title="">
-        {/* TODO: 참여인원 0명 조건 추가 */}
+        {/* TODO: category 대신 author.id === 로그인 유저 id 비교 */}
         {selectedCategory === 2 &&
           !diff2hour(time, new Date()) &&
           nowCnt === 1 && (
-            <DeleteIcon
-              sx={{
-                position: 'absolute',
-                right: '2rem',
-                width: '30px',
-                height: '30px',
-                color: '#a9a9a9',
+            <DeleteBtn
+              type="button"
+              onClick={() => {
+                // TODO: 정말 삭제하시겠습니까 bottomsheet
+                console.log('delete click');
               }}
-            />
+            >
+              <DeleteIcon
+                sx={{
+                  color: '#a9a9a9',
+                }}
+              />
+            </DeleteBtn>
           )}
       </GoBackBar>
       <OrangeBack />
@@ -195,7 +260,8 @@ function MoimDetail() {
       {mates &&
         mates.length &&
         mates.map(mate => <UserInfo userInfo={mate} key={mate.userId} />)}
-      {selectedCategory in [0, 1, 2] && diff2hour(time, new Date()) && (
+      {/* TODO : 카테고리 대신 각각 대기 중인지, 참여 중인지, author인지 비교해서 넣기 (main에서도 대기/참여/진행 받기 위함) */}
+      {diff2hour(time, new Date()) && (
         <ButtonDiv>{bottomButtons[selectedCategory]}</ButtonDiv>
       )}
     </>

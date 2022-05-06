@@ -1,8 +1,7 @@
 import dayjs from 'dayjs';
+import ko from 'dayjs/locale/ko';
 
-require('dayjs/locale/ko');
-
-dayjs.locale('ko');
+dayjs.locale(ko);
 
 function formattedDatetime(datetime) {
   // TODO: 유저 lang 값에 따라 en/ko로 변경

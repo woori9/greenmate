@@ -48,7 +48,7 @@ class MoimSimpleSerializer(MoimBaseSerializer):
         response['restaurant'] = RestaurantMoimDataSerializer(instance.restaurant, context=self.context).data
         return response
 
-# 기본 모임 정보 + 식당정보 + mate_status 합류만 반환 (모임 상세)
+# 기본 모임 정보 + 식당정보 + mate_status 합류만 반환 + 로그인 한 유저 mate_status (모임 상세)
 class MoimDetailSerializer(MoimSimpleSerializer):
     mates = serializers.SerializerMethodField()     
     
@@ -64,6 +64,24 @@ class MoimDetailSerializer(MoimSimpleSerializer):
         queryset = obj.mate_set.filter(mate_status=1)
         serializer = MateSerializer(queryset, many=True) 
         return serializer.data
+
+    def to_representation(self, instance):
+        '''
+        user_mate_status: 0(대기) 1(guest-참여) 2(거절) 3(취소) 4(완료) 5(host-진행) 6(신청 안함)
+        '''
+        response = super().to_representation(instance)
+        logged_in_user_mate = instance.mate_set.filter(user=self.context['user'])
+        if len(logged_in_user_mate):
+            response['user_mate_id'] = logged_in_user_mate[0].id
+            mate_status = logged_in_user_mate[0].mate_status
+            if mate_status == 1:
+                if self.context['user'] == instance.author:
+                    mate_status = 5
+            response['user_mate_status'] = mate_status
+        else:
+            response['user_mate_id'] = ''
+            response['user_mate_status'] = 6
+        return response
 
 # 기본 모임 정보 + 식당정보 + mate_status 대기 / 합류 / 거절 / 취소 / 완료 반환 
 class MoimAllSerializer(MoimSimpleSerializer):
