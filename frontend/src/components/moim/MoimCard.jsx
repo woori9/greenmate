@@ -4,9 +4,11 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
+import { useAtom } from 'jotai';
 import ProfileImage from '../common/ProfileImage';
 import MoimButtons from './MoimButtons';
-import formattedDatetime from '../../utils/formattedDate';
+import { formattedDatetime } from '../../utils/formattedDate';
+import { categoryAtom } from '../../atoms/moim';
 
 const Card = styled.div`
   ${props =>
@@ -48,6 +50,7 @@ const ProfileWithInfo = styled.div`
 function MoimCard({ moimInfo, hasBorder, showStatus }) {
   const navigate = useNavigate();
   const moimStatus = ['모집 중', '모집 완료', '모집 취소', '모임 종료'];
+  const [selectedCategory] = useAtom(categoryAtom);
 
   return (
     <Card
@@ -92,30 +95,56 @@ function MoimCard({ moimInfo, hasBorder, showStatus }) {
           </dl>
         </div>
       </ProfileWithInfo>
-      <MoimButtons />
+      {/* TODO : 카테고리 0,1,4,5일 때만 조건부 렌더링 */}
+      {selectedCategory === 0 && <MoimButtons />}
     </Card>
   );
 }
 
 MoimCard.propTypes = {
   moimInfo: PropTypes.shape({
-    id: PropTypes.number.isRequired,
+    id: PropTypes.number,
     author: PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      nickname: PropTypes.string.isRequired,
-      vegeType: PropTypes.number.isRequired,
-    }).isRequired,
-    title: PropTypes.string.isRequired,
-    content: PropTypes.string.isRequired,
-    time: PropTypes.instanceOf(Date).isRequired,
-    status: PropTypes.number.isRequired,
-    headCnt: PropTypes.number.isRequired,
-    nowCnt: PropTypes.number.isRequired,
+      id: PropTypes.number,
+      nickname: PropTypes.string,
+      vegeType: PropTypes.number,
+    }),
+    title: PropTypes.string,
+    content: PropTypes.string,
+    time: PropTypes.instanceOf(Date),
+    status: PropTypes.number,
+    headCnt: PropTypes.number,
+    nowCnt: PropTypes.number,
+
     mates: PropTypes.oneOfType([
       PropTypes.objectOf(PropTypes.any),
-      PropTypes.arrayOf(PropTypes.any),
+      PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.number,
+          userId: PropTypes.number,
+          nickname: PropTypes.string,
+          vegeType: PropTypes.number,
+          mateStatus: PropTypes.number,
+        }),
+      ),
     ]),
-    restaurant: PropTypes.objectOf(PropTypes.any).isRequired,
+    // mates: PropTypes.oneOfType([
+    //   PropTypes.objectOf(PropTypes.any),
+    //   PropTypes.arrayOf(
+    //     PropTypes.shape({
+    //       id: PropTypes.number,
+    //       userId: PropTypes.number,
+    //       nickname: PropTypes.string,
+    //       vegeType: PropTypes.number,
+    //       mateStatus: PropTypes.number,
+    //     }),
+    //   ),
+    // ]),
+    restaurant: PropTypes.shape({
+      address: PropTypes.string,
+      id: PropTypes.number,
+      name: PropTypes.string,
+    }),
   }).isRequired,
   hasBorder: PropTypes.bool.isRequired,
   showStatus: PropTypes.bool.isRequired,

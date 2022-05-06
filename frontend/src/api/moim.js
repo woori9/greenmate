@@ -6,12 +6,11 @@ export function getMoimList(res, err) {
 }
 
 /* 사용자의 모임 목록 조회 */
-/* HTTP code가 404일 경우 해당 카테고리의 모임 목록이 없는 것! */
-/* TODO: 404 에러 처리 */
-export function getWaitMoimList(index, res, err) {
-  const categoryList = ['wait', 'join', 'myopen', 'finished'];
+/* TODO: 404 에러 처리 (해당 카테고리의 모임 목록이 없는 경우) */
+export function getWaitMoimList(value, res, err) {
+  const categoryDict = { 0: 'wait', 1: 'join', 5: 'myopen', 4: 'finished' };
   apiInstance
-    .get(`/greenmates/mates/${categoryList[index]}/`)
+    .get(`/greenmates/mates/${categoryDict[value]}/`)
     .then(res)
     .catch(err);
 }
@@ -23,12 +22,12 @@ export function createMoim(data, res, err) {
 
 /* 모임 수정 */
 export function updateMoim(moimId, data, res, err) {
-  apiInstance.put(`/greenmates/mates/${moimId}`, data).then(res).catch(err);
+  apiInstance.put(`/greenmates/mates/${moimId}/`, data).then(res).catch(err);
 }
 
 /* 모임 상세 조회 */
 export function getMoimDetail(moimId, res, err) {
-  apiInstance.get(`/greenmates/mates/${moimId}`).then(res).catch(err);
+  apiInstance.get(`/greenmates/mates/${moimId}/`).then(res).catch(err);
 }
 
 /* 모임 검색 */
@@ -49,4 +48,19 @@ export function filterMoim(period, day, res, err) {
     .get('/greenmates/mates/filter/', { params: { period, day } })
     .then(res)
     .catch(err);
+}
+
+/* 모임 대기 신청 */
+export function applyMoim(moimId, res, err) {
+  apiInstance.post(`/greenmates/mates/apply/${moimId}/`, res, err);
+}
+
+/* 모임 대기 취소 */
+export function cancleApplyMoim(mateId, res, err) {
+  apiInstance.delete(`/greenmates/mates/cancle/${mateId}/`, res, err);
+}
+
+/* 모임 나가기 */
+export function exitMoim(mateId, res, err) {
+  apiInstance.delete(`/greenmates/mates/out/${mateId}/`, res, err);
 }

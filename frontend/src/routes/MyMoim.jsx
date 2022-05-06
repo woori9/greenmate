@@ -19,17 +19,22 @@ const CategoryDiv = styled.ul`
 function MyMoim() {
   const [selectedCategory, setSelectedCategory] = useAtom(categoryAtom);
   const [moimList, setMoimList] = useAtom(moimListAtom);
-  const moimCategories = ['대기', '참여', '진행', '완료'];
+  const moimCategories = [
+    ['대기', 0],
+    ['참여', 1],
+    ['진행', 5],
+    ['완료', 4],
+  ];
 
   useEffect(() => {
-    if (selectedCategory === null) {
+    if (selectedCategory === 6) {
       setSelectedCategory(0);
     }
   }, []);
 
   useEffect(() => {
     getWaitMoimList(
-      selectedCategory || 0,
+      selectedCategory === 6 ? 0 : selectedCategory,
       res => {
         const formattedData = res.data.map(item => ({
           ...snakeToCamel(item),
@@ -51,11 +56,11 @@ function MyMoim() {
       <ResponsiveNavbar />
       <FloatingActionBtn isForMoim />
       <CategoryDiv>
-        {moimCategories.map((category, index) => (
+        {moimCategories.map(category => (
           <MoimCategory
-            name={category}
-            index={index}
-            isSelected={selectedCategory === index}
+            name={category[0]}
+            value={category[1]}
+            isSelected={selectedCategory === category[1]}
             setSelectedCategory={setSelectedCategory}
             key={category}
           />

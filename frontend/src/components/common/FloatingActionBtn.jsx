@@ -32,8 +32,9 @@ function FloatingActionBtn({ isForMoim }) {
   function navigateTo() {
     if (isForMoim) {
       navigate('/moim/form');
+    } else {
+      navigate('/community/form');
     }
-    // TODO: else문으로 navigate(커뮤니티 글 작성) 추가
   }
 
   return (
