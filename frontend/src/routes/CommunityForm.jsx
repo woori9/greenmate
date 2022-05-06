@@ -1,6 +1,6 @@
 import ResponsiveNavbar from '../components/common/navbar/ResponsiveNavbar';
 
-function Community() {
+function CommunityForm() {
   return (
     <>
       <h1>커뮤니티폼</h1>
@@ -9,4 +9,4 @@ function Community() {
   );
 }
 
-export default Community;
+export default CommunityForm;

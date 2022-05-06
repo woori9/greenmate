@@ -4,7 +4,7 @@ import KakaoRedirectHandler from './routes/KakaoRedirectHandler';
 import Signup from './routes/Signup';
 import Home from './routes/Home';
 import Community from './routes/Community';
-import CommunityFrom from './routes/CommunityFrom';
+import CommunityForm from './routes/CommunityForm';
 import Map from './routes/Map';
 import MyMoim from './routes/MyMoim';
 import MoimForm from './routes/MoimForm';
@@ -24,7 +24,7 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/" element={<Home />} />
         <Route path="/community" element={<Community />} />
-        <Route path="/community/form" element={<CommunityFrom />} />
+        <Route path="/community/form" element={<CommunityForm />} />
         <Route path="/map" element={<Map />} />
         <Route path="/mymoim" element={<MyMoim />} />
         <Route path="/moim/form" element={<MoimForm />} />
