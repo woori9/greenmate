@@ -5,24 +5,15 @@ export function getMoimList(res, err) {
   apiInstance.get('/greenmates/mates/').then(res).catch(err);
 }
 
-/* 사용자가 대기 중인 모임 목록 조회 */
-export function getWaitMoimList(res, err) {
-  apiInstance.get('/greenmates/mates/wait/').then(res).catch(err);
-}
-
-/* 사용자가 참여 중인 모임 목록 조회 */
-export function getJoinMoimList(res, err) {
-  apiInstance.get('/greenmates/mates/join/').then(res).catch(err);
-}
-
-/* 사용자가 진행 중인 모임 목록 조회 */
-export function getMyOpenMoimList(res, err) {
-  apiInstance.get('/greenmates/mates/myopen/').then(res).catch(err);
-}
-
-/* 사용자의 종료된 모임 목록 조회 */
-export function getFinishedMoimList(res, err) {
-  apiInstance.get('/greenmates/mates/finished/').then(res).catch(err);
+/* 사용자의 모임 목록 조회 */
+/* HTTP code가 404일 경우 해당 카테고리의 모임 목록이 없는 것! */
+/* TODO: 404 에러 처리 */
+export function getWaitMoimList(index, res, err) {
+  const categoryList = ['wait', 'join', 'myopen', 'finished'];
+  apiInstance
+    .get(`/greenmates/mates/${categoryList[index]}/`)
+    .then(res)
+    .catch(err);
 }
 
 /* 모임 생성 */
