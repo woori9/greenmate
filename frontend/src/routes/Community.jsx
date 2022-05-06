@@ -47,8 +47,8 @@ const ColorButton = styled(Button)(({ theme }) => ({
 }));
 
 function Community() {
-  const [Category, setCategory] = useState('');
-  const [VegeType, setVegeType] = useState('');
+  const [category, setCategory] = useState('');
+  const [vegeType, setVegeType] = useState('');
   const [feeds, setFeeds] = useState([]);
   const handleCategoryChange = event => {
     setCategory(event.target.value);
@@ -78,7 +78,7 @@ function Community() {
           <Select
             labelId="category"
             id="standard"
-            value={Category}
+            value={category}
             onChange={handleCategoryChange}
             label="Category"
           >
@@ -94,7 +94,7 @@ function Community() {
           <Select
             labelId="vegeType"
             id="vegeType"
-            value={VegeType}
+            value={vegeType}
             onChange={handleVegeTypeChange}
             label="vegeType"
           >
