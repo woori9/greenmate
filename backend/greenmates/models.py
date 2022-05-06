@@ -66,8 +66,8 @@ class UserReview(models.Model):
     '''
     score: 0(별로)/1(좋아요)/2(최고)
     '''
-    me = models.ManyToManyField(settings.AUTH_USER_MODEL, symmetrical=False, related_name='you') 
-    moim = models.ForeignKey(Moim, on_delete=models.PROTECT)
+    me = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='you', on_delete=models.CASCADE) 
+    mate = models.ForeignKey(Mate, on_delete=models.PROTECT)
     score = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     # me = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='evaluator')
@@ -80,6 +80,9 @@ class UserEvaluation(models.Model):
 
 
 class Feed(models.Model):
+    '''
+    category: 0(일상)/1(식당)/2(제품)/3(레시피)
+    '''
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, null=True)
     score = models.IntegerField(null=True)
@@ -116,3 +119,10 @@ class Comment(models.Model):
 
     def __str__(self):
         return f'{self.pk}: {self.content}'
+
+
+class UserRequest(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    address = models.TextField()
+    content = models.TextField()

@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAtom } from 'jotai';
 import DeleteIcon from '@mui/icons-material/Delete';
 import StorefrontIcon from '@mui/icons-material/Storefront';
@@ -10,7 +10,7 @@ import GoBackBar from '../components/common/GoBackBar';
 import UserInfo from '../components/moim/UserInfo';
 import ProfileImage from '../components/common/ProfileImage';
 import { formattedDatetime } from '../utils/formattedDate';
-import moim from '../atoms/moim';
+import { categoryAtom } from '../atoms/moim';
 import { diff2hour } from '../utils/timestamp';
 
 const OrangeBack = styled.div`
@@ -111,13 +111,17 @@ function MoimDetail() {
   const { moimInfo } = location.state;
   const { restaurant, author, title, content, time, nowCnt, headCnt, mates } =
     moimInfo;
-  const [selectedCategory] = useAtom(moim);
+  const [selectedCategory] = useAtom(categoryAtom);
+  const navigate = useNavigate();
 
   // TODO: 대기 취소, 참여 취소, 수정 api 연결
+  // TODO: 수정 navigate에 restaurant.restaurantId, title, content, time, headCnt 넘겨주기 & 날짜, 시간 제외 disabled 처리
   const bottomButtons = [
     <button type="button">대기 취소하기</button>,
     <button type="button">참여 취소하기</button>,
-    <button type="button">수정하기</button>,
+    <button type="button" onClick={() => navigate('/moim/form')}>
+      수정하기
+    </button>,
   ];
 
   return (
@@ -188,9 +192,9 @@ function MoimDetail() {
       </DataList>
 
       <H2>멤버 소개</H2>
-      {mates.map(mate => (
-        <UserInfo userInfo={mate} key={mate.userId} />
-      ))}
+      {mates &&
+        mates.length &&
+        mates.map(mate => <UserInfo userInfo={mate} key={mate.userId} />)}
       {selectedCategory in [0, 1, 2] && diff2hour(time, new Date()) && (
         <ButtonDiv>{bottomButtons[selectedCategory]}</ButtonDiv>
       )}
