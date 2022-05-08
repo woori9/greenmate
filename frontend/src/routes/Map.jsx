@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import MyLocationIcon from '@mui/icons-material/MyLocation';
 import logo from '../assets/logo.png';
 import ResponsiveMapNavbar from '../components/common/navbar/ResponsiveMapNavbar';
 import ResponsiveSideSheet from '../components/map/SideSheet/ResponsiveSideSheet';
@@ -12,7 +13,20 @@ const KakaoMap = styled.div`
   width: 100vw;
   height: 100vh;
 `;
-
+const BoxMyLocationIcon = styled.div`
+  position: fixed;
+  top: 60px;
+  right: 0;
+  padding: 5px;
+  margin: 1rem;
+  background-color: #f2f2f2;
+  filter: drop-shadow(0 -1px 4px rgba(0, 0, 0, 0.25));
+  display: flex;
+  justify-contnet: center;
+  :hover {
+    cursor: pointer;
+  }
+`;
 function setMapCurrentPosition() {
   const container = document.getElementById('myMap'); // 지도를 담을 영역의 DOM 레퍼런스
   const options = {
@@ -88,6 +102,9 @@ function Map() {
         setKeyword={setKeyword}
       />
       <KakaoMap id="myMap" />
+      <BoxMyLocationIcon onClick={() => setMapCurrentPosition()}>
+        <MyLocationIcon />
+      </BoxMyLocationIcon>
     </>
   );
 }

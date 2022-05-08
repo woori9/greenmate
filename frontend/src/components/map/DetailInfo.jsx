@@ -84,12 +84,12 @@ function DetailInfo({ setSearchPage }) {
   const call = '123-4567-8910';
   return (
     <>
-      <CloseButton>
-        <CloseIcon
-          onClick={() =>
-            width > 1024 ? setSearchPage('searchLst') : setSearchPage('summary')
-          }
-        />
+      <CloseButton
+        onClick={() =>
+          width > 1024 ? setSearchPage('searchLst') : setSearchPage('summary')
+        }
+      >
+        <CloseIcon />
       </CloseButton>
       <Summary>
         <RestaurantInfoCard />
