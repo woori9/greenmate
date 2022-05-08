@@ -12,13 +12,14 @@ function KakaoRedirectHandler() {
       {
         grant_type: 'authorization_code',
         client_id: process.env.REACT_APP_REST_API_KEY,
-        redirect_uri: 'https://k6b105.p.ssafy.io/oauth/callback/kakao',
+        redirect_uri: 'http://localhost:3000/oauth/callback/kakao',
         code,
       },
       response => {
         const accessToken = response.data.access_token;
         apiLogin({ access_token: accessToken }, res => {
           sessionStorage.setItem('Authorization', res.data.access_token);
+          sessionStorage.setItem('Refresh', res.data.refresh_token);
           apiInstance.defaults.headers.common.Authorization = `Bearer ${res.data.access_token}`;
           if (res.data.vege_type === null) {
             navigate('/signup');

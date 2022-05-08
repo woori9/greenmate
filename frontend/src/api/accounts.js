@@ -21,20 +21,6 @@ export function apiLogin(data, res, err) {
   apiInstance.post('/accounts/kakao/login/', data).then(res).catch(err);
 }
 
-/* 로그인 > 토큰 유효성 검사 */
-export function apiVerifyToken(res, err) {
-  apiInstance
-    .get('/accounts/token/', {
-      headers: {
-        AuthorizationRefresh: `Bearer ${sessionStorage.getItem(
-          'AuthorizationRefresh',
-        )}`,
-      },
-    })
-    .then(res)
-    .catch(err);
-}
-
 /* 닉네임 중복 검사 */
 export function apiCheckNickname(data, res, err) {
   apiInstance.get('/accounts/userinfo/', data).then(res).catch(err);
@@ -44,3 +30,18 @@ export function apiCheckNickname(data, res, err) {
 export function apiPutUserInfo(data, res, err) {
   apiInstance.put('/accounts/userinfo/', data).then(res).catch(err);
 }
+
+/* 로그인 > 토큰 유효성 검사 */
+// export async function apiVerifyToken() {
+//   try {
+//     const res = await apiInstance.get('/accounts/token/', {
+//       headers: {
+//         Refresh: `${sessionStorage.getItem('Refresh')}`,
+//       },
+//     });
+//     sessionStorage.setItem('Authorization', res.data.access_token);
+//     sessionStorage.setItem('Refresh', res.data.refresh_token);
+//   } catch (err) {
+//     console.log(err);
+//   }
+// }
