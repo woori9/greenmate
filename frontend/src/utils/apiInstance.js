@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
+const API_BASE_URL = 'https://k6b105.p.ssafy.io/api';
 
 const apiInstance = axios.create({
   baseURL: `${API_BASE_URL}`,
@@ -8,5 +8,8 @@ const apiInstance = axios.create({
     'Content-type': 'application/json',
   },
 });
+apiInstance.defaults.headers.common.Authorization = `Bearer ${sessionStorage.getItem(
+  'Authorization',
+)}`;
 
 export default apiInstance;

@@ -12,7 +12,7 @@ function KakaoRedirectHandler() {
       {
         grant_type: 'authorization_code',
         client_id: process.env.REACT_APP_REST_API_KEY,
-        redirect_uri: 'http://localhost:3000/oauth/callback/kakao',
+        redirect_uri: 'https://k6b105.p.ssafy.io/oauth/callback/kakao',
         code,
       },
       response => {
