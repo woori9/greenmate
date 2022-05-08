@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import logo from '../assets/logo.png';
 import ResponsiveMapNavbar from '../components/common/navbar/ResponsiveMapNavbar';
@@ -75,13 +75,18 @@ const setMapSearchKeyword = async inputKeyword => {
 };
 
 function Map() {
+  const [keyword, setKeyword] = useState('');
   useEffect(() => {
     setMapCurrentPosition();
   }, []);
   return (
     <>
       <ResponsiveMapNavbar />
-      <ResponsiveSideSheet setMapSearchKeyword={setMapSearchKeyword} />
+      <ResponsiveSideSheet
+        setMapSearchKeyword={setMapSearchKeyword}
+        keyword={keyword}
+        setKeyword={setKeyword}
+      />
       <KakaoMap id="myMap" />
     </>
   );

@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import CloseIcon from '@mui/icons-material/Close';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
@@ -5,9 +6,8 @@ import BookmarkBorderOutlinedIcon from '@mui/icons-material/BookmarkBorderOutlin
 import RestaurantInfoCard from './RestaurantInfoCard';
 import ButtonLetsEat from './ButtonLetsEat';
 
-const StyledCloseIcon = styled(CloseIcon)`
-  position: fixed;
-  right: 1rem;
+const CloseButton = styled.div`
+  text-align: end;
 `;
 const Summary = styled.div`
   display: flex;
@@ -22,12 +22,14 @@ const BookMark = styled.div`
   }
 `;
 
-function SummaryInfo() {
+function SummaryInfo({ setSearchPage }) {
   const marked = true;
   return (
     <>
-      <StyledCloseIcon />
-      <Summary>
+      <CloseButton>
+        <CloseIcon onClick={() => setSearchPage('searchLst')} />
+      </CloseButton>
+      <Summary onClick={() => setSearchPage('detail')}>
         <RestaurantInfoCard />
         <BookMark>
           {marked ? (
@@ -41,5 +43,8 @@ function SummaryInfo() {
     </>
   );
 }
+SummaryInfo.propTypes = {
+  setSearchPage: PropTypes.func.isRequired,
+};
 
 export default SummaryInfo;
