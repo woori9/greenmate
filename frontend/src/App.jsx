@@ -14,6 +14,7 @@ import MyPage from './routes/MyPage';
 import Chat from './routes/Chat';
 import BottomSheetBase from './components/common/BottomSheetBase';
 import ChatRoom from './components/chat/ChatRoom';
+import Test from './routes/Test';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
         <Route path="/mypage/:userPk" element={<MyPage />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="/chatRoom" element={<ChatRoom />} />
+        <Route path="/test" element={<Test />} />
       </Routes>
       <BottomSheetBase />
     </BrowserRouter>
