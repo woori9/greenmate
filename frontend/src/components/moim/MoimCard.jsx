@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { useAtom } from 'jotai';
 import ProfileImage from '../common/ProfileImage';
-import MoimButtons from './MoimButtons';
+import MoimCardButtons from './MoimCardButtons';
 import { formattedDatetime } from '../../utils/formattedDate';
 import { categoryAtom } from '../../atoms/moim';
 
@@ -95,8 +95,7 @@ function MoimCard({ moimInfo, hasBorder, showStatus }) {
           </dl>
         </div>
       </ProfileWithInfo>
-      {/* TODO : 카테고리 0,1,4,5일 때만 조건부 렌더링 */}
-      {selectedCategory === 0 && <MoimButtons />}
+      {[0, 1, 4, 5].includes(selectedCategory) && <MoimCardButtons />}
     </Card>
   );
 }
@@ -115,7 +114,6 @@ MoimCard.propTypes = {
     status: PropTypes.number,
     headCnt: PropTypes.number,
     nowCnt: PropTypes.number,
-
     mates: PropTypes.oneOfType([
       PropTypes.objectOf(PropTypes.any),
       PropTypes.arrayOf(
@@ -128,18 +126,6 @@ MoimCard.propTypes = {
         }),
       ),
     ]),
-    // mates: PropTypes.oneOfType([
-    //   PropTypes.objectOf(PropTypes.any),
-    //   PropTypes.arrayOf(
-    //     PropTypes.shape({
-    //       id: PropTypes.number,
-    //       userId: PropTypes.number,
-    //       nickname: PropTypes.string,
-    //       vegeType: PropTypes.number,
-    //       mateStatus: PropTypes.number,
-    //     }),
-    //   ),
-    // ]),
     restaurant: PropTypes.shape({
       address: PropTypes.string,
       id: PropTypes.number,

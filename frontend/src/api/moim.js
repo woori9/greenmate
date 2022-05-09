@@ -61,6 +61,13 @@ export function cancleApplyMoim(mateId, res, err) {
 }
 
 /* 모임 나가기 */
-export function exitMoim(mateId, res, err) {
-  apiInstance.delete(`/greenmates/mates/out/${mateId}/`, res, err);
+export async function exitMoim(mateId) {
+  try {
+    const { data } = await apiInstance.delete(
+      `/greenmates/mates/out/${mateId}/`,
+    );
+    return data;
+  } catch (err) {
+    return err;
+  }
 }
