@@ -80,7 +80,6 @@ def get_evaluation_list(request, user_id):
 def get_feed_list(request, type, user_id):
     '''
     GET: {user_id}번 사용자가 작성한 피드/리뷰 조회 (최근 피드순)
-    TODO: user 변경
     '''
     # user = get_object_or_404(User, pk=1)
     user = get_request_user(request)

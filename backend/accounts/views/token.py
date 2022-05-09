@@ -67,9 +67,7 @@ def verify_token(request):
         return Response(data='UNAUTHORIZED', status=HTTP_401_UNAUTHORIZED)
 
     access_token = request.headers['Authorization'].split(' ')[1]
-    # TODO: refresh_token 확인
-    refresh_token = ''
-    
+    refresh_token = request.headers['Refresh']
     
     try:
         data_access = jwt.decode(str(access_token), settings.SECRET_KEY, algorithms=settings.ALGORITHM) 
