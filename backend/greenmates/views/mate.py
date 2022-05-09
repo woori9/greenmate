@@ -128,11 +128,19 @@ def decline_mate(request, mate_id):
             data='접근 권한이 없습니다.',
             status=HTTP_403_FORBIDDEN
         )
-    if mate.mate_status != 0: # 게스트가 대기 상태가 아닌 경우
+    if mate.mate_status > 1: # 게스트가 대기 상태 또는 참여 상태가 아닌 경우
         return Response(
             data='참여 거절이 불가합니다.',
             status=HTTP_409_CONFLICT
         )
+    if mate.mate_status == 1:
+        two_hrs = datetime.datetime.now() + datetime.timedelta(hours=2) 
+        appointment = moim.time
+        if two_hrs >= appointment: # 2시간 전인지 확인
+            return Response(
+                data='모임 시간 2시간 이전부터는 모임 나가기가 불가합니다.',
+                status=HTTP_405_METHOD_NOT_ALLOWED
+            )
     mate.mate_status = 2
     mate.save()
     return Response(
@@ -198,7 +206,7 @@ def out_mate(request, mate_id):
     appointment = moim.time
     
     # case1. 호스트인 경우
-    if moim.author.pk == user.id:
+    if moim.author.pk == user.id == mate.user.pk:
         return out_host()
     
     # case2. 게스트인 경우
