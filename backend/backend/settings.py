@@ -159,6 +159,11 @@ SWAGGER_SETTINGS = {
 
 CORS_ORIGIN_ALLOW_ALL = True
 
+CORS_ALLOW_HEADERS = {
+    'authorization',
+    'refresh',
+}
+
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 AWS_ACCESS_KEY_ID = 'AKIAQ2GQBIRG5WOCLXEF'
