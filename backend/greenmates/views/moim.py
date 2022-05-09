@@ -1,3 +1,6 @@
+# 비속어 검열 모듈 korcen 
+# 출처: https://github.com/TANAT96564/korcen
+
 from django.shortcuts import get_list_or_404, get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -21,11 +24,12 @@ import datetime
 from django.db.models import Q
 from django.contrib.auth import get_user_model
 from accounts.views.token import get_request_user
-
 from .community import n2mt
+# from korcen import korcen
 
 User = get_user_model()
-# user = get_object_or_404(User, pk=2)
+# user = get_object_or_404(User, pk=3)
+
 @api_view(['GET', 'POST'])
 def get_create_moim_list(request):
     '''
@@ -48,6 +52,10 @@ def get_create_moim_list(request):
                 status=HTTP_201_CREATED
             )
     
+    # def is_badword():
+    #     korcen = korcen.korcen()
+    #     return korcen.check(request.data['title'] + ' ' + request.data['content'])
+
     user = get_request_user(request)
     if not user:
         return Response(status=HTTP_401_UNAUTHORIZED)
@@ -58,6 +66,11 @@ def get_create_moim_list(request):
         return moim_list()
 
     elif request.method =="POST":
+        # if is_badword():
+        #    return Response(
+        #        data='욕설이 감지되었습니다. 고운말로 다시 작성해 주세요.',
+        #        status=HTTP_400_BAD_REQUEST
+        #    ) 
         return moim_create()
 
 @api_view(['GET', 'PUT'])
@@ -67,7 +80,12 @@ def get_update_moim_detail(request, moim_id):
     PUT : 해당 모임 글의 날짜, 시간 수정 (2시간 전까지)
     '''
     def moim_detail():
-        serializer = MoimDetailSerializer(moim, context={'user': user},)
+        # guest
+        if moim.author != user:
+            serializer = MoimDetailSerializer(moim, context={'user': user},)
+        # host
+        else:
+            serializer = MoimAllSerializer(moim, context={'user': user}) 
         return Response(serializer.data)
 
     def moim_update():

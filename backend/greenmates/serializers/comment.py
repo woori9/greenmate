@@ -2,7 +2,7 @@ from rest_framework import serializers
 from ..models import Comment
 from accounts.serializers import UserSerializer
 
-# TODO: Comment => feed, like_users=>is_like, trans정보 X 작성자 닉네임까지
+
 class CommentSerializer(serializers.ModelSerializer):
     is_like = serializers.SerializerMethodField()
     like_cnt = serializers.IntegerField(source='like_users.count', read_only=True)
