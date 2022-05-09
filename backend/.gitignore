@@ -1,6 +1,12 @@
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,django,venv,python,windows,macos,node
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,django,venv,python,windows,macos,node
 
+# Chrome Driver
+*.exe
+
+# Data
+*.xlsx
+
 ### Django ###
 *.log
 *.pot
