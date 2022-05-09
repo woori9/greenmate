@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import styled, { css } from 'styled-components';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
@@ -53,49 +54,54 @@ function MoimCard({ moimInfo, hasBorder, showStatus }) {
   const [selectedCategory] = useAtom(categoryAtom);
 
   return (
-    <Card
-      hasBorder={hasBorder}
-      onClick={() =>
-        navigate(`/moim/${moimInfo.id}`, {
-          state: { moimInfo },
-        })
-      }
-    >
-      {showStatus && <p>{moimStatus[moimInfo.status]}</p>}
-      <ProfileWithInfo>
-        <ProfileImage isBig />
-        <div>
-          <h2>{moimInfo.title}</h2>
-          <dl>
-            <div className="info-data">
-              <dt className="sr-only">시간</dt>
-              <dd>
-                <AccessTimeIcon />
-              </dd>
-              <dd>{formattedDatetime(moimInfo.time)}</dd>
-            </div>
+    <Card hasBorder={hasBorder}>
+      <div
+        onClick={() =>
+          navigate(`/moim/${moimInfo.id}`, {
+            state: { moimInfo },
+          })
+        }
+        role="button"
+        tabIndex="0"
+      >
+        {showStatus && <p>{moimStatus[moimInfo.status]}</p>}
+        <ProfileWithInfo>
+          <ProfileImage isBig />
+          <div>
+            <h2>{moimInfo.title}</h2>
+            <dl>
+              <div className="info-data">
+                <dt className="sr-only">시간</dt>
+                <dd>
+                  <AccessTimeIcon />
+                </dd>
+                <dd>{formattedDatetime(moimInfo.time)}</dd>
+              </div>
 
-            <div className="info-data">
-              <dt className="sr-only">장소</dt>
-              <dd>
-                <StorefrontIcon />
-              </dd>
-              <dd>{moimInfo.restaurant.name}</dd>
-            </div>
+              <div className="info-data">
+                <dt className="sr-only">장소</dt>
+                <dd>
+                  <StorefrontIcon />
+                </dd>
+                <dd>{moimInfo.restaurant.name}</dd>
+              </div>
 
-            <div className="info-data">
-              <dt className="sr-only">인원</dt>
-              <dd>
-                <PeopleAltIcon />
-              </dd>
-              <dd>
-                {moimInfo.nowCnt} / {moimInfo.headCnt}
-              </dd>
-            </div>
-          </dl>
-        </div>
-      </ProfileWithInfo>
-      {[0, 1, 4, 5].includes(selectedCategory) && <MoimCardButtons />}
+              <div className="info-data">
+                <dt className="sr-only">인원</dt>
+                <dd>
+                  <PeopleAltIcon />
+                </dd>
+                <dd>
+                  {moimInfo.nowCnt} / {moimInfo.headCnt}
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </ProfileWithInfo>
+      </div>
+      {[0, 1, 4, 5].includes(selectedCategory) && (
+        <MoimCardButtons moimId={moimInfo.id} mateList={moimInfo.mates} />
+      )}
     </Card>
   );
 }

@@ -60,6 +60,30 @@ export function cancleApplyMoim(mateId, res, err) {
   apiInstance.delete(`/greenmates/mates/cancle/${mateId}/`, res, err);
 }
 
+/* 모임 참가자 수락 */
+export async function acceptGuest(mateId) {
+  try {
+    const { data } = await apiInstance.put(
+      `/greenmates/mates/accept/${mateId}/`,
+    );
+    return data;
+  } catch (err) {
+    return err;
+  }
+}
+
+/* 모임 참가자 거절 */
+export async function declineGuest(mateId) {
+  try {
+    const { data } = await apiInstance.put(
+      `/greenmates/mates/decline/${mateId}/`,
+    );
+    return data;
+  } catch (err) {
+    return err;
+  }
+}
+
 /* 모임 나가기 */
 export async function exitMoim(mateId) {
   try {
