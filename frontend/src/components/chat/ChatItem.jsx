@@ -77,7 +77,7 @@ function ChatItem({ chat, onChatClick, user, countUnreadMessage }) {
   const time = formatChatDateTime(recentMessage.sentAt);
   const pair = membersInfo.find(member => member.id !== user);
   return (
-    <StyledChatItem onClick={() => onChatClick(chat.id)}>
+    <StyledChatItem onClick={() => onChatClick(chat)}>
       <img src={`${process.env.PUBLIC_URL}/logo192.png`} alt="sample" />
       <p className="nickname horizon-align">{pair.nickname}</p>
       <p className="color-gray text-right font-12 horizon-align">{time}</p>
@@ -107,7 +107,7 @@ ChatItem.propTypes = {
           seconds: PropTypes.number,
         }),
         nickname: PropTypes.string,
-        veganType: PropTypes.string,
+        veganType: PropTypes.number,
       }),
     ),
     recentMessage: PropTypes.shape({

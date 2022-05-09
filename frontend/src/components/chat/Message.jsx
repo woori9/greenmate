@@ -51,8 +51,12 @@ function Message({ message, isMyMessage }) {
 
 Message.propTypes = {
   message: PropTypes.shape({
-    sentBy: PropTypes.string,
     content: PropTypes.string,
+    sentBy: PropTypes.shape({
+      id: PropTypes.string,
+      veganType: PropTypes.number,
+      nickname: PropTypes.string,
+    }),
     sentAt: PropTypes.shape({
       nanoseconds: PropTypes.number,
       seconds: PropTypes.number,

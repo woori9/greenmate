@@ -8,14 +8,14 @@ const StyledMessageList = styled.ul`
   margin: 0;
 `;
 
-function MessageList({ messages, user }) {
+function MessageList({ messages, userId }) {
   return (
     <StyledMessageList>
       {messages.map(message => (
         <Message
           key={message.id}
           message={message}
-          isMyMessage={message.sentBy === user}
+          isMyMessage={message.sentBy.id === userId}
         />
       ))}
     </StyledMessageList>
@@ -26,15 +26,19 @@ MessageList.propTypes = {
   messages: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string,
-      sentBy: PropTypes.string,
       content: PropTypes.string,
+      sentBy: PropTypes.shape({
+        id: PropTypes.string,
+        veganType: PropTypes.number,
+        nickname: PropTypes.string,
+      }),
       sentAt: PropTypes.shape({
         nanoseconds: PropTypes.number,
         seconds: PropTypes.number,
       }),
     }),
   ).isRequired,
-  user: PropTypes.string.isRequired,
+  userId: PropTypes.string.isRequired,
 };
 
 export default MessageList;
