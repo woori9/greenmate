@@ -11,11 +11,6 @@ import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
 import styled from 'styled-components';
 import ChatRoom from '../components/chat/ChatRoom';
 import app from '../service/firebase';
-import {
-  findPrivateChatRoom,
-  createPrivateRoom,
-  activateChatRoom,
-} from '../service/chat_service';
 import GoBackBar from '../components/common/GoBackBar';
 import useWindowDimensions from '../utils/windowDimension';
 import DesktopNavbar from '../components/common/navbar/DesktopNavbar';
@@ -24,7 +19,8 @@ import ChatList from '../components/chat/ChatList';
 const db = getFirestore(app);
 
 const StyledDiv = styled.div`
-  padding-top: 52px;
+  padding-top: ${props => (props.isDesktop ? '70px' : '52px')};
+  padding-left: ${props => props.isDesktop && '140px'};
 `;
 
 const GridChatContainer = styled.div`
@@ -34,16 +30,6 @@ const GridChatContainer = styled.div`
 
 function Chat() {
   const isDesktop = useWindowDimensions().width > 1024;
-  const user = {
-    id: '1',
-    veganType: 1,
-    nickname: '1번유저',
-  };
-  const otherUser = {
-    id: '2',
-    veganType: 2,
-    nickname: '2번유저',
-  };
   const [selectedChat, setSelectedChat] = useState(null);
   const [chatList, setChatList] = useState([]);
   const [unreadMessage, setUnreadMessage] = useState({});
@@ -53,8 +39,15 @@ function Chat() {
     }
   };
 
+  const user = {
+    id: '1',
+    veganType: 1,
+    nickname: '1번유저',
+  };
+
   useEffect(() => {
-    if (!user.id) return () => {};
+    // 내 채팅 목록 실시간 업데이트(최근메세지)
+    if (!user) return () => {};
 
     const roomsRef = collection(db, 'rooms');
     const q = query(
@@ -77,7 +70,8 @@ function Chat() {
   }, []);
 
   useEffect(() => {
-    if (!user.id) return () => {};
+    // 목록에서 count를 실시간으로 보기 위함
+    if (!user) return () => {};
     const q = query(
       collection(db, 'users', user.id, 'rooms'),
       where('type', '==', 1),
@@ -96,27 +90,12 @@ function Chat() {
     return unsubscribe;
   }, []);
 
-  const selectChat = chatRoomId => {
-    setSelectedChat(chatRoomId);
-  };
-
-  const chatWithOtherUser = async (you, me) => {
-    const chatRoom = await findPrivateChatRoom(you.id, me.id);
-    if (chatRoom) {
-      await activateChatRoom(user.id, chatRoom.id);
-      setSelectedChat(chatRoom);
-    } else {
-      const createdRoom = await createPrivateRoom(you, me);
-      await activateChatRoom(me.id, createdRoom.id);
-      setSelectedChat(createdRoom);
-    }
+  const selectChat = chatRoom => {
+    setSelectedChat(chatRoom);
   };
 
   return (
-    <StyledDiv>
-      <button type="button" onClick={() => chatWithOtherUser(otherUser, user)}>
-        2번 유저와 대화하기
-      </button>
+    <StyledDiv isDesktop={isDesktop}>
       {isDesktop ? (
         <>
           <DesktopNavbar />
@@ -127,12 +106,12 @@ function Chat() {
               user={user.id}
               unreadMessage={unreadMessage}
             />
-            <ChatRoom selectedChat={selectedChat} user={user} />
+            <ChatRoom selectedChat={selectedChat} isFromChatPage />
           </GridChatContainer>
         </>
       ) : (
         <>
-          <GoBackBar title="채팅" handleOnClick={selectChat && goBackHandler}>
+          <GoBackBar title="채팅" handleOnClick={goBackHandler}>
             {!selectedChat && (
               <ForwardToInboxIcon
                 sx={{ fontSize: 28, marginRight: '1rem', marginTop: '0.5rem' }}
@@ -147,7 +126,7 @@ function Chat() {
               unreadMessage={unreadMessage}
             />
           ) : (
-            <ChatRoom selectedChat={selectedChat} user={user.id} />
+            <ChatRoom selectedChat={selectedChat} isFromChatPage />
           )}
         </>
       )}

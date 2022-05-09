@@ -12,6 +12,7 @@ import MoimDetail from './routes/MoimDetail';
 import MyPage from './routes/MyPage';
 import Chat from './routes/Chat';
 import BottomSheetBase from './components/common/BottomSheetBase';
+import ChatRoom from './components/chat/ChatRoom';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         <Route path="/moim/:moimId" element={<MoimDetail />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/chat" element={<Chat />} />
+        <Route path="/chatRoom" element={<ChatRoom />} />
       </Routes>
       <BottomSheetBase />
     </BrowserRouter>

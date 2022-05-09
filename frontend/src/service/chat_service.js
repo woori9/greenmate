@@ -13,6 +13,7 @@ import {
   getDocs,
   orderBy,
   onSnapshot,
+  increment,
 } from 'firebase/firestore';
 import app from './firebase';
 
@@ -53,74 +54,11 @@ const activateChatRoom = async (userId, chatRoomId) => {
 
 // 채팅방이 unmount 될 때 비활성화
 const deactivateChatRoom = async (userId, chatRoomId) => {
+  console.log('deactivate ', userId, ' s', chatRoomId);
   const userRef = doc(db, 'users', userId);
   await updateDoc(userRef, {
     activatedChatRooms: arrayRemove(chatRoomId),
   });
-};
-
-const getRoomId = async (moimId, userId) => {
-  const moimRef = doc(db, 'moims', moimId);
-  const docSnap = await getDoc(moimRef);
-
-  if (docSnap.exists()) {
-    // 맴버로 추가되어 있나 확인
-    const chatRoomId = docSnap.data().roomId;
-    const roomRef = doc(db, 'rooms', chatRoomId);
-    const roomDocSnap = await getDoc(roomRef);
-    const { members } = roomDocSnap.data();
-    const targetMember = members.find(member => member === userId);
-
-    if (!targetMember) {
-      await updateDoc(roomRef, {
-        members: arrayUnion(userId),
-      });
-
-      await updateDoc(roomRef, {
-        membersInfo: arrayUnion({
-          id: userId,
-          joinDate: new Date(),
-          nickname: `nickname${userId}`,
-          veganType: userId,
-        }),
-      });
-
-      await addRoomToUser(userId, chatRoomId, 0);
-    }
-    return chatRoomId;
-  }
-
-  // create moim and chat room
-  try {
-    // new chat room id
-    const newRoomRef = doc(collection(db, 'rooms'));
-
-    // new moim
-    await setDoc(doc(db, 'moims', moimId), {
-      id: moimId,
-      roomId: newRoomRef.id,
-    });
-
-    const newRoom = {
-      id: newRoomRef.id,
-      members: [userId],
-      membersInfo: [
-        {
-          id: userId,
-          joinDate: new Date(),
-          nickname: `nickname${userId}`,
-          veganType: userId,
-        },
-      ],
-      type: 0, // type 0: moim, 1: private
-    };
-
-    await setDoc(newRoomRef, newRoom);
-    await addRoomToUser(userId, newRoomRef.id, 0);
-    return newRoomRef.id;
-  } catch (e) {
-    throw new Error(e);
-  }
 };
 
 const updateRecentMessage = async (roomId, payload) => {
@@ -147,10 +85,49 @@ const sendMessage = async (roomId, content, user) => {
     };
 
     await addDoc(messagesRef, newMessage);
-    await updateRecentMessage(roomId, { ...newMessage, readBy: [] });
+    await updateRecentMessage(roomId, { ...newMessage });
+    return 'success';
   } catch (e) {
     throw new Error(e);
   }
+};
+
+const getCurrentMembers = async chatRoomId => {
+  const roomRef = doc(db, 'rooms', chatRoomId);
+  const docSnap = await getDoc(roomRef);
+  const { members } = docSnap.data();
+  return members;
+};
+
+const increaseUnreadMessage = async (chatRoomId, memberId) => {
+  console.log('increase member', memberId, 's unread message');
+  const userRef = doc(db, 'users', memberId);
+  const snapShot = await getDoc(userRef);
+  const { activatedChatRooms } = snapShot.data();
+  const userRoomRef = doc(db, 'users', memberId, 'rooms', chatRoomId);
+
+  if (!activatedChatRooms.includes(chatRoomId)) {
+    await setDoc(
+      userRoomRef,
+      {
+        countUnreadMessage: increment(1),
+      },
+      { merge: true },
+    );
+  }
+};
+
+const resetUnreadMessage = async (userId, chatRoomId) => {
+  console.log('reset ', userId, ' s unread message');
+  const userRoomRef = doc(db, 'users', userId, 'rooms', chatRoomId);
+
+  await setDoc(
+    userRoomRef,
+    {
+      countUnreadMessage: 0,
+    },
+    { merge: true },
+  );
 };
 
 // 채팅 목록이 아닌 상대방 프로필의 메세지 아이콘을 눌렀을 때, 유저를 검색해서 눌렀을 때
@@ -171,13 +148,12 @@ const findPrivateChatRoom = async (pairId, userId) => {
 };
 
 const createPrivateRoom = async (pair, user) => {
-  console.log(pair, user);
   try {
     const newRoomRef = doc(collection(db, 'rooms'));
 
     const newRoom = {
       id: newRoomRef.id,
-      type: 1, // type 0: moim, 1: private,
+      type: 1, // type 2: moim, 1: private,
       members: [pair.id, user.id],
       membersInfo: [
         {
@@ -214,13 +190,78 @@ const getMessages = (selectedChat, callback) => {
   return unsubscribe;
 };
 
+const getMoimChatRoom = async moimId => {
+  const moimRef = doc(db, 'moims', moimId);
+  const docSnap = await getDoc(moimRef);
+  // const chatRoomId = docSnap.data().roomId;
+  return docSnap.exists() ? docSnap.data() : null;
+};
+
+const checkUserIsInMember = async (chatRoomId, user) => {
+  const roomRef = doc(db, 'rooms', chatRoomId);
+  const roomDocSnap = await getDoc(roomRef);
+  const { members } = roomDocSnap.data();
+  const targetMember = members.find(member => member === user.id);
+
+  if (!targetMember) {
+    await updateDoc(roomRef, {
+      members: arrayUnion(user.id),
+    });
+
+    await updateDoc(roomRef, {
+      membersInfo: arrayUnion({
+        ...user,
+        joinDate: new Date(),
+      }),
+    });
+
+    await addRoomToUser(user.id, chatRoomId, 0);
+  }
+};
+
+const createMoimChat = async (moimId, user) => {
+  try {
+    // new chat room id
+    const newRoomRef = doc(collection(db, 'rooms'));
+
+    // new moim
+    await setDoc(doc(db, 'moims', moimId), {
+      id: moimId,
+      roomId: newRoomRef.id,
+    });
+
+    const newRoom = {
+      id: newRoomRef.id,
+      members: [user.id],
+      membersInfo: [
+        {
+          ...user,
+          joinDate: new Date(),
+        },
+      ],
+      type: 2, // type 1: private 2: moim
+    };
+
+    await setDoc(newRoomRef, newRoom);
+    await addRoomToUser(user.id, newRoomRef.id, 2);
+    return newRoomRef.id;
+  } catch (e) {
+    throw new Error(e);
+  }
+};
+
 export {
   signIn,
-  getRoomId,
   sendMessage,
   findPrivateChatRoom,
   createPrivateRoom,
   activateChatRoom,
   deactivateChatRoom,
   getMessages,
+  getMoimChatRoom,
+  checkUserIsInMember,
+  createMoimChat,
+  getCurrentMembers,
+  increaseUnreadMessage,
+  resetUnreadMessage,
 };
