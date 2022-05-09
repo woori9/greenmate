@@ -34,3 +34,4 @@ sqlparse==0.4.2
 tzdata==2022.1
 uritemplate==4.1.1
 urllib3==1.26.9
+korcen==0.0.8
