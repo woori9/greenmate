@@ -18,7 +18,7 @@ const Button = styled.button`
   cursor: pointer;
 `;
 
-function MoimButtons() {
+function MoimCardButtons() {
   const [selectedCategory] = useAtom(categoryAtom);
   const buttonDict = {
     0: (
@@ -50,4 +50,4 @@ function MoimButtons() {
   return buttonDict[selectedCategory];
 }
 
-export default MoimButtons;
+export default MoimCardButtons;

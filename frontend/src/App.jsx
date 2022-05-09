@@ -13,6 +13,7 @@ import MoimDetail from './routes/MoimDetail';
 import MyPage from './routes/MyPage';
 import Chat from './routes/Chat';
 import PrivateRoute from './routes/PrivateRoute';
+import BottomSheetBase from './components/common/BottomSheetBase';
 
 function App() {
   const isVerified = true;
@@ -38,6 +39,7 @@ function App() {
           <Route path="/chat" element={<Chat />} />
         </Route>
       </Routes>
+      <BottomSheetBase />
     </BrowserRouter>
   );
 }
