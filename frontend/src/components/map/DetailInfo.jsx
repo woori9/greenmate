@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import CloseIcon from '@mui/icons-material/Close';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -6,10 +7,10 @@ import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderOutlinedIcon from '@mui/icons-material/BookmarkBorderOutlined';
 import RestaurantInfoCard from './RestaurantInfoCard';
 import ButtonLetsEat from './ButtonLetsEat';
+import useWindowDimensions from '../../utils/windowDimension';
 
-const StyledCloseIcon = styled(CloseIcon)`
-  position: fixed;
-  right: 1rem;
+const CloseButton = styled.div`
+  text-align: end;
 `;
 const Summary = styled.div`
   display: flex;
@@ -75,13 +76,21 @@ function copyAddress(text) {
   document.body.removeChild(t);
 }
 
-function DetailInfo() {
+function DetailInfo({ setSearchPage }) {
+  const { width } = useWindowDimensions();
+
   const marked = true;
   const address = '경기도 평택시';
   const call = '123-4567-8910';
   return (
     <>
-      <StyledCloseIcon />
+      <CloseButton
+        onClick={() =>
+          width > 1024 ? setSearchPage('searchLst') : setSearchPage('summary')
+        }
+      >
+        <CloseIcon />
+      </CloseButton>
       <Summary>
         <RestaurantInfoCard />
         <BookMark>
@@ -126,5 +135,9 @@ function DetailInfo() {
     </>
   );
 }
+
+DetailInfo.propTypes = {
+  setSearchPage: PropTypes.func.isRequired,
+};
 
 export default DetailInfo;

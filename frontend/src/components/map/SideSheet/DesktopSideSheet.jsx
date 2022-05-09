@@ -5,6 +5,8 @@ import { styled as muiStyled } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import SearchBox from '../SearchBox';
+import SearchLst from '../SearchLst';
+import DetailInfo from '../DetailInfo';
 
 const drawerWidth = 440;
 const openedMixin = theme => ({
@@ -20,12 +22,13 @@ const openedMixin = theme => ({
   overflowX: 'hidden',
 });
 const closedMixin = theme => ({
+  width: drawerWidth,
   backgroundColor: 'transparent',
   top: '60px',
   border: 'none',
   left: '130px',
   [theme.breakpoints.up('sm')]: {
-    left: '-119px',
+    left: '-280px',
   },
   transition: theme.transitions.create('left', {
     easing: theme.transitions.easing.sharp,
@@ -77,13 +80,27 @@ const Button = styled.button`
     cursor: pointer;
   }
 `;
-function DesktopSideSheet({ setMapSearchKeyword }) {
+function DesktopSideSheet({ setMapSearchKeyword, keyword, setKeyword }) {
   const [open, setOpen] = useState(true);
+  const [searchPage, setSearchPage] = useState('searchBox');
+
   return (
     <SideSheet variant="permanent" open={open}>
       <SheetContent>
         <Body>
-          <SearchBox setMapSearchKeyword={setMapSearchKeyword} />
+          {searchPage === 'searchBox' ? (
+            <SearchBox
+              setMapSearchKeyword={setMapSearchKeyword}
+              setSearchPage={setSearchPage}
+              setKeyword={setKeyword}
+            />
+          ) : null}
+          {searchPage === 'searchLst' ? (
+            <SearchLst keyword={keyword} setSearchPage={setSearchPage} />
+          ) : null}
+          {searchPage === 'detail' ? (
+            <DetailInfo setSearchPage={setSearchPage} />
+          ) : null}
         </Body>
         <Button
           type="button"
@@ -98,5 +115,7 @@ function DesktopSideSheet({ setMapSearchKeyword }) {
 }
 DesktopSideSheet.propTypes = {
   setMapSearchKeyword: PropTypes.func.isRequired,
+  keyword: PropTypes.string.isRequired,
+  setKeyword: PropTypes.func.isRequired,
 };
 export default DesktopSideSheet;

@@ -22,11 +22,13 @@ const SearchContainer = styled.div`
   }
 `;
 
-function SearchBox({ setMapSearchKeyword }) {
+function SearchBox({ setMapSearchKeyword, setSearchPage, setKeyword }) {
   function handleKeyPress(event) {
     if (event.key === 'Enter') {
       setMapSearchKeyword(event.target.value);
+      setKeyword(event.target.value);
       document.getElementById('search-input').value = '';
+      setSearchPage('searchLst');
     }
   }
   return (
@@ -42,6 +44,8 @@ function SearchBox({ setMapSearchKeyword }) {
 }
 SearchBox.propTypes = {
   setMapSearchKeyword: PropTypes.func.isRequired,
+  setSearchPage: PropTypes.func.isRequired,
+  setKeyword: PropTypes.func.isRequired,
 };
 
 export default SearchBox;
