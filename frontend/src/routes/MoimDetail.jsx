@@ -9,10 +9,12 @@ import styled from 'styled-components';
 import GoBackBar from '../components/common/GoBackBar';
 import UserInfo from '../components/moim/UserInfo';
 import ProfileImage from '../components/common/ProfileImage';
+import ConfirmDeleteMoim from '../components/moim/ConfirmDeleteMoim';
 import { formattedDatetime } from '../utils/formattedDate';
 import { categoryAtom } from '../atoms/moim';
 import { diff2hour } from '../utils/timestamp';
 import { applyMoim, exitMoim } from '../api/moim';
+import { openSheetAtom } from '../atoms/bottomSheet';
 
 // 모임 상세 api 수정된 후 수정 필요!!!!
 // 응답으로 받은 userMateStatus 값에 따라 버튼 다르게 보여주기
@@ -120,6 +122,7 @@ const ButtonDiv = styled.div`
 `;
 
 function MoimDetail() {
+  // TODO: 메인 페이지에서 들어왔을 경우 모임 상세 api 호출
   const location = useLocation();
   const {
     id,
@@ -133,6 +136,7 @@ function MoimDetail() {
     mates,
   } = location.state.moimInfo;
   const [selectedCategory] = useAtom(categoryAtom);
+  const [, setOpen] = useAtom(openSheetAtom);
   const navigate = useNavigate();
 
   // TODO: 대기 취소, 참여 취소 api 연결
@@ -189,23 +193,23 @@ function MoimDetail() {
     <>
       <GoBackBar title="">
         {/* TODO: category 대신 author.id === 로그인 유저 id 비교 */}
-        {selectedCategory === 2 &&
-          !diff2hour(time, new Date()) &&
-          nowCnt === 1 && (
-            <DeleteBtn
-              type="button"
-              onClick={() => {
-                // TODO: 정말 삭제하시겠습니까 bottomsheet
-                console.log('delete click');
+        {selectedCategory === 5 && diff2hour(time, new Date()) && nowCnt === 1 && (
+          <DeleteBtn
+            type="button"
+            onClick={() => {
+              setOpen({
+                open: true,
+                component: <ConfirmDeleteMoim mateId={mates[0].id} />,
+              });
+            }}
+          >
+            <DeleteIcon
+              sx={{
+                color: '#a9a9a9',
               }}
-            >
-              <DeleteIcon
-                sx={{
-                  color: '#a9a9a9',
-                }}
-              />
-            </DeleteBtn>
-          )}
+            />
+          </DeleteBtn>
+        )}
       </GoBackBar>
       <OrangeBack />
       <MainBox>

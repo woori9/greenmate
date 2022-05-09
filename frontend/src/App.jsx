@@ -11,6 +11,7 @@ import MoimForm from './routes/MoimForm';
 import MoimDetail from './routes/MoimDetail';
 import MyPage from './routes/MyPage';
 import Chat from './routes/Chat';
+import BottomSheetBase from './components/common/BottomSheetBase';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/chat" element={<Chat />} />
       </Routes>
+      <BottomSheetBase />
     </BrowserRouter>
   );
 }
