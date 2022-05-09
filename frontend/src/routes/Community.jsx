@@ -9,7 +9,7 @@ import CardActions from '@mui/material/CardActions';
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import { red, purple } from '@mui/material/colors';
+import { green } from '@mui/material/colors';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import CommentIcon from '@mui/icons-material/Comment';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -18,9 +18,6 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-
-import Button from '@mui/material/Button';
-import Stack from '@mui/material/Stack';
 
 import ResponsiveNavbar from '../components/common/navbar/ResponsiveNavbar';
 import FloatingActionBtn from '../components/common/FloatingActionBtn';
@@ -36,14 +33,6 @@ const CommentMore = styled(props => {
   transition: theme.transitions.create('transform', {
     duration: theme.transitions.duration.shortest,
   }),
-}));
-
-const ColorButton = styled(Button)(({ theme }) => ({
-  color: theme.palette.getContrastText(purple[500]),
-  backgroundColor: purple[500],
-  '&:hover': {
-    backgroundColor: purple[700],
-  },
 }));
 
 function Community() {
@@ -111,8 +100,8 @@ function Community() {
       <Card sx={{ maxWidth: 345 }}>
         <CardHeader
           avatar={
-            <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-              R
+            <Avatar sx={{ bgcolor: green[200] }} aria-label="recipe">
+              Icon
             </Avatar>
           }
           action={
@@ -120,20 +109,21 @@ function Community() {
               <MoreVertIcon />
             </IconButton>
           }
-          title="Shrimp and Chorizo Paella"
-          subheader="September 14, 2016"
+          title={feeds[2].author.nickname}
+          subheader={
+            `${feeds[2].created_at.substr(0, 4)}년` +
+            ' ' +
+            `${feeds[2].created_at.substr(5, 2)}월` +
+            ' ' +
+            `${feeds[2].created_at.substr(8, 2)}일`
+          }
         />
         <CardMedia
           component="img"
           height="194"
-          image="/static/images/cards/paella.jpg"
+          image={feeds[2].img_paths[0].img_path}
           alt="사진"
         />
-        <CardContent>
-          <Typography variant="body2" color="text.secondary">
-            내용
-          </Typography>
-        </CardContent>
         <CardActions disableSpacing>
           <IconButton aria-label="add to favorites">
             <FavoriteIcon />
@@ -149,6 +139,11 @@ function Community() {
             </CommentMore>
           </IconButton>
         </CardActions>
+        <CardContent>
+          <Typography variant="body2" color="text.secondary">
+            {feeds[2].content}
+          </Typography>
+        </CardContent>
         <Collapse in={expanded} timeout="auto" unmountOnExit>
           <CardContent>
             <Typography paragraph>Method:</Typography>
@@ -162,12 +157,8 @@ function Community() {
           </CardContent>
         </Collapse>
       </Card>
-      <Stack spacing={2} direction="row">
-        <ColorButton variant="contained">Custom CSS</ColorButton>
-      </Stack>
       <ResponsiveNavbar />
       <FloatingActionBtn isForMoim={false} />
-      <p>{feeds.length && feeds[0].content}</p>
     </>
   );
 }
