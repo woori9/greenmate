@@ -4,8 +4,7 @@ import resImg from '../../assets/logo.png';
 
 const Container = styled.div`
   display: flex;
-  padding: 10px;
-  border-bottom: 1px solid #f2f2f2;
+  padding: 1rem 0;
 `;
 const Img = styled.img`
   width: 100px;
