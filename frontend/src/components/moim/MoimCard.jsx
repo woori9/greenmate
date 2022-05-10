@@ -80,6 +80,7 @@ function MoimCard({ moimInfo, showStatus }) {
                 state: { moimInfo: formattedData },
               });
             });
+            return;
           }
           navigate(`/moim/${moimInfo.id}`, {
             state: { moimInfo },
