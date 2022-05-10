@@ -1,5 +1,6 @@
 import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import KakaoRedirectHandler from './routes/KakaoRedirectHandler';
 import Signup from './routes/Signup';
 import Home from './routes/Home';
@@ -15,8 +16,18 @@ import Chat from './routes/Chat';
 import BottomSheetBase from './components/common/BottomSheetBase';
 import ChatRoom from './components/chat/ChatRoom';
 import Test from './routes/Test';
+import { checkToken, onMessageListener } from './service/notification_service';
 
 function App() {
+  const [isTokenFound, setTokenFound] = useState(false);
+
+  useEffect(() => {
+    checkToken(setTokenFound);
+    onMessageListener('1');
+  }, []);
+
+  console.log('APP', isTokenFound);
+
   return (
     <BrowserRouter>
       <Routes>
