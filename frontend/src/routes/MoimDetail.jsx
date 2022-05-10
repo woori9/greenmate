@@ -274,7 +274,7 @@ function MoimDetail() {
       <OrangeBack />
       <MainBox>
         <h1>{moimInfo.title}</h1>
-        <ProfileImage isBig={false} />
+        <ProfileImage vegeType={moimInfo.author.vegeType} isBig={false} />
         <p>{moimInfo.author.nickname}</p>
       </MainBox>
       <DataList>
