@@ -1,9 +1,8 @@
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { useAtom } from 'jotai';
-import { useNavigate } from 'react-router-dom';
 import { onDismissAtom } from '../../atoms/bottomSheet';
-import { exitMoim } from '../../api/moim';
+import { declineGuest } from '../../api/moim';
 
 const Container = styled.div`
   display: flex;
@@ -38,7 +37,6 @@ const Container = styled.div`
 
 function ConfirmExitMember({ mateId, setNeedUpdate }) {
   const [, onDismiss] = useAtom(onDismissAtom);
-  const navigate = useNavigate();
 
   return (
     <Container>
@@ -47,10 +45,9 @@ function ConfirmExitMember({ mateId, setNeedUpdate }) {
         type="button"
         className="delete-btn"
         onClick={() =>
-          exitMoim(mateId)
+          declineGuest(mateId)
             .then(() => {
               setNeedUpdate(prev => prev + 1);
-              navigate(-1);
               onDismiss();
             })
             .catch(err => console.log(err))

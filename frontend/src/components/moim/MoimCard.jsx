@@ -10,12 +10,24 @@ import ProfileImage from '../common/ProfileImage';
 import MoimCardButtons from './MoimCardButtons';
 import { formattedDatetime } from '../../utils/formattedDate';
 import { categoryAtom } from '../../atoms/moim';
+import { getMoimDetail } from '../../api/moim';
+import { snakeToCamel } from '../../utils/formatKey';
+import useWindowDimensions from '../../utils/windowDimension';
 
 const Card = styled.div`
   ${props =>
     props.hasBorder
       ? css`
+          display: inline-block;
+          min-width: 24rem;
+          padding: 0.5rem;
           border: 1px solid #a9a9a9;
+          border-radius: 15px;
+          margin: 0.5rem;
+
+          &:first-child {
+            margin-left: 0;
+          }
         `
       : css`
           &:not(:last-child) {
@@ -48,19 +60,31 @@ const ProfileWithInfo = styled.div`
   }
 `;
 
-function MoimCard({ moimInfo, hasBorder, showStatus }) {
+function MoimCard({ moimInfo, showStatus }) {
   const navigate = useNavigate();
   const moimStatus = ['모집 중', '모집 완료', '모집 취소', '모임 종료'];
   const [selectedCategory] = useAtom(categoryAtom);
+  const { width } = useWindowDimensions();
 
   return (
-    <Card hasBorder={hasBorder}>
+    <Card hasBorder={width > 1024}>
       <div
-        onClick={() =>
+        onClick={() => {
+          if (!moimInfo.mates) {
+            getMoimDetail(moimInfo.id, res => {
+              const formattedData = {
+                ...snakeToCamel(res.data),
+                time: new Date(res.data.time),
+              };
+              navigate(`/moim/${moimInfo.id}`, {
+                state: { moimInfo: formattedData },
+              });
+            });
+          }
           navigate(`/moim/${moimInfo.id}`, {
             state: { moimInfo },
-          })
-        }
+          });
+        }}
         role="button"
         tabIndex="0"
       >
@@ -138,7 +162,6 @@ MoimCard.propTypes = {
       name: PropTypes.string,
     }),
   }).isRequired,
-  hasBorder: PropTypes.bool.isRequired,
   showStatus: PropTypes.bool.isRequired,
 };
 
