@@ -67,7 +67,7 @@ const SliderItem = styled.div`
   justify-content: center;
   width: 100%;
   height: 9rem;
-  border-radius: 15px;
+  border-radius: 20px;
   background-color: #ffc774;
 
   &.item-two {
@@ -86,6 +86,14 @@ const SliderItem = styled.div`
     font-size: 1.1rem;
     font-weight: 600;
     margin-left: 0.5rem;
+  }
+
+  @media screen and (min-width: 1025px) {
+    height: 17rem;
+
+    p {
+      font-size: 2rem;
+    }
   }
 `;
 

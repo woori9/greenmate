@@ -1,11 +1,14 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAtom } from 'jotai';
+import { userInfoAtom } from '../atoms/accounts';
 import { getToken, apiLogin } from '../api/accounts';
 import apiInstance from '../utils/apiInstance';
 
 function KakaoRedirectHandler() {
   const navigate = useNavigate();
   const code = new URL(window.location.href).searchParams.get('code');
+  const [, setUserInfo] = useAtom(userInfoAtom);
 
   useEffect(() => {
     getToken(
@@ -19,6 +22,7 @@ function KakaoRedirectHandler() {
         const accessToken = response.data.access_token;
         apiLogin({ access_token: accessToken }, res => {
           sessionStorage.setItem('Authorization', res.data.access_token);
+          setUserInfo(res.data);
           apiInstance.defaults.headers.common.Authorization = `Bearer ${res.data.access_token}`;
           if (res.data.vege_type === null) {
             navigate('/signup');
