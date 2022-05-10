@@ -250,6 +250,17 @@ const createMoimChat = async (moimId, user) => {
   }
 };
 
+const saveNotification = async (userId, payload) => {
+  const userRef = doc(db, 'users', userId);
+  const notificationRef = collection(userRef, 'notifications');
+  const notification = {
+    notification: payload,
+    createdAt: new Date(),
+  };
+
+  await addDoc(notificationRef, notification);
+};
+
 export {
   signIn,
   sendMessage,
@@ -264,4 +275,5 @@ export {
   getCurrentMembers,
   increaseUnreadMessage,
   resetUnreadMessage,
+  saveNotification,
 };
