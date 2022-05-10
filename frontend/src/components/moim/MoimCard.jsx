@@ -60,7 +60,7 @@ const ProfileWithInfo = styled.div`
   }
 `;
 
-function MoimCard({ moimInfo, showStatus }) {
+function MoimCard({ moimInfo, setNeedUpdate, showStatus }) {
   const navigate = useNavigate();
   const moimStatus = ['모집 중', '모집 완료', '모집 취소', '모임 종료'];
   const [selectedCategory] = useAtom(categoryAtom);
@@ -70,6 +70,7 @@ function MoimCard({ moimInfo, showStatus }) {
     <Card hasBorder={width > 1024}>
       <div
         onClick={() => {
+          if (moimInfo.status === 3) return;
           if (!moimInfo.mates) {
             getMoimDetail(moimInfo.id, res => {
               const formattedData = {
@@ -91,7 +92,7 @@ function MoimCard({ moimInfo, showStatus }) {
       >
         {showStatus && <p>{moimStatus[moimInfo.status]}</p>}
         <ProfileWithInfo>
-          <ProfileImage isBig />
+          <ProfileImage vegeType={moimInfo.author.vegeType} isBig />
           <div>
             <h2>{moimInfo.title}</h2>
             <dl>
@@ -125,7 +126,12 @@ function MoimCard({ moimInfo, showStatus }) {
         </ProfileWithInfo>
       </div>
       {[0, 1, 4, 5].includes(selectedCategory) && (
-        <MoimCardButtons moimId={moimInfo.id} mateList={moimInfo.mates} />
+        <MoimCardButtons
+          moimId={moimInfo.id}
+          mateId={moimInfo.userMateId}
+          mateList={moimInfo.mates}
+          setNeedUpdate={setNeedUpdate}
+        />
       )}
     </Card>
   );
@@ -145,6 +151,8 @@ MoimCard.propTypes = {
     status: PropTypes.number,
     headCnt: PropTypes.number,
     nowCnt: PropTypes.number,
+    userMateId: PropTypes.number,
+    userMateStatus: PropTypes.number,
     mates: PropTypes.oneOfType([
       PropTypes.objectOf(PropTypes.any),
       PropTypes.arrayOf(
@@ -163,7 +171,12 @@ MoimCard.propTypes = {
       name: PropTypes.string,
     }),
   }).isRequired,
+  setNeedUpdate: PropTypes.func,
   showStatus: PropTypes.bool.isRequired,
+};
+
+MoimCard.defaultProps = {
+  setNeedUpdate: null,
 };
 
 export default MoimCard;

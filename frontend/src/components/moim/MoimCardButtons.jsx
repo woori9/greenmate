@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { categoryAtom } from '../../atoms/moim';
+import { cancleApplyMoim, exitMoim } from '../../api/moim';
 
 const ButtonDiv = styled.div`
   display: flex;
@@ -20,7 +21,7 @@ const Button = styled.button`
   cursor: pointer;
 `;
 
-function MoimCardButtons({ moimId, mateList }) {
+function MoimCardButtons({ moimId, mateId, mateList, setNeedUpdate }) {
   const [selectedCategory] = useAtom(categoryAtom);
   const navigate = useNavigate();
 
@@ -28,19 +29,48 @@ function MoimCardButtons({ moimId, mateList }) {
     0: (
       <ButtonDiv>
         <Button type="button">호스트 문의</Button>
-        <Button type="button">대기 취소</Button>
+        <Button
+          type="button"
+          onClick={() =>
+            cancleApplyMoim(
+              mateId,
+              () => setNeedUpdate(prev => prev + 1),
+              err => console.log(err),
+            )
+          }
+        >
+          대기 취소
+        </Button>
       </ButtonDiv>
     ),
     1: (
       <ButtonDiv>
-        <Button type="button">참여 취소</Button>
+        <Button
+          type="button"
+          onClick={() =>
+            exitMoim(
+              mateId,
+              () => setNeedUpdate(prev => prev + 1),
+              err => console.log(err),
+            )
+          }
+        >
+          참여 취소
+        </Button>
         <Button type="button">채팅방 입장</Button>
       </ButtonDiv>
     ),
     4: (
       <ButtonDiv>
         <Button type="button">식당 리뷰</Button>
-        <Button type="button">모임 평가</Button>
+        <Button
+          type="button"
+          onClick={() =>
+            navigate(`/moim/${moimId}/evaluation`, { state: { mateList } })
+          }
+        >
+          모임 평가
+        </Button>
       </ButtonDiv>
     ),
     5: (
@@ -74,6 +104,7 @@ function MoimCardButtons({ moimId, mateList }) {
 
 MoimCardButtons.propTypes = {
   moimId: PropTypes.number.isRequired,
+  mateId: PropTypes.number,
   mateList: PropTypes.oneOfType([
     PropTypes.objectOf(PropTypes.any),
     PropTypes.arrayOf(
@@ -86,5 +117,12 @@ MoimCardButtons.propTypes = {
       }),
     ),
   ]),
+  setNeedUpdate: PropTypes.func,
 };
+
+MoimCardButtons.defaultProps = {
+  mateId: null,
+  setNeedUpdate: null,
+};
+
 export default MoimCardButtons;
