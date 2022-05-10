@@ -10,7 +10,7 @@ import { openSheetAtom } from '../atoms/bottomSheet';
 import { getMoimDetail, acceptGuest, declineGuest } from '../api/moim';
 import { snakeToCamel } from '../utils/formatKey';
 
-const Container = styled.div`
+const MemberBox = styled.div`
   margin-bottom: 2rem;
 
   h2 {
@@ -96,7 +96,7 @@ function ManageMember() {
   return (
     <>
       <GoBackBar title="멤버 관리" />
-      <Container>
+      <MemberBox>
         <h2>
           참여 대기 멤버 <span>{waitList.length}명</span>
         </h2>
@@ -117,8 +117,8 @@ function ManageMember() {
             ))}
           </Ul>
         )}
-      </Container>
-      <Container>
+      </MemberBox>
+      <MemberBox>
         <h2>참여 확정 멤버</h2>
         {joinList.length > 0 && (
           <Ul>
@@ -143,7 +143,7 @@ function ManageMember() {
             ))}
           </Ul>
         )}
-      </Container>
+      </MemberBox>
     </>
   );
 }

@@ -22,6 +22,11 @@ const Bar = styled.div`
   div {
     margin-left: auto;
   }
+
+  @media screen and (min-width: 1025px) {
+    top: 60px;
+    left: 130px;
+  }
 `;
 
 function GoBackBar({ title, children, handleOnClick }) {
