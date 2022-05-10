@@ -22,6 +22,11 @@ const Bar = styled.div`
   div {
     margin-left: auto;
   }
+
+  @media screen and (min-width: 1025px) {
+    top: 60px;
+    left: 130px;
+  }
 `;
 
 function GoBackBar({ title, children, handleOnClick }) {
@@ -44,7 +49,7 @@ function GoBackBar({ title, children, handleOnClick }) {
 GoBackBar.propTypes = {
   title: PropTypes.string.isRequired,
   // eslint-disable-next-line react/require-default-props
-  children: PropTypes.node.isRequired,
+  children: PropTypes.node,
   handleOnClick: PropTypes.func,
 };
 

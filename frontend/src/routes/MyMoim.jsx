@@ -6,7 +6,7 @@ import FloatingActionBtn from '../components/common/FloatingActionBtn';
 import MoimCategory from '../components/moim/MoimCategory';
 import MoimCard from '../components/moim/MoimCard';
 import { categoryAtom, moimListAtom } from '../atoms/moim';
-import { getWaitMoimList } from '../api/moim';
+import { getMyMoimList } from '../api/moim';
 import { snakeToCamel } from '../utils/formatKey';
 
 const CategoryDiv = styled.ul`
@@ -33,7 +33,7 @@ function MyMoim() {
   }, []);
 
   useEffect(() => {
-    getWaitMoimList(
+    getMyMoimList(
       selectedCategory === 6 ? 0 : selectedCategory,
       res => {
         const formattedData = res.data.map(item => ({
@@ -69,12 +69,7 @@ function MyMoim() {
       <hr />
       {moimList.length > 0 &&
         moimList.map(moimInfo => (
-          <MoimCard
-            key={moimInfo.id}
-            moimInfo={moimInfo}
-            hasBorder={false}
-            showStatus
-          />
+          <MoimCard key={moimInfo.id} moimInfo={moimInfo} showStatus />
         ))}
     </>
   );
