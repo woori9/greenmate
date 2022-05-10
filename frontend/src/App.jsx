@@ -30,7 +30,7 @@ function App() {
         <Route path="/mymoim" element={<MyMoim />} />
         <Route path="/moim/form" element={<MoimForm />} />
         <Route path="/moim/:moimId" element={<MoimDetail />} />
-        <Route path="/mypage" element={<MyPage />} />
+        <Route path="/mypage/:userPk" element={<MyPage />} />
         <Route path="/chat" element={<Chat />} />
       </Routes>
       <BottomSheetBase />
