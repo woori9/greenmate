@@ -6,6 +6,8 @@ import WysiwygIcon from '@mui/icons-material/Wysiwyg';
 import EcoIcon from '@mui/icons-material/EnergySavingsLeaf';
 import PersonIcon from '@mui/icons-material/Person';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
+import { useAtom } from 'jotai';
+import { userInfoAtom } from '../../../atoms/accounts';
 
 const defaultColor = '#a9a9a9';
 const selectedColor = '#fcb448';
@@ -52,6 +54,7 @@ const NavTop = styled.div`
 `;
 
 function MobileMapNavbar() {
+  const [userInfo] = useAtom(userInfoAtom);
   const { pathname } = useLocation();
   const links = [
     {
@@ -76,7 +79,7 @@ function MobileMapNavbar() {
     },
     {
       name: '마이페이지',
-      path: '/mypage',
+      path: `/mypage/${userInfo.id}`,
       icon: <PersonIcon sx={{ fontSize: 30 }} />,
     },
   ];

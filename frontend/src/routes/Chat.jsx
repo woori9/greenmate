@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   getFirestore,
   collection,
@@ -11,14 +11,6 @@ import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
 import styled from 'styled-components';
 import ChatRoom from '../components/chat/ChatRoom';
 import app from '../service/firebase';
-import {
-  signIn,
-  getRoomId,
-  getPrivateRoomId,
-  createPrivateRoom,
-  activateChatRoom,
-  // deactivateChatRoom,
-} from '../service/chat_service';
 import GoBackBar from '../components/common/GoBackBar';
 import useWindowDimensions from '../utils/windowDimension';
 import DesktopNavbar from '../components/common/navbar/DesktopNavbar';
@@ -27,7 +19,8 @@ import ChatList from '../components/chat/ChatList';
 const db = getFirestore(app);
 
 const StyledDiv = styled.div`
-  padding-top: 52px;
+  padding-top: ${props => (props.isDesktop ? '70px' : '52px')};
+  padding-left: ${props => props.isDesktop && '140px'};
 `;
 
 const GridChatContainer = styled.div`
@@ -37,9 +30,6 @@ const GridChatContainer = styled.div`
 
 function Chat() {
   const isDesktop = useWindowDimensions().width > 1024;
-  const userRef = useRef();
-  const moimRef = useRef();
-  const [user, setUser] = useState('');
   const [selectedChat, setSelectedChat] = useState(null);
   const [chatList, setChatList] = useState([]);
   const [unreadMessage, setUnreadMessage] = useState({});
@@ -49,13 +39,20 @@ function Chat() {
     }
   };
 
+  const user = {
+    id: '1',
+    veganType: 1,
+    nickname: '1번유저',
+  };
+
   useEffect(() => {
+    // 내 채팅 목록 실시간 업데이트(최근메세지)
     if (!user) return () => {};
 
     const roomsRef = collection(db, 'rooms');
     const q = query(
       roomsRef,
-      where('members', 'array-contains', user),
+      where('members', 'array-contains', user.id),
       where('type', '==', 1),
       orderBy('recentMessage.sentAt'),
     );
@@ -70,12 +67,13 @@ function Chat() {
     });
 
     return unsubscribe;
-  }, [user]);
+  }, []);
 
   useEffect(() => {
+    // 목록에서 count를 실시간으로 보기 위함
     if (!user) return () => {};
     const q = query(
-      collection(db, 'users', user, 'rooms'),
+      collection(db, 'users', user.id, 'rooms'),
       where('type', '==', 1),
     );
 
@@ -90,14 +88,14 @@ function Chat() {
     });
 
     return unsubscribe;
-  }, [user]);
+  }, []);
 
-  const selectChat = chatRoomId => {
-    setSelectedChat(chatRoomId);
+  const selectChat = chatRoom => {
+    setSelectedChat(chatRoom);
   };
 
   return (
-    <StyledDiv>
+    <StyledDiv isDesktop={isDesktop}>
       {isDesktop ? (
         <>
           <DesktopNavbar />
@@ -105,15 +103,15 @@ function Chat() {
             <ChatList
               chats={chatList}
               onChatClick={selectChat}
-              user={user}
+              user={user.id}
               unreadMessage={unreadMessage}
             />
-            <ChatRoom selectedChat={selectedChat} user={user} />
+            <ChatRoom selectedChat={selectedChat} isFromChatPage />
           </GridChatContainer>
         </>
       ) : (
         <>
-          <GoBackBar title="채팅" handleOnClick={selectChat && goBackHandler}>
+          <GoBackBar title="채팅" handleOnClick={goBackHandler}>
             {!selectedChat && (
               <ForwardToInboxIcon
                 sx={{ fontSize: 28, marginRight: '1rem', marginTop: '0.5rem' }}
@@ -124,58 +122,12 @@ function Chat() {
             <ChatList
               chats={chatList}
               onChatClick={selectChat}
-              user={user}
+              user={user.id}
               unreadMessage={unreadMessage}
             />
           ) : (
-            <ChatRoom selectedChat={selectedChat} user={user} />
+            <ChatRoom selectedChat={selectedChat} isFromChatPage />
           )}
-        </>
-      )}
-
-      {user ? null : (
-        <>
-          <input ref={userRef} type="text" placeholder="user" />
-          <button
-            type="button"
-            onClick={() => {
-              setUser(userRef.current.value);
-              signIn(userRef.current.value);
-            }}
-          >
-            set User
-          </button>
-          <input ref={moimRef} type="text" placeholder="room" />
-          <button
-            type="button"
-            onClick={async () => {
-              if (!moimRef.current.value) return;
-              const roomId = await getRoomId(moimRef.current.value, user);
-              await activateChatRoom(user, roomId);
-              setSelectedChat(roomId);
-            }}
-          >
-            채팅방 입장
-          </button>
-
-          <button
-            type="button"
-            onClick={async () => {
-              // 임시로 상대방을 5번 유저로 설정
-              // 현재 유저를 설정하지 않으면 에러남..
-              const roomId = await getPrivateRoomId('5', user);
-              if (roomId) {
-                await activateChatRoom(user, roomId);
-                setSelectedChat(roomId);
-              } else {
-                const createdRoomId = await createPrivateRoom('5', user);
-                await activateChatRoom(user, createdRoomId);
-                setSelectedChat(createdRoomId);
-              }
-            }}
-          >
-            5번 유저와 채팅하기(상대 프로필의 메세지 아이콘)
-          </button>
         </>
       )}
     </StyledDiv>

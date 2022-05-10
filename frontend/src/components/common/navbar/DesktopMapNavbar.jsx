@@ -6,6 +6,8 @@ import WysiwygIcon from '@mui/icons-material/Wysiwyg';
 import EcoIcon from '@mui/icons-material/EnergySavingsLeaf';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 import PersonIcon from '@mui/icons-material/Person';
+import { useAtom } from 'jotai';
+import { userInfoAtom } from '../../../atoms/accounts';
 import logo from '../../../assets/logo.png';
 import KakaoLoginImg from '../../../assets/kakao_login.png';
 
@@ -78,6 +80,7 @@ const StyledLink = styled(Link)`
 `;
 
 function DesktopNavbar() {
+  const [userInfo] = useAtom(userInfoAtom);
   const accessToken = sessionStorage.getItem('Authorization');
   const { pathname } = useLocation();
   const links = [
@@ -137,7 +140,7 @@ function DesktopNavbar() {
             />
           </li>
           <li>
-            <Link to="/mypage" style={{ color: 'black' }}>
+            <Link to={`/mypage/${userInfo.id}`} style={{ color: 'black' }}>
               <PersonIcon sx={{ fontSize: 30 }} />
             </Link>
           </li>
