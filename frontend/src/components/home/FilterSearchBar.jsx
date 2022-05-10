@@ -7,6 +7,18 @@ import InputAdornment from '@mui/material/InputAdornment';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import SearchIcon from '@mui/icons-material/Search';
 import PropTypes from 'prop-types';
+import styled from 'styled-components';
+
+const Container = styled.div`
+  @media screen and (min-width: 1025px) {
+    display: flex;
+    justify-content: space-between;
+
+    .MuiInputBase-fullWidth {
+      width: 25rem;
+    }
+  }
+`;
 
 function FilterSearchBar({ searchKeyword, setSearchKeyword }) {
   const [period, setPeriod] = useState(0);
@@ -31,42 +43,44 @@ function FilterSearchBar({ searchKeyword, setSearchKeyword }) {
   }
 
   return (
-    <>
-      <FormControl sx={{ width: 100, margin: '0 0.5rem 0.5rem 0' }}>
-        <InputLabel id="period">기간</InputLabel>
-        <Select
-          labelId="period"
-          id="period"
-          value={period}
-          label="기간"
-          displayEmpty
-          onChange={event => handlePeriodChange(event)}
-        >
-          <MenuItem value={0}>전체</MenuItem>
-          <MenuItem value={7}>이번 주</MenuItem>
-          <MenuItem value={14}>다음 주</MenuItem>
-        </Select>
-      </FormControl>
-      <FormControl sx={{ width: 80 }}>
-        <InputLabel id="day">요일</InputLabel>
-        <Select
-          labelId="day"
-          id="day"
-          value={day}
-          label="요일"
-          displayEmpty
-          onChange={event => handleDayChange(event)}
-        >
-          <MenuItem value={0}>전체</MenuItem>
-          <MenuItem value={1}>일</MenuItem>
-          <MenuItem value={2}>월</MenuItem>
-          <MenuItem value={3}>화</MenuItem>
-          <MenuItem value={4}>수</MenuItem>
-          <MenuItem value={5}>목</MenuItem>
-          <MenuItem value={6}>금</MenuItem>
-          <MenuItem value={7}>토</MenuItem>
-        </Select>
-      </FormControl>
+    <Container>
+      <div>
+        <FormControl sx={{ width: 100, margin: '0 0.5rem 0.5rem 0' }}>
+          <InputLabel id="period">기간</InputLabel>
+          <Select
+            labelId="period"
+            id="period"
+            value={period}
+            label="기간"
+            displayEmpty
+            onChange={event => handlePeriodChange(event)}
+          >
+            <MenuItem value={0}>전체</MenuItem>
+            <MenuItem value={7}>이번 주</MenuItem>
+            <MenuItem value={14}>다음 주</MenuItem>
+          </Select>
+        </FormControl>
+        <FormControl sx={{ width: 80 }}>
+          <InputLabel id="day">요일</InputLabel>
+          <Select
+            labelId="day"
+            id="day"
+            value={day}
+            label="요일"
+            displayEmpty
+            onChange={event => handleDayChange(event)}
+          >
+            <MenuItem value={0}>전체</MenuItem>
+            <MenuItem value={1}>일</MenuItem>
+            <MenuItem value={2}>월</MenuItem>
+            <MenuItem value={3}>화</MenuItem>
+            <MenuItem value={4}>수</MenuItem>
+            <MenuItem value={5}>목</MenuItem>
+            <MenuItem value={6}>금</MenuItem>
+            <MenuItem value={7}>토</MenuItem>
+          </Select>
+        </FormControl>
+      </div>
       <OutlinedInput
         id="restaurant"
         name="restaurant"
@@ -85,8 +99,12 @@ function FilterSearchBar({ searchKeyword, setSearchKeyword }) {
         inputProps={{
           'aria-label': 'search keyword',
         }}
+        sx={{
+          width: '18rem',
+          borderRadius: '15px',
+        }}
       />
-    </>
+    </Container>
   );
 }
 

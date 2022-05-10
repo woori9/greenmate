@@ -9,6 +9,7 @@ import Map from './routes/Map';
 import MyMoim from './routes/MyMoim';
 import MoimForm from './routes/MoimForm';
 import MoimDetail from './routes/MoimDetail';
+import ManageMember from './routes/ManageMember';
 import MyPage from './routes/MyPage';
 import Chat from './routes/Chat';
 import BottomSheetBase from './components/common/BottomSheetBase';
@@ -31,6 +32,7 @@ function App() {
         <Route path="/mymoim" element={<MyMoim />} />
         <Route path="/moim/form" element={<MoimForm />} />
         <Route path="/moim/:moimId" element={<MoimDetail />} />
+        <Route path="/moim/:moimId/member" element={<ManageMember />} />
         <Route path="/mypage/:userPk" element={<MyPage />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="/chatRoom" element={<ChatRoom />} />

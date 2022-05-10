@@ -1,5 +1,7 @@
 import { useAtom } from 'jotai';
 import styled from 'styled-components';
+import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 import { categoryAtom } from '../../atoms/moim';
 
 const ButtonDiv = styled.div`
@@ -18,8 +20,10 @@ const Button = styled.button`
   cursor: pointer;
 `;
 
-function MoimCardButtons() {
+function MoimCardButtons({ moimId, mateList }) {
   const [selectedCategory] = useAtom(categoryAtom);
+  const navigate = useNavigate();
+
   const buttonDict = {
     0: (
       <ButtonDiv>
@@ -41,7 +45,25 @@ function MoimCardButtons() {
     ),
     5: (
       <ButtonDiv>
-        <Button type="button">멤버 관리</Button>
+        <Button
+          type="button"
+          onClick={() => {
+            const waitList = [];
+            const joinList = [];
+            mateList.forEach((mate, idx) => {
+              if (mate.mateStatus === 0) {
+                waitList.push(mate);
+              } else if (mate.mateStatus === 1 && idx !== 0) {
+                joinList.push(mate);
+              }
+            });
+            navigate(`/moim/${moimId}/member`, {
+              state: { waitList, joinList },
+            });
+          }}
+        >
+          멤버 관리
+        </Button>
         <Button type="button">채팅방 입장</Button>
       </ButtonDiv>
     ),
@@ -50,4 +72,19 @@ function MoimCardButtons() {
   return buttonDict[selectedCategory];
 }
 
+MoimCardButtons.propTypes = {
+  moimId: PropTypes.number.isRequired,
+  mateList: PropTypes.oneOfType([
+    PropTypes.objectOf(PropTypes.any),
+    PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number,
+        userId: PropTypes.number,
+        nickname: PropTypes.string,
+        vegeType: PropTypes.number,
+        mateStatus: PropTypes.number,
+      }),
+    ),
+  ]),
+};
 export default MoimCardButtons;
