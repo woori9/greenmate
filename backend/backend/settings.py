@@ -9,25 +9,39 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
-import os
+import os, json
 from pathlib import Path
+from django.core.exceptions import ImproperlyConfigured
 from corsheaders.defaults import default_headers
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+secret_file = os.path.join(BASE_DIR, 'secrets.json')
+
+with open(secret_file) as f:
+    secrets = json.loads(f.read())
+
+def get_secret(setting, secrets=secrets):
+    try:
+        return secrets[setting]
+    except KeyError:
+        error_msg = "Set the {} environment variable".format(setting)
+        raise ImproperlyConfigured(error_msg)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-p6!r7*8*o)bya+ubj8l%ba)7=lw-z#$mt)v&q%tn=-=6f6h0ef'
-ALGORITHM = 'HS256'
+SECRET_KEY = get_secret("SECRET_KEY")
+ALGORITHM = get_secret("ALGORITHM")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'k6b105.p.ssafy.io',
+]
 
 
 # Application definition
@@ -93,10 +107,10 @@ DATABASES = {
 
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'greenmate',
-        'USER': 'greenmate',
-        'PASSWORD': 'greenmateB105', 
-        'HOST': '127.0.0.1',
-        'PORT': '3306'
+        'USER': get_secret("DATABASE_USER"),
+        'PASSWORD': get_secret("DATABASE_PASSWORD"),
+        'HOST': get_secret("DATABASE_HOST"),
+        'PORT': get_secret("DATABASE_PORT"),
     }
 }
 
@@ -135,7 +149,11 @@ USE_TZ = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = 'static/'
+ROOT_DIR = os.path.dirname(BASE_DIR)
+
+STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(ROOT_DIR, 'static')
 
 MEDIA_URL = 'media/'
 
@@ -164,8 +182,8 @@ CORS_ALLOW_HEADERS = list(default_headers)
 
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
-AWS_ACCESS_KEY_ID = 'AKIAQ2GQBIRG5WOCLXEF'
-AWS_SECRET_ACCESS_KEY = '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'
+AWS_ACCESS_KEY_ID = get_secret("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = get_secret("AWS_SECRET_ACCESS_KEY")
 AWS_REGION = 'ap-northeast-2'
 
 AWS_STORAGE_BUCKET_NAME = 'greenmate-ssafy'
