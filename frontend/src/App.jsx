@@ -26,16 +26,32 @@ import BottomSheetBase from './components/common/BottomSheetBase';
 import ChatRoom from './components/chat/ChatRoom';
 import Test from './routes/Test';
 import { checkToken, onMessageListener } from './service/notification_service';
+import useNotificationStatus from './utils/permision';
 
 function App() {
-  const [isTokenFound, setTokenFound] = useState(false);
+  const [isTokenFound, setIsTokenFound] = useState(false);
+  const notificationStatus = useNotificationStatus();
 
   useEffect(() => {
-    checkToken(setTokenFound);
-    onMessageListener('1');
-  }, []);
+    let unsubscribe;
 
-  console.log('APP', isTokenFound);
+    if (notificationStatus === 'default') {
+      Notification.requestPermission();
+    }
+
+    if (notificationStatus === 'granted') {
+      // 서버에 token 보내기 (저장)
+      checkToken(setIsTokenFound);
+      unsubscribe = onMessageListener('1');
+    }
+
+    if (notificationStatus !== 'granted' && isTokenFound) {
+      // 서버에 기존 token delete 요청
+      setIsTokenFound(false);
+    }
+
+    return unsubscribe;
+  }, [notificationStatus]);
 
   return (
     <BrowserRouter>
