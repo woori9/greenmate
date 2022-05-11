@@ -36,7 +36,8 @@ INSTALLED_APPS = [
     # local apps
     'accounts',
     'greenmates',
-
+    'notifications'
+    
     # 3rd
     'storages',
     'rest_framework',
