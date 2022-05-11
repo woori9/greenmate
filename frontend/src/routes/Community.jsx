@@ -6,6 +6,7 @@ import Select from '@mui/material/Select';
 import ResponsiveNavbar from '../components/common/navbar/ResponsiveNavbar';
 import FloatingActionBtn from '../components/common/FloatingActionBtn';
 import Feeds from '../components/community/Feeds';
+import GoBackBar from '../components/common/GoBackBar';
 
 function Community() {
   const [category, setCategory] = useState('');
@@ -20,7 +21,11 @@ function Community() {
   return (
     <>
       <div>
-        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+        <GoBackBar />
+        <FormControl
+          variant="standard"
+          sx={{ mt: 5, ml: 3, mr: 3, minWidth: 120 }}
+        >
           <InputLabel id="category">카테고리</InputLabel>
           <Select
             labelId="category"
@@ -36,7 +41,7 @@ function Community() {
             <MenuItem value={4}>레시피</MenuItem>
           </Select>
         </FormControl>
-        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+        <FormControl variant="standard" sx={{ mt: 5, minWidth: 120 }}>
           <InputLabel id="vegeType">채식 타입</InputLabel>
           <Select
             labelId="vegeType"
