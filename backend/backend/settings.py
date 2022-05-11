@@ -12,10 +12,17 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 import os
 from pathlib import Path
 from corsheaders.defaults import default_headers
+import firebase_admin
+from firebase_admin import credentials
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# serviceAccountKey 경로 설정
+cred_path = os.path.join(BASE_DIR, "serviceAccountKey.json")
+cred = credentials.Certificate(cred_path)
+firebase_admin.initialize_app(cred)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -36,13 +43,15 @@ INSTALLED_APPS = [
     # local apps
     'accounts',
     'greenmates',
+    'notifications',
 
     # 3rd
     'storages',
     'rest_framework',
     'drf_yasg',
     'corsheaders',
-
+    'django_apscheduler',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
