@@ -37,7 +37,6 @@ function Feed({ feed }) {
   const handleSetiing = () => {
     setIsSetting(!isSetting);
   };
-  console.log(feed);
   return (
     <Card sx={{ mb: 5, maxWidth: 1024 }}>
       <CardHeader
@@ -96,9 +95,9 @@ function Feed({ feed }) {
           }}
         >
           {isLike ? (
-            <FavoriteBorderIcon sx={{ color: red[400] }} />
-          ) : (
             <FavoriteIcon sx={{ color: red[400] }} />
+          ) : (
+            <FavoriteBorderIcon sx={{ color: red[400] }} />
           )}
         </IconButton>
         <IconButton onClick={handleExpandClick}>

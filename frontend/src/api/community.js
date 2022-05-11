@@ -1,11 +1,12 @@
 import apiInstance from '../utils/apiInstance';
 
-// 모임 목록 조회
+// 피드 목록 조회
 export async function getFeedList() {
   const response = await apiInstance.get('/greenmates/community/feeds/');
   return response.data;
 }
 
+// 피드 작성
 export async function createFeed(data) {
   const response = await apiInstance.post('/greenmates/community/feeds/', data);
   return response.data;
