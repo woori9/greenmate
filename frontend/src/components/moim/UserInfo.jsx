@@ -11,7 +11,7 @@ const InfoDiv = styled.div`
 function UserInfo({ userInfo }) {
   return (
     <InfoDiv>
-      <ProfileImage isBig={false} />
+      <ProfileImage vegeType={userInfo.vegeType} isBig={false} />
       <p>{userInfo.nickname}</p>
     </InfoDiv>
   );
