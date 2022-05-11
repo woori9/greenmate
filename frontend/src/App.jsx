@@ -1,5 +1,6 @@
 import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import KakaoRedirectHandler from './routes/KakaoRedirectHandler';
 import Signup from './routes/Signup';
 import Home from './routes/Home';
@@ -10,12 +11,24 @@ import MyMoim from './routes/MyMoim';
 import MoimForm from './routes/MoimForm';
 import MoimDetail from './routes/MoimDetail';
 import ManageMember from './routes/ManageMember';
+import EvaluateMoim from './routes/EvaluateMoim';
 import MyPage from './routes/MyPage';
 import Chat from './routes/Chat';
 import BottomSheetBase from './components/common/BottomSheetBase';
 import ChatRoom from './components/chat/ChatRoom';
+import Test from './routes/Test';
+import { checkToken, onMessageListener } from './service/notification_service';
 
 function App() {
+  const [isTokenFound, setTokenFound] = useState(false);
+
+  useEffect(() => {
+    checkToken(setTokenFound);
+    onMessageListener('1');
+  }, []);
+
+  console.log('APP', isTokenFound);
+
   return (
     <BrowserRouter>
       <Routes>
@@ -33,9 +46,11 @@ function App() {
         <Route path="/moim/form" element={<MoimForm />} />
         <Route path="/moim/:moimId" element={<MoimDetail />} />
         <Route path="/moim/:moimId/member" element={<ManageMember />} />
+        <Route path="/moim/:moimId/evaluation" element={<EvaluateMoim />} />
         <Route path="/mypage/:userPk" element={<MyPage />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="/chatRoom" element={<ChatRoom />} />
+        <Route path="/test" element={<Test />} />
       </Routes>
       <BottomSheetBase />
     </BrowserRouter>
