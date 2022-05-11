@@ -33,7 +33,7 @@ class MoimBaseSerializer(serializers.ModelSerializer):
     def get_now_cnt(self, obj):
         now_cnt = obj.mate_set.filter(mate_status=1).count()
         if obj.status == 3:
-            now_cnt = obj.mate_set.filter(mate_status=4).count()
+            now_cnt = obj.head_cnt
         return now_cnt
        
 # 기본 모임 정보 + 식당정보 (모임 list) 
