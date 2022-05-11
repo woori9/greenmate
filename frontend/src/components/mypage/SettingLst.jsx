@@ -1,5 +1,8 @@
 import PropTypes from 'prop-types';
+import { useAtom } from 'jotai';
 import styled from 'styled-components';
+import { openSheetAtom } from '../../atoms/bottomSheet';
+import ConfirmLogout from './ConfirmLogout';
 
 const Ul = styled.ul`
   list-style: none;
@@ -29,13 +32,23 @@ const P = styled.p`
 `;
 
 function SettingLst({ setPageStatus }) {
+  const [, setOpen] = useAtom(openSheetAtom);
   return (
     <>
       <Ul>
         <Li onClick={() => setPageStatus('setNickname')}>내 정보</Li>
         <Li onClick={() => setPageStatus('setLanguage')}>언어설정</Li>
         <Li onClick={() => setPageStatus('registerNewRestau')}>식당등록요청</Li>
-        <LastLi>로그아웃</LastLi>
+        <LastLi
+          onClick={() => {
+            setOpen({
+              open: true,
+              component: <ConfirmLogout />,
+            });
+          }}
+        >
+          로그아웃
+        </LastLi>
       </Ul>
       <Div>
         <P onClick={() => setPageStatus('deleteUser')}>탈퇴하기</P>

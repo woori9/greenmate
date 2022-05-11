@@ -2,6 +2,7 @@ import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import KakaoRedirectHandler from './routes/KakaoRedirectHandler';
+import Intro from './routes/Intro';
 import Signup from './routes/Signup';
 import Home from './routes/Home';
 import Community from './routes/Community';
@@ -40,6 +41,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         {/* TODO: 로그인 필수 분기처리 */}
+        <Route path="/intro" element={<Intro />} />
         <Route
           path="/oauth/callback/kakao"
           element={<KakaoRedirectHandler />}

@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAtom } from 'jotai';
+import { userInfoAtom } from '../atoms/accounts';
 import { apiCheckNickname, apiPutUserInfo } from '../api/accounts';
 import logo from '../assets/logo.png';
 
@@ -24,8 +26,9 @@ const VegeType = styled.div`
 
 function Signup() {
   const navigate = useNavigate();
-  const [newNickname, setNewNickname] = useState('default 닉네임');
-  const [nicknameStatus, SetNicknameStatus] = useState(0);
+  const [userInfo] = useAtom(userInfoAtom);
+  const [newNickname, setNewNickname] = useState(userInfo);
+  const [nicknameStatus, SetNicknameStatus] = useState(false);
   const [newVegeType, setVegeType] = useState(null);
   const vegeTypes = [
     { vegeType: 0, title: '비건' },
@@ -40,14 +43,16 @@ function Signup() {
     apiCheckNickname(
       { nickname: putNickname },
       () => {
-        SetNicknameStatus(1);
+        SetNicknameStatus(true);
       },
       () => {
-        SetNicknameStatus(0);
+        SetNicknameStatus(false);
       },
     );
   }
-  useEffect(() => checkNickname(newNickname));
+  useEffect(() => {
+    checkNickname(newNickname);
+  }, []);
   return (
     <>
       <h1>회원가입</h1>
@@ -82,7 +87,7 @@ function Signup() {
       </VegeTypes>
       <button
         type="button"
-        disabled={!nicknameStatus || newVegeType === null}
+        disabled={!(nicknameStatus && newVegeType !== null)}
         onClick={() => {
           apiPutUserInfo(
             {
