@@ -1,3 +1,4 @@
+APScheduler==3.9.1
 asgiref==3.5.0
 async-generator==1.10
 attrs==21.4.0
@@ -12,6 +13,7 @@ coreapi==2.3.3
 coreschema==0.0.4
 cryptography==37.0.2
 Django==4.0.4
+django-apscheduler==0.6.2
 django-cors-headers==3.11.0
 django-storages==1.12.3
 djangorestframework==3.13.1
@@ -43,6 +45,7 @@ pyparsing==3.0.8
 PySocks==1.7.1
 python-dateutil==2.8.2
 pytz==2022.1
+pytz-deprecation-shim==0.1.0.post0
 requests==2.27.1
 rfc3986==1.5.0
 ruamel.yaml==0.17.21
@@ -57,6 +60,7 @@ sqlparse==0.4.2
 trio==0.20.0
 trio-websocket==0.9.2
 tzdata==2022.1
+tzlocal==4.2
 uritemplate==4.1.1
 urllib3==1.26.9
 wsproto==1.1.0
