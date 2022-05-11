@@ -8,7 +8,21 @@ import GoBackBar from '../components/common/GoBackBar';
 import { evaluateMoim } from '../api/moim';
 import { evaluationAtom } from '../atoms/moim';
 
+const Container = styled.div`
+  @media screen and (max-width: 1024px) {
+    padding: 52px 1rem;
+  }
+
+  @media screen and (min-width: 1025px) {
+    margin: 112px 0 0 130px;
+    padding: 0 2rem;
+  }
+`;
+
 const SubmitButton = styled.button`
+  position: absolute;
+  top: 0.9rem;
+  right: 2rem;
   color: ${props => (props.isActive ? '#f5bd68' : '#a9a9a9')};
   font-size: 1.15rem;
   background: none;
@@ -22,7 +36,7 @@ const TextContainer = styled.div`
   margin: 2.5rem 0;
 
   p {
-    font-size: 1.1rem;
+    font-size: 1.03rem;
   }
 `;
 
@@ -30,6 +44,7 @@ const UserList = styled.ul`
   list-style: none;
   display: flex;
   padding-left: 0;
+  overflow-x: auto;
 `;
 
 const UserListItem = styled.li`
@@ -80,7 +95,7 @@ function EvaluateMoim() {
   }
 
   return (
-    <>
+    <Container>
       <GoBackBar title="">
         <SubmitButton
           type="button"
@@ -110,7 +125,7 @@ function EvaluateMoim() {
         selectedMateNickname={selectedMate.nickname}
         selectedMateId={selectedMate.id}
       />
-    </>
+    </Container>
   );
 }
 
