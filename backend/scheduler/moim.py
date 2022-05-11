@@ -1,5 +1,4 @@
 import datetime
-from dateutil.relativedelta import relativedelta
 from greenmates.models import Moim, Mate
 
 now = datetime.datetime.now()
@@ -19,11 +18,3 @@ def update_status():
         ## mate_status 1(합류) -> 4(완료)
     Moim.objects.filter(time__lte=now, status=1).update(status=3)
     Mate.objects.filter(mate_status=1, moim__status=3).update(mate_status=4)
-
-# TODO: 조회시, 3개월만 보여주기.
-# def delete_moim():
-#     '''
-#     모임 시간으로부터 3개월이 지난, 완료된 모임: 모임 db에서 삭제 
-#     '''
-#     three_months = now - relativedelta(months=3)
-#     Moim.objects.filter(time__gte=three_months, status=3).delete()
