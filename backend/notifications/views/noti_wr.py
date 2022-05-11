@@ -19,8 +19,5 @@ def test(request):
         token=registration_token,
     )
 
-    response = messaging.send(message)
-    print(response)
-    # Response is a message ID string.
-    print('Successfully sent message:', response)
+    messaging.send(message)
     return Response(status=HTTP_200_OK)
