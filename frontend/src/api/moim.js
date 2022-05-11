@@ -100,3 +100,10 @@ export async function exitMoim(mateId) {
     return err;
   }
 }
+
+export function evaluateMoim(evaluationList, res, err) {
+  apiInstance
+    .post('/greenmates/mates/evaluate/', evaluationList)
+    .then(res)
+    .catch(err);
+}
