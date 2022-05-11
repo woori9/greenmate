@@ -27,7 +27,7 @@ const VegeType = styled.div`
 function Signup() {
   const navigate = useNavigate();
   const [userInfo] = useAtom(userInfoAtom);
-  const [newNickname, setNewNickname] = useState(userInfo);
+  const [newNickname, setNewNickname] = useState(userInfo.nickname);
   const [nicknameStatus, SetNicknameStatus] = useState(false);
   const [newVegeType, setVegeType] = useState(null);
   const vegeTypes = [
@@ -44,6 +44,7 @@ function Signup() {
       { nickname: putNickname },
       () => {
         SetNicknameStatus(true);
+        setNewNickname(putNickname);
       },
       () => {
         SetNicknameStatus(false);
@@ -60,8 +61,7 @@ function Signup() {
         <input
           value={newNickname}
           onChange={event => {
-            setNewNickname(event.target.value);
-            apiCheckNickname(event.target.value);
+            checkNickname(event.target.value.trim());
           }}
         />
         {nicknameStatus ? (
@@ -95,7 +95,6 @@ function Signup() {
               vege_type: newVegeType,
             },
             () => navigate('/'),
-            err => console.log(err),
           );
         }}
       >
