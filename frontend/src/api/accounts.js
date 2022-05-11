@@ -44,3 +44,18 @@ export function apiCheckNickname(data, res, err) {
 export function apiPutUserInfo(data, res, err) {
   apiInstance.put('/accounts/userinfo/', data).then(res).catch(err);
 }
+
+/* 회원탈퇴 */
+export function apiDeleteUser(res, err) {
+  apiInstance.delete('/accounts/signout').then(res).catch(err);
+}
+
+/* 번역 정보 수정 */
+export function apiPutLanguage(data, res, err) {
+  apiInstance.put('/accounts/userinfo/', data).then(res).catch(err);
+}
+
+/* 팔로우 & 언팔로우 */
+export function apiPostFollow(data, res, err) {
+  apiInstance.post(`/accounts/follow/${data.targetId}/`).then(res).catch(err);
+}

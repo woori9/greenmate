@@ -1,16 +1,42 @@
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { apiDeleteUser } from '../../api/accounts';
 
 const Container = styled.div`
-  border: 1px solid red;
   padding: auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 80vh;
+  height: 55vh;
+  .title {
+    font-size: 20px;
+    font-weight: 400;
+  }
+  .sub-title {
+    color: #f9795d;
+    padding-top: 1.5rem;
+    padding-bottom: 2rem;
+  }
+  ul {
+    padding: 2rem;
+  }
+  li {
+    padding: 0.5rem 0;
+  }
+`;
+const Button = styled.div`
+  color: white;
+  background-color: #f9795d;
+  border: none;
+  border-radius: 10px;
+  padding: 0.7rem 2.5rem;
+  margin-top: 2rem;
+  cursor: pointer;
 `;
 
 function SettingDropUser() {
+  const navigate = useNavigate();
   return (
     <Container>
       <p className="title">회원 탈퇴</p>
@@ -22,7 +48,17 @@ function SettingDropUser() {
           없습니다.
         </li>
       </ul>
-      <button type="button">탈퇴하기</button>
+      <Button
+        type="button"
+        onClick={() =>
+          apiDeleteUser(
+            () => navigate('/intro'),
+            () => alert('진행 중인 모임이 있어 회원탈퇴가 불가합니다'),
+          )
+        }
+      >
+        탈퇴하기
+      </Button>
     </Container>
   );
 }

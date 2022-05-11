@@ -23,7 +23,7 @@ const NameNStatus = styled.div`
   margin-top: 1.5rem;
 `;
 
-function DesktopProfile({ profileInfo, isDesktop }) {
+function DesktopProfile({ getProfileInfo, profileInfo, isDesktop }) {
   const isBig = true;
   return (
     <LeftContainer>
@@ -32,7 +32,10 @@ function DesktopProfile({ profileInfo, isDesktop }) {
         <Nickname profileInfo={profileInfo} isDesktop={isDesktop} />
         <FollowerStatus profileInfo={profileInfo} isDesktop={isDesktop} />
       </NameNStatus>
-      <ButtonContainer profileInfo={profileInfo} />
+      <ButtonContainer
+        getProfileInfo={getProfileInfo}
+        profileInfo={profileInfo}
+      />
       <ProfileLst />
     </LeftContainer>
   );
@@ -40,5 +43,6 @@ function DesktopProfile({ profileInfo, isDesktop }) {
 DesktopProfile.propTypes = {
   profileInfo: PropTypes.shape().isRequired,
   isDesktop: PropTypes.bool.isRequired,
+  getProfileInfo: PropTypes.func.isRequired,
 };
 export default DesktopProfile;

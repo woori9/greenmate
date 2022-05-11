@@ -21,7 +21,7 @@ const NameNStatus = styled.div`
   align-items: center;
 `;
 
-function MobileProfile({ profileInfo, isDesktop }) {
+function MobileProfile({ getProfileInfo, profileInfo, isDesktop }) {
   const isBig = true;
   return (
     <Containter>
@@ -36,7 +36,10 @@ function MobileProfile({ profileInfo, isDesktop }) {
         </NickNameBox>
         <FollowerStatus profileInfo={profileInfo} isDesktop={isDesktop} />
       </NameNStatus>
-      <ButtonContainer profileInfo={profileInfo} />
+      <ButtonContainer
+        getProfileInfo={getProfileInfo}
+        profileInfo={profileInfo}
+      />
       <ProfileLst />
     </Containter>
   );
@@ -44,6 +47,7 @@ function MobileProfile({ profileInfo, isDesktop }) {
 MobileProfile.propTypes = {
   profileInfo: PropTypes.shape().isRequired,
   isDesktop: PropTypes.bool.isRequired,
+  getProfileInfo: PropTypes.func.isRequired,
 };
 
 export default MobileProfile;

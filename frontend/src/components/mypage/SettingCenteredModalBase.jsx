@@ -187,8 +187,8 @@ function SettingCenteredModalBase({ vegeType, mainAction }) {
         <Page className="descript-page">
           {vegeTypeLst.map(ele => {
             return (
-              <DescriptionVegeTypeContainer>
-                <DescriptionVegeTypeTitle key={ele.title}>
+              <DescriptionVegeTypeContainer key={ele.title}>
+                <DescriptionVegeTypeTitle>
                   <img src={ele.icon} alt={ele.id} />
                   <p>{ele.title}</p>
                 </DescriptionVegeTypeTitle>

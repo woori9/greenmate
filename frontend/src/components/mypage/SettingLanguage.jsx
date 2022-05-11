@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { useAtom } from 'jotai';
 import styled from 'styled-components';
 import { userInfoAtom } from '../../atoms/accounts';
+import { apiPutLanguage } from '../../api/accounts';
 
 const Ul = styled.ul`
-  padding: 0;
-  padding-top: 1rem;
+  padding: 1rem;
 `;
 const Li = styled.li`
   list-style: none;
@@ -16,25 +16,39 @@ const Li = styled.li`
 `;
 
 function SettingLanguage() {
-  const [userInfo] = useAtom(userInfoAtom);
+  const [userInfo, setUserInfo] = useAtom(userInfoAtom);
   const [newLan, setNewLan] = useState(userInfo.language);
-  console.log(newLan);
   const LangLst = [
     {
       id: 0,
       title: '한국어',
     },
     {
-      id: 2,
+      id: 1,
       title: '영어',
     },
   ];
+  function putLanguage(putNewLang) {
+    apiPutLanguage(
+      { language: putNewLang },
+      res => {
+        alert('언어 설정이 변경되었습니다');
+        setUserInfo({ ...userInfo, ...res.data });
+      },
+      () => {
+        alert('언어 설정 변경에 실패했습니다');
+      },
+    );
+  }
   return (
     <Ul>
       {LangLst.map(ele => (
         <Li
           key={ele.id}
-          onClick={() => setNewLan(ele.id)}
+          onClick={() => {
+            setNewLan(ele.id);
+            putLanguage(ele.id);
+          }}
           selected={newLan === ele.id}
         >
           {ele.title}
