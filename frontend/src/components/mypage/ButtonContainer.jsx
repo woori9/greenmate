@@ -24,9 +24,9 @@ const Container = styled.div`
   }
 `;
 
-function ButtonContainer({ userInfo }) {
+function ButtonContainer({ profileInfo }) {
   const navigate = useNavigate();
-  const followingStatus = userInfo.following_status;
+  const followingStatus = profileInfo.following_status;
   function getRightButton(statusNum) {
     let rightButton = '';
     if (statusNum === 0) {
@@ -64,6 +64,6 @@ function ButtonContainer({ userInfo }) {
   );
 }
 ButtonContainer.propTypes = {
-  userInfo: PropTypes.shape().isRequired,
+  profileInfo: PropTypes.shape().isRequired,
 };
 export default ButtonContainer;

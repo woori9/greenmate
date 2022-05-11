@@ -11,6 +11,13 @@ import MoimForm from './routes/MoimForm';
 import MoimDetail from './routes/MoimDetail';
 import ManageMember from './routes/ManageMember';
 import MyPage from './routes/MyPage';
+import MyPageLikedRestaurants from './routes/MyPageLikedRestaurants';
+import MyPageLikedFeeds from './routes/MyPageLikedFeeds';
+import MyPageLikedReview from './routes/MyPageLikedReview';
+import MyPageEvaluation from './routes/MyPageEvaluation';
+import MyPageReviews from './routes/MyPageReviews';
+import MyPageFeeds from './routes/MyPageFeeds';
+import MyPageSetting from './routes/MyPageSetting';
 import Chat from './routes/Chat';
 import BottomSheetBase from './components/common/BottomSheetBase';
 import ChatRoom from './components/chat/ChatRoom';
@@ -34,6 +41,25 @@ function App() {
         <Route path="/moim/:moimId" element={<MoimDetail />} />
         <Route path="/moim/:moimId/member" element={<ManageMember />} />
         <Route path="/mypage/:userPk" element={<MyPage />} />
+        <Route
+          path="/mypage/:userPk/liked-restaurants"
+          element={<MyPageLikedRestaurants />}
+        />
+        <Route
+          path="/mypage/:userPk/liked-feeds"
+          element={<MyPageLikedFeeds />}
+        />
+        <Route
+          path="/mypage/:userPk/liked-reviews"
+          element={<MyPageLikedReview />}
+        />
+        <Route
+          path="/mypage/:userPk/evaluation"
+          element={<MyPageEvaluation />}
+        />
+        <Route path="/mypage/:userPk/my-reviews" element={<MyPageReviews />} />
+        <Route path="/mypage/:userPk/my-feeds" element={<MyPageFeeds />} />
+        <Route path="/mypage/:userPk/setting" element={<MyPageSetting />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="/chatRoom" element={<ChatRoom />} />
       </Routes>
