@@ -7,7 +7,7 @@ import ConfirmLogout from './ConfirmLogout';
 const Ul = styled.ul`
   list-style: none;
   padding: 1rem 0;
-  border: 1px solid #a9a9a9;
+  border: ${props => (props.isDesktop ? '1px solid #a9a9a9' : null)};
   border-radius: 5px;
 `;
 const Li = styled.li`
@@ -31,11 +31,11 @@ const P = styled.p`
   cursor: pointer;
 `;
 
-function SettingLst({ setPageStatus }) {
+function SettingLst({ isDesktop, setPageStatus }) {
   const [, setOpen] = useAtom(openSheetAtom);
   return (
     <>
-      <Ul>
+      <Ul isDesktop={isDesktop}>
         <Li onClick={() => setPageStatus('setNickname')}>내 정보</Li>
         <Li onClick={() => setPageStatus('setLanguage')}>언어설정</Li>
         <Li onClick={() => setPageStatus('registerNewRestau')}>식당등록요청</Li>
@@ -59,5 +59,6 @@ function SettingLst({ setPageStatus }) {
 
 SettingLst.propTypes = {
   setPageStatus: PropTypes.func.isRequired,
+  isDesktop: PropTypes.bool.isRequired,
 };
 export default SettingLst;

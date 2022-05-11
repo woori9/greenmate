@@ -16,9 +16,54 @@ const Container = styled.div`
 function MyPageEvaluation() {
   const { width } = useWindowDimensions();
   const isDesktop = width > 1024;
+  const evaluTable = [
+    {
+      0: {
+        title: '이분과 다시는 식사하고 싶지 않아요',
+      },
+      1: {
+        title: '약속 장소에 나타나지 않았어요',
+      },
+      2: {
+        title: '대화가 어려웠어요',
+      },
+      3: {
+        title: '응답이 느려요',
+      },
+    },
+    {
+      0: {
+        title: '시간 약속을 잘 지켜요',
+      },
+      1: {
+        title: '친절하고 매너가 좋아요',
+      },
+      2: {
+        title: '대화가 잘 통해요',
+      },
+      3: {
+        title: '응답이 빨라요',
+      },
+    },
+    {
+      0: {
+        title: '시간 약속을 잘 지켜요',
+      },
+      1: {
+        title: '친절하고 매너가 좋아요',
+      },
+      2: {
+        title: '대화가 잘 통해요',
+      },
+      3: {
+        title: '응답이 빨라요',
+      },
+    },
+  ];
   const [evaluation, setEvaluation] = useState([]);
   const { userPk } = useParams();
   console.log(evaluation);
+  console.log(evaluTable);
   useEffect(() => {
     getEvaluationLst(
       { userId: userPk },
@@ -41,7 +86,9 @@ function MyPageEvaluation() {
         <GoBackBar title="평가" />
       )}
       <Container isDesktop={isDesktop}>
-        <p>평가</p>
+        <ul>
+          <p>d</p>
+        </ul>
       </Container>
     </>
   );

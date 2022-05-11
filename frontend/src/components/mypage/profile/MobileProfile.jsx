@@ -4,7 +4,7 @@ import Nickname from '../Nickname';
 import FollowerStatus from '../FollowerStatus';
 import ButtonContainer from '../ButtonContainer';
 import ProfileLst from '../ProfileLst';
-import logo from '../../../assets/logo.png';
+import ProfileImg from '../../common/ProfileImage';
 
 const Containter = styled.div`
   padding: 62px 1rem;
@@ -15,13 +15,6 @@ const NickNameBox = styled.div`
   padding: 1rem 0;
 `;
 
-const Img = styled.img`
-  width: 60px;
-  height: 60px;
-  border-radius: 20px;
-  object-fit: cover;
-  margin-right: 1rem;
-`;
 const NameNStatus = styled.div`
   display: flex;
   justify-content: space-around;
@@ -29,11 +22,16 @@ const NameNStatus = styled.div`
 `;
 
 function MobileProfile({ profileInfo, isDesktop }) {
+  const isBig = true;
   return (
     <Containter>
       <NameNStatus>
         <NickNameBox>
-          <Img src={logo} alt="profile-img" />
+          <ProfileImg
+            className="profile-img"
+            vegeType={profileInfo.vege_type}
+            isBig={isBig}
+          />
           <Nickname profileInfo={profileInfo} isDesktop={isDesktop} />
         </NickNameBox>
         <FollowerStatus profileInfo={profileInfo} isDesktop={isDesktop} />
