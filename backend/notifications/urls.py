@@ -28,7 +28,7 @@ urlpatterns = [
 
 
     # 3
-
+    path('test/', noti_wr.test),
 
 
 
