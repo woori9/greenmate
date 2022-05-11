@@ -8,16 +8,6 @@ import PersonIcon from '@mui/icons-material/Person';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 import { useAtom } from 'jotai';
 import { userInfoAtom } from '../../../atoms/accounts';
-import KakaoLoginImg from '../../../assets/kakao_login.png';
-
-const REDIRECT_URI = 'https://k6b105.p.ssafy.io/oauth/callback/kakao';
-const KAKAO_URL = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${process.env.REACT_APP_REST_API_KEY}&redirect_uri=${REDIRECT_URI}`;
-const KakaoImg = styled.div`
-  height: 1rem;
-  img {
-    height: 100%;
-  }
-`;
 
 const defaultColor = '#a9a9a9';
 const selectedColor = '#fcb448';
@@ -66,7 +56,6 @@ const NavTop = styled.div`
 
 function MobileNavbar() {
   const [userInfo] = useAtom(userInfoAtom);
-  const accessToken = sessionStorage.getItem('Authorization');
   const { pathname } = useLocation();
   const links = [
     {
@@ -100,15 +89,6 @@ function MobileNavbar() {
     <>
       <NavTop>
         <p>그린메이트</p>
-        {accessToken === null ? (
-          <a href={KAKAO_URL}>
-            <KakaoImg>
-              <img src={KakaoLoginImg} alt="kakao-login" />
-            </KakaoImg>
-          </a>
-        ) : (
-          <p>로그인완료</p>
-        )}
         <NotificationsNoneOutlinedIcon sx={{ color: 'black', fontSize: 30 }} />
       </NavTop>
       <NavBottom>
