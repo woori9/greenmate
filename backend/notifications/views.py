@@ -13,6 +13,7 @@ from rest_framework.status import (
     HTTP_403_FORBIDDEN
 )
 from .models import FirebaseToken
+from .serializers import FirebaseTokenSerializer
 from accounts.views.token import get_request_user
 
 
@@ -21,8 +22,8 @@ User = get_user_model()
 
 @api_view(['POST'])
 def create_update_token(request):
-    # user = get_object_or_404(User, pk=1)
-    user = get_request_user(request)
+    user = get_object_or_404(User, pk=1)
+    # user = get_request_user(request)
 
     if not user:
         return Response(status=HTTP_401_UNAUTHORIZED)
@@ -33,18 +34,18 @@ def create_update_token(request):
     try:
         token = FirebaseToken.objects.get(user=user, registration_token=token)
         token.save()
-        return Response(status=HTTP_200_OK)
+        serializer = FirebaseTokenSerializer(token)
+        return Response(serializer.data, status=HTTP_200_OK)
 
     except FirebaseToken.DoesNotExist:
-        FirebaseToken.objects.create(
-            user = user,
-            registration_token=token,
-            )
-        return Response(data='알람 설정이 완료되었습니다.', status=HTTP_201_CREATED)
+        serializer = FirebaseTokenSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(user=user)
+        return Response(serializer.data, status=HTTP_201_CREATED)
 
 
 @api_view(['DELETE'])
-def delete_token(request):
+def delete_token(request, token_id):
     # user = get_object_or_404(User, pk=1)
     user = get_request_user(request)
 
@@ -52,13 +53,13 @@ def delete_token(request):
         return Response(status=HTTP_401_UNAUTHORIZED)
     elif user == 'EXPIRED_TOKEN':
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
-
-    token = request.data['registration_token']
     
-    registration_token = get_object_or_404(FirebaseToken, user=user, registration_token=token)
-    registration_token.delete()
+    registration_token = get_object_or_404(FirebaseToken, pk=token_id)
 
-    return Response(data='알람 설정이 취소되었습니다.', status=HTTP_204_NO_CONTENT)
+    if registration_token.user == user:
+        registration_token.delete()
+        return Response(data='알람 설정이 취소되었습니다.', status=HTTP_204_NO_CONTENT)
+    return Response(data='잘못된 요청입니다.', status=HTTP_403_FORBIDDEN)
 
 
 @api_view(['POST'])

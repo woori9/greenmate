@@ -8,6 +8,6 @@ from .views import (
 
 urlpatterns = [
     path('set/', create_update_token),
-    path('cancel/', delete_token),
+    path('cancel/<int:token_id>/', delete_token),
     path('chat/<int:moim_id>/', send_chat_alarm),
 ]
