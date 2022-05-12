@@ -11,13 +11,18 @@ import { getMoimList } from '../api/moim';
 import { snakeToCamel } from '../utils/formatKey';
 
 const Container = styled.div`
+  .inform-txt-container {
+    width: 100%;
+    text-align: center;
+    margin: 3rem 0;
+  }
+
   @media screen and (max-width: 1024px) {
     padding: 5rem 1rem 5rem 1rem;
   }
 
   @media screen and (min-width: 1025px) {
     margin: 60px 0 0 130px;
-    /* TODO : 데스크탑 좌우 여백 통일 */
     padding: 0 2rem;
 
     .moim-card-container {
@@ -51,12 +56,7 @@ function Home() {
         }));
         setMoimList(formattedData);
       },
-      err => {
-        // TODO: 백엔드에서 404 대신 빈 배열로 변경될 경우 res에서 처리
-        if (err.response.status === 404) {
-          setMoimList([]);
-        }
-      },
+      () => {},
     );
   }, []);
 
@@ -71,14 +71,20 @@ function Home() {
       />
       <Hr />
       <div className="moim-card-container">
-        {moimList.length > 0 &&
+        {moimList.length > 0 ? (
           moimList.map(moimInfo => (
             <MoimCard
               key={moimInfo.id}
               moimInfo={moimInfo}
               showStatus={false}
             />
-          ))}
+          ))
+        ) : (
+          <div className="inform-txt-container">
+            <p>지금 모집 중인 모임이 없습니다.</p>
+            <p>모임을 만들어보세요!</p>
+          </div>
+        )}
       </div>
     </Container>
   );
