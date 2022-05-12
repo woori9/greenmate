@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { BottomSheet } from 'react-spring-bottom-sheet';
 import styled from 'styled-components';
@@ -20,15 +19,15 @@ function MobileBottomSheet({
   searchResults,
   getSummaryRestau,
   summaryRestau,
+  searchPage,
+  setSearchPage,
+  getDetailRestau,
+  detailRestau,
 }) {
-  const [searchPage, setSearchPage] = useState('searchBox');
   return (
     <BottomSheet
       open
-      snapPoints={({ minHeight, maxHeight }) => [
-        minHeight + 85,
-        maxHeight - 350,
-      ]}
+      snapPoints={({ minHeight }) => [minHeight + 85]}
       blocking={false}
     >
       <BottomSheetBody>
@@ -52,10 +51,15 @@ function MobileBottomSheet({
           <SummaryInfo
             setSearchPage={setSearchPage}
             summaryRestau={summaryRestau}
+            getDetailRestau={getDetailRestau}
+            searchResults={searchResults}
           />
         ) : null}
         {searchPage === 'detail' ? (
-          <DetailInfo setSearchPage={setSearchPage} />
+          <DetailInfo
+            setSearchPage={setSearchPage}
+            detailRestau={detailRestau}
+          />
         ) : null}
       </BottomSheetBody>
     </BottomSheet>
@@ -77,6 +81,10 @@ MobileBottomSheet.propTypes = {
   ).isRequired,
   getSummaryRestau: PropTypes.func.isRequired,
   summaryRestau: PropTypes.shape().isRequired,
+  searchPage: PropTypes.string.isRequired,
+  setSearchPage: PropTypes.func.isRequired,
+  getDetailRestau: PropTypes.func.isRequired,
+  detailRestau: PropTypes.shape().isRequired,
 };
 
 export default MobileBottomSheet;

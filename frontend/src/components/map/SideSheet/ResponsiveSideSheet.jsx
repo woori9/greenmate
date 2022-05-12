@@ -11,6 +11,10 @@ function ResponsiveSideSheet({
   searchResults,
   getSummaryRestau,
   summaryRestau,
+  searchPage,
+  setSearchPage,
+  getDetailRestau,
+  detailRestau,
 }) {
   const { width } = useWindowDimensions();
   return (
@@ -30,6 +34,10 @@ function ResponsiveSideSheet({
           searchResults={searchResults}
           getSummaryRestau={getSummaryRestau}
           summaryRestau={summaryRestau}
+          searchPage={searchPage}
+          setSearchPage={setSearchPage}
+          getDetailRestau={getDetailRestau}
+          detailRestau={detailRestau}
         />
       )}
     </div>
@@ -51,6 +59,10 @@ ResponsiveSideSheet.propTypes = {
   ).isRequired,
   getSummaryRestau: PropTypes.func.isRequired,
   summaryRestau: PropTypes.shape().isRequired,
+  searchPage: PropTypes.string.isRequired,
+  setSearchPage: PropTypes.func.isRequired,
+  getDetailRestau: PropTypes.func.isRequired,
+  detailRestau: PropTypes.shape().isRequired,
 };
 
 export default ResponsiveSideSheet;

@@ -6,7 +6,6 @@ import resImg from '../../assets/logo.png';
 const Container = styled.div`
   display: flex;
   padding: 1rem 0;
-  border-bottom: 1px solid #f2f2f2;
 `;
 const Img = styled.img`
   width: 100px;
@@ -24,7 +23,7 @@ const Text = styled.div`
 const VegeTypeLst = styled.div`
   display: flex;
   .vege-type {
-    width: 35px;
+    width: 43px;
     height: 17px;
     border-radius: 15px;
     background-color: #fcb448;

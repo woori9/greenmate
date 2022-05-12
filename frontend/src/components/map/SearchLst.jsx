@@ -28,8 +28,14 @@ const Summary = styled.div`
   display: flex;
   flex-direction: column;
   padding-bottom: 4rem;
+  .no-content {
+    padding-top: 4rem;
+    margin: 0 auto;
+  }
 `;
-const SummaryContainer = styled.div``;
+const SummaryContainer = styled.div`
+  border-bottom: 1px solid #f2f2f2;
+`;
 
 function SearchLst({
   getSummaryRestau,
@@ -39,10 +45,7 @@ function SearchLst({
 }) {
   const { width } = useWindowDimensions();
   const ArrayResults = Object.values(searchResults);
-  const isMobileAction = inputRestauPk => {
-    getSummaryRestau(inputRestauPk);
-    setSearchPage('summary');
-  };
+
   return (
     <>
       <SearchHeader>
@@ -56,18 +59,26 @@ function SearchLst({
         <CloseIcon onClick={() => setSearchPage('searchBox')} />
       </SearchHeader>
       <Summary>
-        {ArrayResults.map(arrayResult => (
-          <SummaryContainer
-            key={arrayResult.id}
-            onClick={() =>
-              width > 1024
-                ? setSearchPage('detail')
-                : isMobileAction(arrayResult.id)
-            }
-          >
-            <RestaurantInfoCard arrayResult={arrayResult} />
-          </SummaryContainer>
-        ))}
+        {ArrayResults.length ? (
+          <>
+            {ArrayResults.map(arrayResult => (
+              <SummaryContainer
+                key={arrayResult.id}
+                onClick={() =>
+                  width > 1024
+                    ? setSearchPage('detail')
+                    : getSummaryRestau(arrayResult.id)
+                }
+              >
+                <RestaurantInfoCard arrayResult={arrayResult} />
+              </SummaryContainer>
+            ))}
+          </>
+        ) : (
+          <div className="no-content">
+            <p>검색결과가 없습니다</p>
+          </div>
+        )}
       </Summary>
     </>
   );
