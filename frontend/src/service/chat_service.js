@@ -25,7 +25,10 @@ const signInFirebase = async payload => {
   const { id } = payload;
   const userRef = doc(db, 'users', id);
   const docSnap = await getDoc(userRef);
-  if (docSnap.exists()) return;
+  if (docSnap.exists()) {
+    alert('id가 겹치는 회원이 있습니다.');
+    return;
+  }
 
   try {
     await setDoc(doc(db, 'users', id), payload);
@@ -38,6 +41,7 @@ const addRoomToUser = async (userId, chatRoomId, type) => {
   const userRoomRef = doc(db, 'users', userId, 'rooms', chatRoomId);
   await setDoc(userRoomRef, {
     countUnreadMessage: 0,
+    joinDate: new Date(),
     type,
   });
 };
@@ -49,7 +53,6 @@ const activateChatRoom = async (userId, chatRoomId) => {
   });
 };
 
-// 채팅방이 unmount 될 때 비활성화
 const deactivateChatRoom = async (userId, chatRoomId) => {
   console.log('deactivate ', userId, ' s', chatRoomId);
   const userRef = doc(db, 'users', userId);
@@ -152,16 +155,6 @@ const createPrivateRoom = async (pair, user) => {
       id: newRoomRef.id,
       type: 1, // type 2: moim, 1: private,
       members: [pair.id, user.id],
-      membersInfo: [
-        {
-          ...user,
-          joinDate: new Date(),
-        },
-        {
-          ...pair,
-          joinDate: new Date(),
-        },
-      ],
     };
 
     await setDoc(newRoomRef, newRoom); // 방 생성
@@ -211,20 +204,12 @@ const checkUserIsInMember = async (chatRoomId, user) => {
     await updateDoc(roomRef, {
       members: arrayUnion(user.id),
     });
-
-    await updateDoc(roomRef, {
-      membersInfo: arrayUnion({
-        ...user,
-        joinDate: new Date(),
-      }),
-    });
-
     await addRoomToUser(user.id, chatRoomId, 1);
   }
 };
 
-const joinMoimChat = async (moimId, userInfo) => {
-  console.log('JOIN MOIM CHAT', moimId, userInfo);
+const joinMoimChat = async (moimId, userId) => {
+  console.log('JOIN MOIM CHAT', moimId, userId);
   try {
     const moimRef = doc(db, 'moims', moimId);
     const docSnap = await getDoc(moimRef);
@@ -235,29 +220,18 @@ const joinMoimChat = async (moimId, userInfo) => {
 
     const { roomId } = docSnap.data();
     const roomRef = doc(db, 'rooms', roomId);
-    const { userId, nickname, vegeType } = userInfo;
-    const user = {
-      id: `${userId}`,
-      nickname,
-      vegeType,
-    };
 
     updateDoc(roomRef, {
-      members: arrayUnion(user.id),
+      members: arrayUnion(userId),
     });
-    updateDoc(roomRef, {
-      membersInfo: arrayUnion({
-        ...user,
-        joinDate: new Date(),
-      }),
-    });
-    addRoomToUser(user.id, roomId, 2);
+    addRoomToUser(userId, roomId, 2);
   } catch (e) {
     throw new Error(e);
   }
 };
 
 const createMoimChat = (moimId, userInfo) => {
+  // veteType이 undefined면 에러
   const user = formatUserInfo(userInfo);
   try {
     // new chat room id
@@ -271,12 +245,6 @@ const createMoimChat = (moimId, userInfo) => {
     const newRoom = {
       id: newRoomRef.id,
       members: [user.id],
-      membersInfo: [
-        {
-          ...user,
-          joinDate: new Date(),
-        },
-      ],
       type: 2, // type 1: private 2: moim
     };
 
@@ -315,15 +283,11 @@ const excludeFromChatRoom = async (moimId, userId) => {
 
     const { roomId } = docSnap.data();
     const roomRef = doc(db, 'rooms', roomId);
-    const { membersInfo } = (await getDoc(roomRef)).data();
 
     updateDoc(roomRef, {
       members: arrayRemove(userId),
     });
 
-    updateDoc(roomRef, {
-      membersInfo: membersInfo.filter(member => member.id !== userId),
-    });
     deleteRoomFromUser(roomId, userId);
   } catch (e) {
     throw new Error(e);
