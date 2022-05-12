@@ -92,18 +92,14 @@ const sendMessage = async (roomId, content, user) => {
   }
 };
 
-const getCurrentMembers = async chatRoomId => {
-  const roomRef = doc(db, 'rooms', chatRoomId);
-  const docSnap = await getDoc(roomRef);
-  const { members } = docSnap.data();
-  return members;
-};
-
 const increaseUnreadMessage = async (chatRoomId, memberId) => {
-  console.log('increase member', memberId, 's unread message');
   const userRef = doc(db, 'users', memberId);
   const snapShot = await getDoc(userRef);
   const { activatedChatRooms } = snapShot.data();
+
+  // activatedChatRooms 가 한번도 조작되지 않았다면 undefined
+  if (!activatedChatRooms || !activatedChatRooms.length) return;
+
   const userRoomRef = doc(db, 'users', memberId, 'rooms', chatRoomId);
 
   if (!activatedChatRooms.includes(chatRoomId)) {
@@ -342,7 +338,6 @@ export {
   getMoimChatRoom,
   checkUserIsInMember,
   createMoimChat,
-  getCurrentMembers,
   increaseUnreadMessage,
   resetUnreadMessage,
   saveNotification,
