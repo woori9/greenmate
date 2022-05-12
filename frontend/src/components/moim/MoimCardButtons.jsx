@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { categoryAtom } from '../../atoms/moim';
 import { cancleApplyMoim, exitMoim } from '../../api/moim';
+import { excludeFromChatRoom } from '../../service/chat_service';
+import useUserInfo from '../../hooks/useUserInfo';
 
 const ButtonDiv = styled.div`
   display: flex;
@@ -47,13 +49,15 @@ function MoimCardButtons({ moimId, mateId, mateList, setNeedUpdate }) {
       <ButtonDiv>
         <Button
           type="button"
-          onClick={() =>
+          onClick={() => {
             exitMoim(
               mateId,
               () => setNeedUpdate(prev => prev + 1),
               err => console.log(err),
-            )
-          }
+            );
+
+            excludeFromChatRoom(`${moimId}`, `${useUserInfo.id}`);
+          }}
         >
           참여 취소
         </Button>

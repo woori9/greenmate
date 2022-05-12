@@ -139,6 +139,8 @@ function ManageMember() {
                       component: (
                         <ConfirmExitMember
                           mateId={member.id}
+                          userId={member.userId}
+                          moimId={moimId}
                           setNeedUpdate={setNeedUpdate}
                         />
                       ),

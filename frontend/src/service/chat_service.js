@@ -14,6 +14,7 @@ import {
   orderBy,
   onSnapshot,
   increment,
+  deleteDoc,
 } from 'firebase/firestore';
 import app from './firebase';
 import formatUserInfo from '../utils/formatUserInfo';
@@ -298,6 +299,37 @@ const saveNotification = async (userId, payload) => {
   await addDoc(notificationRef, notification);
 };
 
+const deleteRoomFromUser = async (roomId, userId) => {
+  const userRoomRef = doc(db, 'users', userId, 'rooms', roomId);
+  await deleteDoc(userRoomRef);
+};
+
+const excludeFromChatRoom = async (moimId, userId) => {
+  try {
+    const moimRef = doc(db, 'moims', moimId);
+    const docSnap = await getDoc(moimRef);
+    if (!docSnap.exists()) {
+      alert('해당 모임이 존재하지 않습니다.');
+      return;
+    }
+
+    const { roomId } = docSnap.data();
+    const roomRef = doc(db, 'rooms', roomId);
+    const { membersInfo } = (await getDoc(roomRef)).data();
+
+    updateDoc(roomRef, {
+      members: arrayRemove(userId),
+    });
+
+    updateDoc(roomRef, {
+      membersInfo: membersInfo.filter(member => member.id !== userId),
+    });
+    deleteRoomFromUser(roomId, userId);
+  } catch (e) {
+    throw new Error(e);
+  }
+};
+
 export {
   signInFirebase,
   sendMessage,
@@ -314,4 +346,5 @@ export {
   resetUnreadMessage,
   saveNotification,
   joinMoimChat,
+  excludeFromChatRoom,
 };
