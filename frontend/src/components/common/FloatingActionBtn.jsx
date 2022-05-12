@@ -24,6 +24,10 @@ const FloatButton = styled.button`
       background-color: #fcb448;
       border: none;
     `}
+
+  @media screen and (min-width: 1025px) {
+    bottom: 2rem;
+  }
 `;
 
 function FloatingActionBtn({ isForMoim }) {

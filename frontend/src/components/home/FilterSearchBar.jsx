@@ -8,6 +8,10 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import SearchIcon from '@mui/icons-material/Search';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import { useAtom } from 'jotai';
+import { moimListAtom } from '../../atoms/moim';
+import { searchMoim } from '../../api/moim';
+import { snakeToCamel } from '../../utils/formatKey';
 
 const Container = styled.div`
   @media screen and (min-width: 1025px) {
@@ -15,7 +19,7 @@ const Container = styled.div`
     justify-content: space-between;
 
     .MuiInputBase-fullWidth {
-      width: 25rem;
+      width: 30rem;
     }
   }
 `;
@@ -23,23 +27,42 @@ const Container = styled.div`
 function FilterSearchBar({ searchKeyword, setSearchKeyword }) {
   const [period, setPeriod] = useState(0);
   const [day, setDay] = useState(0);
+  const [, setMoimList] = useAtom(moimListAtom);
+
+  function apiSearch(periodInput, dayInput) {
+    searchMoim(
+      searchKeyword,
+      periodInput > 0 ? periodInput : null,
+      dayInput > 0 ? dayInput : null,
+      res => {
+        const formattedData = res.data.map(item => ({
+          ...snakeToCamel(item),
+          time: new Date(item.time),
+        }));
+        setMoimList(formattedData);
+      },
+      err => console.log(err),
+    );
+  }
 
   function handlePeriodChange(e) {
     setPeriod(e.target.value);
+    apiSearch(e.target.value > 0 ? e.target.value : undefined, day);
   }
 
   function handleDayChange(e) {
     setDay(e.target.value);
-  }
-
-  function onSearchKeyUp(e) {
-    if (e.keyCode === 13 && searchKeyword.length > 0) {
-      console.log('ok');
-    }
+    apiSearch(period, e.target.value > 0 ? e.target.value : undefined);
   }
 
   function handleKeywordChange(e) {
     setSearchKeyword(e.target.value);
+  }
+
+  function onSearchKeyUp(e) {
+    if (e.keyCode === 13 && searchKeyword.length > 0) {
+      apiSearch();
+    }
   }
 
   return (
@@ -101,6 +124,7 @@ function FilterSearchBar({ searchKeyword, setSearchKeyword }) {
         }}
         sx={{
           width: '18rem',
+          maxWidth: '100%',
           borderRadius: '15px',
         }}
       />
