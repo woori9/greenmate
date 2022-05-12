@@ -42,6 +42,7 @@ function SearchLst({
   searchResults,
   keyword,
   setSearchPage,
+  markingAllRestau,
 }) {
   const { width } = useWindowDimensions();
   const ArrayResults = Object.values(searchResults);
@@ -56,7 +57,12 @@ function SearchLst({
             <p className="search-cnt">{searchResults.length}개의 검색결과</p>
           </div>
         </div>
-        <CloseIcon onClick={() => setSearchPage('searchBox')} />
+        <CloseIcon
+          onClick={() => {
+            setSearchPage('searchBox');
+            markingAllRestau();
+          }}
+        />
       </SearchHeader>
       <Summary>
         {ArrayResults.length ? (
@@ -96,6 +102,7 @@ SearchLst.propTypes = {
     }),
   ).isRequired,
   getSummaryRestau: PropTypes.func.isRequired,
+  markingAllRestau: PropTypes.func.isRequired,
 };
 
 export default SearchLst;

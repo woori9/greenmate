@@ -54,38 +54,6 @@ function setMapCurrentPosition() {
     alert('위치 정보 수집에 동의해주세요');
   }
 }
-// async function markingAllRestau() {
-//   const container = document.getElementById('myMap'); // 지도를 담을 영역의 DOM 레퍼런스
-//   const options = {
-//     center: new kakao.maps.LatLng(37.4989043009984, 127.0321282915444), // 지도의 중심좌표(필수):LatLng(위도_latitude, 경도, longitude)
-//     level: 3, // 지도의 레벨(확대, 축소 정도)
-//   };
-//   const mapContainer = new kakao.maps.Map(container, options); // 지도 생성 및 객체 리턴
-//   // 지도에 마킹하기
-//   // 식당 리스트
-//   const restauAllLst = await apiGetAllRestau();
-//   const imgSrc = mapPinImg;
-//   for (let i = 0; i < restauAllLst.length; i += 1) {
-//     const imgSize = new kakao.maps.Size(80, 80);
-//     const imgOption = { offset: new kakao.maps.Point(57, 100) };
-//     const markerImg = new kakao.maps.MarkerImage(imgSrc, imgSize, imgOption);
-//     const latLng = new kakao.maps.LatLng(
-//       restauAllLst[i].latitude,
-//       restauAllLst[i].longitude,
-//     );
-//     const marker = new kakao.maps.Marker({
-//       map: mapContainer,
-//       position: latLng,
-//       title: restauAllLst[i].title,
-//       image: markerImg,
-//     });
-//     // 클릭이벤트
-//     kakao.maps.event.addListener(marker, 'click', function () {
-//       console.log(restauAllLst[i].id);
-//       console.log(restauAllLst[i].name);
-//     });
-//   }
-// }
 async function placesSearchCB(data, status) {
   const container = document.getElementById('myMap'); // 지도를 담을 영역의 DOM 레퍼런스
   const options = {
@@ -144,7 +112,7 @@ function Map() {
       () => alert('검색에 실패했습니다'),
     );
   };
-  async function markingAllRestau() {
+  const markingAllRestau = async () => {
     const container = document.getElementById('myMap'); // 지도를 담을 영역의 DOM 레퍼런스
     const options = {
       center: new kakao.maps.LatLng(37.4989043009984, 127.0321282915444), // 지도의 중심좌표(필수):LatLng(위도_latitude, 경도, longitude)
@@ -174,7 +142,7 @@ function Map() {
         getSummaryRestau(restauAllLst[i].id);
       });
     }
-  }
+  };
   useEffect(() => {
     markingAllRestau();
   }, []);
@@ -193,6 +161,7 @@ function Map() {
         setSearchPage={setSearchPage}
         getDetailRestau={getDetailRestau}
         detailRestau={detailRestau}
+        markingAllRestau={markingAllRestau}
       />
       <KakaoMap id="myMap" />
       <BoxMyLocationIcon onClick={() => setMapCurrentPosition()}>

@@ -15,6 +15,7 @@ function ResponsiveSideSheet({
   setSearchPage,
   getDetailRestau,
   detailRestau,
+  markingAllRestau,
 }) {
   const { width } = useWindowDimensions();
   return (
@@ -38,6 +39,7 @@ function ResponsiveSideSheet({
           setSearchPage={setSearchPage}
           getDetailRestau={getDetailRestau}
           detailRestau={detailRestau}
+          markingAllRestau={markingAllRestau}
         />
       )}
     </div>
@@ -63,6 +65,7 @@ ResponsiveSideSheet.propTypes = {
   setSearchPage: PropTypes.func.isRequired,
   getDetailRestau: PropTypes.func.isRequired,
   detailRestau: PropTypes.shape().isRequired,
+  markingAllRestau: PropTypes.func.isRequired,
 };
 
 export default ResponsiveSideSheet;

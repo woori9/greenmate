@@ -23,6 +23,7 @@ function MobileBottomSheet({
   setSearchPage,
   getDetailRestau,
   detailRestau,
+  markingAllRestau,
 }) {
   return (
     <BottomSheet
@@ -45,6 +46,7 @@ function MobileBottomSheet({
             setSearchPage={setSearchPage}
             searchResults={searchResults}
             getSummaryRestau={getSummaryRestau}
+            markingAllRestau={markingAllRestau}
           />
         ) : null}
         {searchPage === 'summary' ? (
@@ -53,6 +55,7 @@ function MobileBottomSheet({
             summaryRestau={summaryRestau}
             getDetailRestau={getDetailRestau}
             searchResults={searchResults}
+            markingAllRestau={markingAllRestau}
           />
         ) : null}
         {searchPage === 'detail' ? (
@@ -85,6 +88,7 @@ MobileBottomSheet.propTypes = {
   setSearchPage: PropTypes.func.isRequired,
   getDetailRestau: PropTypes.func.isRequired,
   detailRestau: PropTypes.shape().isRequired,
+  markingAllRestau: PropTypes.func.isRequired,
 };
 
 export default MobileBottomSheet;

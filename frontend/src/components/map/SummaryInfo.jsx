@@ -31,6 +31,7 @@ function SummaryInfo({
   setSearchPage,
   summaryRestau,
   getDetailRestau,
+  markingAllRestau,
 }) {
   const [newBookMark, setNewBookMark] = useState(summaryRestau.is_like);
   function postLikeRestau() {
@@ -47,6 +48,7 @@ function SummaryInfo({
               setSearchPage('searchLst');
             } else {
               setSearchPage('searchBox');
+              markingAllRestau();
             }
           }}
         />
@@ -80,6 +82,7 @@ SummaryInfo.propTypes = {
       score: PropTypes.number.isRequired,
     }),
   ).isRequired,
+  markingAllRestau: PropTypes.func.isRequired,
 };
 
 export default SummaryInfo;
