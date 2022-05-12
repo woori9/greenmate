@@ -199,7 +199,7 @@ def get_finished_moim(request):
 def search_moim(request):
     '''
     GET: 모임 검색
-        {"word": "검색어"}
+        {"word": "검색어", "period": "기간", "day": "요일"}
     '''
     user = get_request_user(request)
     if not user:
@@ -208,38 +208,20 @@ def search_moim(request):
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
 
     word = request.GET.get('word', None)
+    period = request.GET.get('period', None)
+    day = request.GET.get('day', None)
     q = Q()
     if word:
         q = Q(author__nickname__icontains=word)
         q |= Q(restaurant__restaurantinfo__name__icontains=word)  
         q |= Q(restaurant__restaurantinfo__address__icontains=word)  
-    q &= Q(status=0)   
-    moim_list = Moim.objects.filter(q).distinct().order_by('time')
-    serializer = MoimSimpleSerializer(moim_list, context={'user': user}, many=True)
-    return Response(serializer.data)
-
-@api_view(['GET'])
-def filter_moim(request):
-    '''
-    GET: 모임 필터
-        {"period": "기간", "day": "요일"}
-    '''
-    user = get_request_user(request)
-    if not user:
-        return Response(status=HTTP_401_UNAUTHORIZED)
-    elif user == 'EXPIRED_TOKEN':
-        return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
-
-    period = request.GET.get('period', None)
-    day = request.GET.get('day', None)
-    q = Q(status=0)
-
     if period:
         startdate = datetime.datetime.today()
         enddate = startdate + datetime.timedelta(days=int(period))
         q &= Q(time__range=[startdate, enddate])   
     if day:
-        q &= Q(time__week_day=int(day))     
-    moim_list = Moim.objects.filter(q).order_by('time')
+        q &= Q(time__week_day=int(day)) 
+    q &= Q(status=0)   
+    moim_list = Moim.objects.filter(q).distinct().order_by('time')
     serializer = MoimSimpleSerializer(moim_list, context={'user': user}, many=True)
     return Response(serializer.data)
