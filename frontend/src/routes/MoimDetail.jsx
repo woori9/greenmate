@@ -49,6 +49,7 @@ const OrangeBack = styled.div`
 
   @media screen and (min-width: 1025px) {
     top: 102px;
+    height: 9rem;
   }
 `;
 
@@ -69,18 +70,18 @@ const MainBox = styled.div`
   }
 
   p {
-    margin: 1.5rem 0 1.2rem 0;
+    margin: 1.8rem 0 1.2rem 0;
     order: 1;
   }
 
   h1 {
     font-size: 1.2rem;
-    margin-bottom: 1.2rem;
+    margin-bottom: 1.8rem;
     order: 2;
   }
 
   @media screen and (min-width: 1025px) {
-    margin-top: calc(112px + 2rem);
+    margin-top: calc(112px + 4rem);
   }
 `;
 

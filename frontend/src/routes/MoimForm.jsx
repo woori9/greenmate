@@ -22,14 +22,20 @@ const Container = styled.div`
   }
 
   @media screen and (min-width: 1025px) {
-    margin: 60px 0 0 130px;
-    padding: 0 14rem;
+    margin: 60px 17rem 0 calc(130px + 17rem);
+    padding: 3rem;
+    border: 1px solid #a9a9a9;
+    border-radius: 5px;
   }
 `;
 
 const Form = styled.form`
   display: flex;
   flex-direction: column;
+
+  .form-title {
+    margin-bottom: 2rem;
+  }
 
   label {
     margin-top: 1rem;
@@ -137,6 +143,7 @@ function MoimForm() {
     <Container>
       {width > 1024 ? <DesktopNavbar /> : <GoBackBar title="메이트 구하기" />}
       <Form>
+        {width > 1024 && <h1 className="form-title">메이트 구하기</h1>}
         <label htmlFor="title">모임 제목</label>
         <TextField
           id="title"
