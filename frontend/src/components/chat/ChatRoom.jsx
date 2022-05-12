@@ -46,11 +46,12 @@ function ChatRoom({ selectedChat, isFromChatPage }) {
   const location = useLocation();
   const user = {
     id: '1',
-    veganType: 1,
+    vegeType: 1,
     nickname: '1번유저',
   };
 
   const currentChat = isFromChatPage ? selectedChat : location.state;
+  // const joinDate = currentChat.membersInfo.find()
 
   const handleSend = async () => {
     const content = messageRef.current.value;
@@ -78,7 +79,7 @@ function ChatRoom({ selectedChat, isFromChatPage }) {
       );
     };
 
-    const unsubscribe = getMessages(currentChat.id, callback);
+    const unsubscribe = getMessages(currentChat, callback);
     activateChatRoom(user.id, currentChat.id);
     resetUnreadMessage(user.id, currentChat.id);
 
@@ -119,7 +120,7 @@ ChatRoom.propTypes = {
       PropTypes.shape({
         id: PropTypes.string,
         nickname: PropTypes.string,
-        veganType: PropTypes.number,
+        vegeType: PropTypes.number,
         joinDate: PropTypes.shape({
           nanoseconds: PropTypes.number,
           seconds: PropTypes.number,

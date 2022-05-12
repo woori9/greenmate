@@ -26,7 +26,7 @@ import BottomSheetBase from './components/common/BottomSheetBase';
 import ChatRoom from './components/chat/ChatRoom';
 import Test from './routes/Test';
 import { checkToken, onMessageListener } from './service/notification_service';
-import useNotificationStatus from './utils/permision';
+import useNotificationStatus from './hooks/useNotification';
 
 function App() {
   const [isTokenFound, setIsTokenFound] = useState(false);

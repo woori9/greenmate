@@ -10,6 +10,7 @@ import ConfirmExitMember from '../components/moim/ConfirmExitMember';
 import { openSheetAtom } from '../atoms/bottomSheet';
 import { getMoimDetail, acceptGuest, declineGuest } from '../api/moim';
 import { snakeToCamel } from '../utils/formatKey';
+import { joinMoimChat } from '../service/chat_service';
 import useWindowDimensions from '../utils/windowDimension';
 
 const Container = styled.div`
@@ -124,7 +125,13 @@ function ManageMember() {
                   <button type="button" onClick={() => decline(member.id)}>
                     거절
                   </button>
-                  <button type="button" onClick={() => accept(member.id)}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      accept(member.id);
+                      joinMoimChat(moimId, member);
+                    }}
+                  >
                     수락
                   </button>
                 </div>
