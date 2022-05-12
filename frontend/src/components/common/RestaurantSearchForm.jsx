@@ -31,6 +31,11 @@ const SearchList = styled.ul`
     &:not(:last-child) {
       border-bottom: 1px solid #a9a9a9;
     }
+
+    p:last-child {
+      color: #a
+      font-size: 0.8rem;
+    }
   }
 `;
 
@@ -42,36 +47,6 @@ function RestaurantSearchForm({
 }) {
   const [isSearch, setIsSearch] = useState(false);
   const [searchResult, setSearchResult] = useState([]);
-
-  // const searchResult = [
-  //   {
-  //     id: 1,
-  //     resInfo: {
-  //       name: '검색 결과 1',
-  //       address: '대전시 유성구 봉명동',
-  //       menus: '김밥',
-  //       vegeType: 2,
-  //     },
-  //   },
-  //   {
-  //     id: 2,
-  //     resInfo: {
-  //       name: '검색 결과 2',
-  //       address: '대전시 유성구 봉명동',
-  //       menus: '김밥',
-  //       vegeType: 3,
-  //     },
-  //   },
-  //   {
-  //     id: 3,
-  //     resInfo: {
-  //       name: '검색 결과 3',
-  //       address: '대전시 유성구 봉명동',
-  //       menus: '김밥',
-  //       vegeType: 4,
-  //     },
-  //   },
-  // ];
 
   function handleKeyUp(e) {
     if (e.keyCode === 13 && searchKeyword.length > 0) {
@@ -124,7 +99,8 @@ function RestaurantSearchForm({
                     setIsSearch(false);
                   }}
                 >
-                  {searchItem.resInfo.name}
+                  <p>{searchItem.resInfo.name}</p>
+                  <p>{searchItem.resInfo.address}</p>
                 </li>
               ))
             ) : (
