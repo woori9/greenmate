@@ -12,13 +12,23 @@ const BottomSheetBody = styled.div`
   padding: 0 1rem;
 `;
 
-function MobileBottomSheet({ setMapSearchKeyword, keyword, setKeyword }) {
+function MobileBottomSheet({
+  getSearchRestau,
+  setMapSearchKeyword,
+  keyword,
+  setKeyword,
+  searchResults,
+  getSummaryRestau,
+  summaryRestau,
+}) {
   const [searchPage, setSearchPage] = useState('searchBox');
-
   return (
     <BottomSheet
       open
-      snapPoints={({ minHeight }) => [minHeight + 85]}
+      snapPoints={({ minHeight, maxHeight }) => [
+        minHeight + 85,
+        maxHeight - 350,
+      ]}
       blocking={false}
     >
       <BottomSheetBody>
@@ -27,13 +37,22 @@ function MobileBottomSheet({ setMapSearchKeyword, keyword, setKeyword }) {
             setMapSearchKeyword={setMapSearchKeyword}
             setSearchPage={setSearchPage}
             setKeyword={setKeyword}
+            getSearchRestau={getSearchRestau}
           />
         ) : null}
         {searchPage === 'searchLst' ? (
-          <SearchLst keyword={keyword} setSearchPage={setSearchPage} />
+          <SearchLst
+            keyword={keyword}
+            setSearchPage={setSearchPage}
+            searchResults={searchResults}
+            getSummaryRestau={getSummaryRestau}
+          />
         ) : null}
         {searchPage === 'summary' ? (
-          <SummaryInfo setSearchPage={setSearchPage} />
+          <SummaryInfo
+            setSearchPage={setSearchPage}
+            summaryRestau={summaryRestau}
+          />
         ) : null}
         {searchPage === 'detail' ? (
           <DetailInfo setSearchPage={setSearchPage} />
@@ -46,6 +65,18 @@ MobileBottomSheet.propTypes = {
   setMapSearchKeyword: PropTypes.func.isRequired,
   keyword: PropTypes.string.isRequired,
   setKeyword: PropTypes.func.isRequired,
+  getSearchRestau: PropTypes.func.isRequired,
+  searchResults: PropTypes.arrayOf(
+    PropTypes.shape({
+      category: PropTypes.number.isRequired,
+      id: PropTypes.number.isRequired,
+      is_like: PropTypes.bool.isRequired,
+      res_info: PropTypes.shape(),
+      score: PropTypes.number.isRequired,
+    }),
+  ).isRequired,
+  getSummaryRestau: PropTypes.func.isRequired,
+  summaryRestau: PropTypes.shape().isRequired,
 };
 
 export default MobileBottomSheet;

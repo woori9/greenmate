@@ -22,17 +22,17 @@ const BookMark = styled.div`
   }
 `;
 
-function SummaryInfo({ setSearchPage }) {
-  const marked = true;
+function SummaryInfo({ setSearchPage, summaryRestau }) {
+  console.log(summaryRestau);
   return (
     <>
       <CloseButton>
         <CloseIcon onClick={() => setSearchPage('searchLst')} />
       </CloseButton>
       <Summary onClick={() => setSearchPage('detail')}>
-        <RestaurantInfoCard />
+        <RestaurantInfoCard arrayResult={summaryRestau} />
         <BookMark>
-          {marked ? (
+          {summaryRestau.is_like ? (
             <BookmarkIcon className="bookmark" />
           ) : (
             <BookmarkBorderOutlinedIcon className="bookmark" />
@@ -45,6 +45,7 @@ function SummaryInfo({ setSearchPage }) {
 }
 SummaryInfo.propTypes = {
   setSearchPage: PropTypes.func.isRequired,
+  summaryRestau: PropTypes.shape().isRequired,
 };
 
 export default SummaryInfo;

@@ -14,7 +14,7 @@ export async function apiGetAllRestau() {
 /* 식당 검색 결과 */
 export function apiGetSearchRestau(data, res, err) {
   apiInstance
-    .get(`/greenmates/restaurant/search/?word=${data.keyword}/`)
+    .get(`/greenmates/restaurant/search/?word=${data.keyword}`)
     .then(res)
     .catch(err);
 }

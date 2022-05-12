@@ -26,13 +26,23 @@ const SearchHeader = styled.div`
 `;
 const Summary = styled.div`
   display: flex;
-  justify-content: space-between;
-  border-bottom: 1px solid #f2f2f2;
+  flex-direction: column;
+  padding-bottom: 4rem;
 `;
+const SummaryContainer = styled.div``;
 
-function SearchLst({ keyword, setSearchPage }) {
+function SearchLst({
+  getSummaryRestau,
+  searchResults,
+  keyword,
+  setSearchPage,
+}) {
   const { width } = useWindowDimensions();
-
+  const ArrayResults = Object.values(searchResults);
+  const isMobileAction = inputRestauPk => {
+    getSummaryRestau(inputRestauPk);
+    setSearchPage('summary');
+  };
   return (
     <>
       <SearchHeader>
@@ -40,17 +50,24 @@ function SearchLst({ keyword, setSearchPage }) {
           <SearchIcon className="search-icon" />
           <div>
             <p className="search-keyword">{keyword}</p>
-            <p className="search-cnt">20개의 검색결과</p>
+            <p className="search-cnt">{searchResults.length}개의 검색결과</p>
           </div>
         </div>
         <CloseIcon onClick={() => setSearchPage('searchBox')} />
       </SearchHeader>
-      <Summary
-        onClick={() =>
-          width > 1024 ? setSearchPage('detail') : setSearchPage('summary')
-        }
-      >
-        <RestaurantInfoCard />
+      <Summary>
+        {ArrayResults.map(arrayResult => (
+          <SummaryContainer
+            key={arrayResult.id}
+            onClick={() =>
+              width > 1024
+                ? setSearchPage('detail')
+                : isMobileAction(arrayResult.id)
+            }
+          >
+            <RestaurantInfoCard arrayResult={arrayResult} />
+          </SummaryContainer>
+        ))}
       </Summary>
     </>
   );
@@ -58,6 +75,16 @@ function SearchLst({ keyword, setSearchPage }) {
 SearchLst.propTypes = {
   setSearchPage: PropTypes.func.isRequired,
   keyword: PropTypes.string.isRequired,
+  searchResults: PropTypes.arrayOf(
+    PropTypes.shape({
+      category: PropTypes.number.isRequired,
+      id: PropTypes.number.isRequired,
+      is_like: PropTypes.bool.isRequired,
+      res_info: PropTypes.shape(),
+      score: PropTypes.number.isRequired,
+    }),
+  ).isRequired,
+  getSummaryRestau: PropTypes.func.isRequired,
 };
 
 export default SearchLst;
