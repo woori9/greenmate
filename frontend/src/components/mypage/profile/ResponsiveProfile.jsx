@@ -1,24 +1,46 @@
-import PropTypes from 'prop-types';
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import MobileProfile from './MobileProfile';
 import DesktopProfile from './DesktopProfile';
 import useWindowDimensions from '../../../utils/windowDimension';
+import { apiGetProfileInfo } from '../../../api/mypage';
 
-function ResponsiveProfile({ userInfo }) {
+function ResponsiveProfile() {
   const { width } = useWindowDimensions();
   const isDesktop = true;
+  const [profileInfo, setProfileInfo] = useState({});
+  const { userPk } = useParams();
+  const getProfileInfo = () => {
+    apiGetProfileInfo(
+      { userId: userPk },
+      res => {
+        setProfileInfo(res.data);
+      },
+      err => {
+        console.log(err);
+      },
+    );
+  };
+  useEffect(() => {
+    getProfileInfo();
+  }, []);
   return (
     <div>
       {width > 1024 ? (
-        <DesktopProfile userInfo={userInfo} isDesktop={isDesktop} />
+        <DesktopProfile
+          profileInfo={profileInfo}
+          isDesktop={isDesktop}
+          getProfileInfo={getProfileInfo}
+        />
       ) : (
-        <MobileProfile userInfo={userInfo} isDesktop={!isDesktop} />
+        <MobileProfile
+          profileInfo={profileInfo}
+          isDesktop={!isDesktop}
+          getProfileInfo={getProfileInfo}
+        />
       )}
     </div>
   );
 }
-
-ResponsiveProfile.propTypes = {
-  userInfo: PropTypes.shape().isRequired,
-};
 
 export default ResponsiveProfile;

@@ -4,31 +4,24 @@ import { saveNotification } from './chat_service';
 
 const messaging = getMessaging(app);
 
-export const checkToken = async setTokenFound => {
-  try {
-    const currentToken = await getToken(messaging, {
-      vapidKey: process.env.REACT_APP_FIREBASE_CLOUD_MESSAGE_KEY,
-    });
-
-    if (currentToken) {
-      setTokenFound(true);
-      // Track the token -> client mapping, by sending to backend server
-      // show on the UI that permission is secured
-    } else {
-      console.log(
-        'No registration token available. Request permission to generate one.',
-      );
+export const checkToken = setTokenFound => {
+  getToken(messaging, {
+    vapidKey: process.env.REACT_APP_FIREBASE_CLOUD_MESSAGE_KEY,
+  })
+    .then(currentToken => {
+      if (currentToken) {
+        setTokenFound(true);
+      }
+    })
+    .catch(err => {
       setTokenFound(false);
-      // shows on the UI that permission is required
-    }
-  } catch (e) {
-    throw new Error(e);
-  }
+      throw new Error('An error occurred while retrieving token. ', err);
+    });
 };
 
 export const onMessageListener = userId => {
-  onMessage(messaging, payload => {
-    const { notification } = payload;
-    saveNotification(userId, notification);
+  return onMessage(messaging, payload => {
+    const { data } = payload;
+    saveNotification(userId, data);
   });
 };

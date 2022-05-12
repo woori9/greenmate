@@ -4,47 +4,50 @@ import Nickname from '../Nickname';
 import FollowerStatus from '../FollowerStatus';
 import ButtonContainer from '../ButtonContainer';
 import ProfileLst from '../ProfileLst';
-import logo from '../../../assets/logo.png';
+import ProfileImg from '../../common/ProfileImage';
 
 const Containter = styled.div`
-  padding: 78px 1rem;
+  padding: 62px 1rem;
 `;
 const NickNameBox = styled.div`
   display: flex;
   align-items: center;
+  padding: 1rem 0;
 `;
 
-const Img = styled.img`
-  width: 60px;
-  height: 60px;
-  border-radius: 20px;
-  object-fit: cover;
-  margin-right: 1rem;
-`;
 const NameNStatus = styled.div`
   display: flex;
   justify-content: space-around;
   align-items: center;
 `;
 
-function MobileProfile({ userInfo, isDesktop }) {
+function MobileProfile({ getProfileInfo, profileInfo, isDesktop }) {
+  const isBig = true;
   return (
     <Containter>
       <NameNStatus>
         <NickNameBox>
-          <Img src={logo} alt="profile-img" />
-          <Nickname userInfo={userInfo} isDesktop={isDesktop} />
+          <ProfileImg
+            className="profile-img"
+            vegeType={profileInfo.vege_type}
+            isBig={isBig}
+          />
+          <Nickname profileInfo={profileInfo} isDesktop={isDesktop} />
         </NickNameBox>
-        <FollowerStatus userInfo={userInfo} isDesktop={isDesktop} />
+        <FollowerStatus profileInfo={profileInfo} isDesktop={isDesktop} />
       </NameNStatus>
-      <ButtonContainer userInfo={userInfo} />
+      <ButtonContainer
+        getProfileInfo={getProfileInfo}
+        profileInfo={profileInfo}
+      />
       <ProfileLst />
     </Containter>
   );
 }
 MobileProfile.propTypes = {
-  userInfo: PropTypes.shape().isRequired,
+  profileInfo: PropTypes.shape().isRequired,
   isDesktop: PropTypes.bool.isRequired,
+  getProfileInfo: PropTypes.func.isRequired,
 };
 
 export default MobileProfile;

@@ -32,6 +32,8 @@ class MoimBaseSerializer(serializers.ModelSerializer):
     # 합류 중인 인원수
     def get_now_cnt(self, obj):
         now_cnt = obj.mate_set.filter(mate_status=1).count()
+        if obj.status == 3:
+            now_cnt = obj.head_cnt
         return now_cnt
        
 # 기본 모임 정보 + 식당정보 (모임 list) 

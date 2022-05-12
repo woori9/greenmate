@@ -8,25 +8,31 @@ importScripts(
   'https://www.gstatic.com/firebasejs/9.6.11/firebase-messaging-compat.js',
 );
 
-const firebaseConfig = {
-  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
-  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.REACT_APP_FIREBASE_APP_ID,
-};
-firebase.initializeApp(firebaseConfig);
+// Set Firebase configuration, once available
+self.addEventListener('fetch', () => {
+  const urlParams = new URLSearchParams(location.search);
+  self.firebaseConfig = Object.fromEntries(urlParams);
+});
 
+// "Default" Firebase configuration (prevents errors)
+const defaultConfig = {
+  apiKey: true,
+  projectId: true,
+  messagingSenderId: true,
+  appId: true,
+};
+
+// Initialize Firebase app
+firebase.initializeApp(self.firebaseConfig || defaultConfig);
 // Retrieve firebase messaging
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage(function (payload) {
   console.log('Received background message ', payload);
 
-  const notificationTitle = payload.notification.title;
+  const notificationTitle = payload.data.title;
   const notificationOptions = {
-    body: payload.notification.body,
+    body: payload.data.body,
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);

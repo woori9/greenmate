@@ -21,6 +21,7 @@ from rest_framework.status import (
     HTTP_405_METHOD_NOT_ALLOWED,
 )
 import datetime
+from dateutil.relativedelta import relativedelta
 from django.db.models import Q
 from django.contrib.auth import get_user_model
 from accounts.views.token import get_request_user
@@ -185,8 +186,9 @@ def get_finished_moim(request):
         return Response(status=HTTP_401_UNAUTHORIZED)
     elif user == 'EXPIRED_TOKEN':
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
-
-    moims_list = Moim.objects.filter(mate__user=user.id, mate__mate_status=4).order_by('-time')
+    
+    three_months = datetime.datetime.now() - relativedelta(months=3)
+    moims_list = Moim.objects.filter(time__gte=three_months, mate__user=user.id, mate__mate_status=4).order_by('-time')
     serializer = MoimAllSerializer(moims_list, context={'user': user}, many=True) 
     return Response(serializer.data)
 
