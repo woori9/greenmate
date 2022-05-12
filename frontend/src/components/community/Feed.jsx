@@ -19,6 +19,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
+import Input from '@mui/material/Input';
 import Comment from './Comment';
 import FeedImageCarousel from './FeedIamgeCarousel';
 import { postLike } from '../../api/community';
@@ -111,6 +112,7 @@ function Feed({ feed }) {
       </CardContent>
       <Collapse in={expanded}>
         <Comment feedId={feed.id} />
+        <Input />
       </Collapse>
     </Card>
   );

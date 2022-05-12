@@ -1,15 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 import TextField from '@mui/material/TextField';
 import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
-import { orange, grey } from '@mui/material/colors';
+import { grey } from '@mui/material/colors';
 import ParkIcon from '@mui/icons-material/Park';
 import LocalDiningIcon from '@mui/icons-material/LocalDining';
 import ScaleIcon from '@mui/icons-material/Scale';
 import RoomServiceIcon from '@mui/icons-material/RoomService';
 import AdjustIcon from '@mui/icons-material/Adjust';
 import { createFeed } from '../api/community';
+import RestaurantSearch from '../components/common/RestaurantSearch';
+import Rating from '../components/community/rating';
 
 const Form = styled.form`
   display: flex;
@@ -35,18 +37,48 @@ const Form = styled.form`
     border-radius: 5px;
     padding: 0.5rem 0;
   }
+
+  .review_margin {
+    margin-top: 20px;
+  }
+
+  .input-file-button {
+    display: flex;
+    justify-content: center;
+    left: 1rem;
+    bottom: 5rem;
+    width: 60%;
+    color: #fff;
+    font-weight: 600;
+    background-color: #fcb448;
+    border: none;
+    border-radius: 5px;
+    padding: 0.5rem 0;
+    cursor: pointer;
+  }
+  .imgInput {
+    display: none;
+  }
 `;
 
 function CommunityForm() {
   const [category, setCategory] = useState(0);
   const [content, setContent] = useState('');
   const [vegeType, setVegeType] = useState(null);
-  const [restaurantId, setRestaurantId] = useState(null);
   const [imgs, setImgs] = useState(null);
+  const [selectedRestaurantId, setSelectedRestaurantId] = useState(null);
+  const [searchKeyword, setSearchKeyword] = useState('');
   const [isCategoryClick, setIsCategoryClick] = useState(0);
   const [isVegeTypeClick, setIsVegeTypeClick] = useState(0);
+
   function handleSubmit() {
     if (category === 0 || !content || !imgs) {
+      if (isCategoryClick === 2) {
+        if (!selectedRestaurantId) {
+          alert('입력하지 않은 정보가 있습니다.');
+          return;
+        }
+      }
       alert('입력하지 않은 정보가 있습니다.');
       return;
     }
@@ -54,16 +86,13 @@ function CommunityForm() {
     formData.append('category', category);
     formData.append('content', content);
     formData.append('vege_type', vegeType);
-    formData.append('retaurant_id', restaurantId);
+    formData.append('retaurant_id', selectedRestaurantId);
     for (let i = 0; i < imgs.length; i += 1) {
       formData.append('img_path', imgs[i]);
     }
     formData.append('enctype', 'multipart/form-data');
     createFeed(formData);
   }
-  useEffect(() => {
-    setRestaurantId(1);
-  }, []);
 
   return (
     <Form>
@@ -72,7 +101,7 @@ function CommunityForm() {
         <Stack direction="column" alignItems="center">
           {isCategoryClick === 1 ? (
             <Avatar
-              sx={{ cursor: 'pointer', bgcolor: orange[300] }}
+              sx={{ cursor: 'pointer', bgcolor: '#fcb448' }}
               onClick={() => {
                 setIsCategoryClick(0);
                 setCategory(0);
@@ -96,7 +125,7 @@ function CommunityForm() {
         <Stack direction="column" alignItems="center">
           {isCategoryClick === 2 ? (
             <Avatar
-              sx={{ cursor: 'pointer', bgcolor: orange[300] }}
+              sx={{ cursor: 'pointer', bgcolor: '#fcb448' }}
               onClick={() => {
                 setIsCategoryClick(0);
                 setCategory(0);
@@ -120,7 +149,7 @@ function CommunityForm() {
         <Stack direction="column" alignItems="center">
           {isCategoryClick === 3 ? (
             <Avatar
-              sx={{ cursor: 'pointer', bgcolor: orange[300] }}
+              sx={{ cursor: 'pointer', bgcolor: '#fcb448' }}
               onClick={() => {
                 setIsCategoryClick(0);
                 setCategory(0);
@@ -144,7 +173,7 @@ function CommunityForm() {
         <Stack direction="column" alignItems="center">
           {isCategoryClick === 4 ? (
             <Avatar
-              sx={{ cursor: 'pointer', bgcolor: orange[300] }}
+              sx={{ cursor: 'pointer', bgcolor: '#fcb448' }}
               onClick={() => {
                 setIsCategoryClick(0);
                 setCategory(0);
@@ -171,7 +200,7 @@ function CommunityForm() {
         <Stack direction="column" alignItems="center">
           {isVegeTypeClick === 1 ? (
             <Avatar
-              sx={{ cursor: 'pointer', bgcolor: orange[300] }}
+              sx={{ cursor: 'pointer', bgcolor: '#fcb448' }}
               onClick={() => {
                 setIsVegeTypeClick(0);
                 setVegeType(0);
@@ -195,7 +224,7 @@ function CommunityForm() {
         <Stack direction="column" alignItems="center">
           {isVegeTypeClick === 2 ? (
             <Avatar
-              sx={{ cursor: 'pointer', bgcolor: orange[300] }}
+              sx={{ cursor: 'pointer', bgcolor: '#fcb448' }}
               onClick={() => {
                 setIsVegeTypeClick(0);
                 setVegeType(0);
@@ -219,7 +248,7 @@ function CommunityForm() {
         <Stack direction="column" alignItems="center">
           {isVegeTypeClick === 3 ? (
             <Avatar
-              sx={{ cursor: 'pointer', bgcolor: orange[300] }}
+              sx={{ cursor: 'pointer', bgcolor: '#fcb448' }}
               onClick={() => {
                 setIsVegeTypeClick(0);
                 setVegeType(0);
@@ -243,7 +272,7 @@ function CommunityForm() {
         <Stack direction="column" alignItems="center">
           {isVegeTypeClick === 4 ? (
             <Avatar
-              sx={{ cursor: 'pointer', bgcolor: orange[300] }}
+              sx={{ cursor: 'pointer', bgcolor: '#fcb448' }}
               onClick={() => {
                 setIsVegeTypeClick(0);
                 setVegeType(0);
@@ -267,7 +296,7 @@ function CommunityForm() {
         <Stack direction="column" alignItems="center">
           {isVegeTypeClick === 5 ? (
             <Avatar
-              sx={{ cursor: 'pointer', bgcolor: orange[300] }}
+              sx={{ cursor: 'pointer', bgcolor: '#fcb448' }}
               onClick={() => {
                 setIsVegeTypeClick(0);
                 setVegeType(0);
@@ -291,7 +320,7 @@ function CommunityForm() {
         <Stack direction="column" alignItems="center">
           {isVegeTypeClick === 6 ? (
             <Avatar
-              sx={{ cursor: 'pointer', bgcolor: orange[300] }}
+              sx={{ cursor: 'pointer', bgcolor: '#fcb448' }}
               onClick={() => {
                 setIsVegeTypeClick(0);
                 setVegeType(0);
@@ -313,16 +342,34 @@ function CommunityForm() {
           <p>폴로</p>
         </Stack>
       </Stack>
-      <label htmlFor="img_path">사진</label>
+      {isCategoryClick === 2 ? (
+        <div className="review_margin">
+          <RestaurantSearch
+            searchKeyword={searchKeyword}
+            setSearchKeyword={setSearchKeyword}
+            setSelectedRestaurantId={setSelectedRestaurantId}
+          />
+          <div className="review_margin">
+            <label htmlFor="rating">평점</label>
+            <Rating />
+          </div>
+        </div>
+      ) : (
+        <div />
+      )}
+      <label className="input-file-button" htmlFor="input-file">
+        사진 업로드
+      </label>
       <input
         type="file"
         multiple="multiple"
         className="imgInput"
-        id="logoImg"
+        id="input-file"
         accept="image/*"
         name="file"
         onChange={event => setImgs(event.target.files)}
       />
+      {imgs ? <p>{imgs.length}개의 사진 업로드</p> : <div />}
       <label htmlFor="content">내용</label>
       <TextField
         id="content"
