@@ -10,9 +10,7 @@ import { getMyMoimList } from '../api/moim';
 import { snakeToCamel } from '../utils/formatKey';
 
 const Container = styled.div`
-  @media screen and (max-width: 1024px) {
-    padding: 5rem 1rem 5rem 1rem;
-  }
+  padding: 5rem 1rem 5rem 1rem;
 
   @media screen and (min-width: 1025px) {
     margin: 60px 0 0 130px;
@@ -54,12 +52,7 @@ function MyMoim() {
         }));
         setMoimList(formattedData);
       },
-      err => {
-        // TODO: 백엔드에서 404 대신 빈 배열로 변경될 경우 res에서 처리
-        if (err.response.status === 404) {
-          setMoimList([]);
-        }
-      },
+      () => {},
     );
   }, [selectedCategory, needUpdate]);
 

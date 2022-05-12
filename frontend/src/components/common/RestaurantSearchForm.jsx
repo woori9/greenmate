@@ -5,11 +5,20 @@ import Input from '@mui/material/Input';
 import InputAdornment from '@mui/material/InputAdornment';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import { searchRestaurant } from '../../api/restaurant';
+import { snakeToCamel } from '../../utils/formatKey';
+
+// TODO: 테스트 필요
+
+const SearchContainer = styled.div`
+  position: relative;
+`;
 
 const SearchList = styled.ul`
   position: absolute;
+  clear: both;
   list-style-type: none;
-  width: 90%;
+  width: 100%;
   background-color: #fff;
   padding-left: 0;
   border: 1px solid #a9a9a9;
@@ -22,38 +31,43 @@ const SearchList = styled.ul`
     &:not(:last-child) {
       border-bottom: 1px solid #a9a9a9;
     }
+
+    p:last-child {
+      color: #a
+      font-size: 0.8rem;
+    }
   }
 `;
 
-function RestaurantSearch({
+function RestaurantSearchForm({
   isForUpdate,
   searchKeyword,
   setSearchKeyword,
   setSelectedRestaurantId,
 }) {
   const [isSearch, setIsSearch] = useState(false);
+  const [searchResult, setSearchResult] = useState([]);
 
-  const searchResult = [
-    { restaurantId: 1, name: '검색 결과1', lattitude: 112.2, longitude: 155.5 },
-    { restaurantId: 2, name: '검색 결과2', lattitude: 112.2, longitude: 155.5 },
-    { restaurantId: 3, name: '검색 결과3', lattitude: 112.2, longitude: 155.5 },
-    { restaurantId: 4, name: '검색 결과4', lattitude: 112.2, longitude: 155.5 },
-  ];
-
-  function onKeyUp(e) {
+  function handleKeyUp(e) {
     if (e.keyCode === 13 && searchKeyword.length > 0) {
       setIsSearch(true);
       setSearchKeyword(e.target.value);
+      searchRestaurant(
+        searchKeyword,
+        res => {
+          const formattedData = res.data.map(item => ({
+            ...snakeToCamel(item),
+          }));
+          setSearchResult(formattedData);
+        },
+        err => console.log(err),
+      );
     }
   }
 
-  function handleChange(e) {
-    setSearchKeyword(e.target.value);
-  }
-
   return (
-    <>
-      <label htmlFor="title" className="input-label">
+    <SearchContainer>
+      <label htmlFor="restaurant" className="input-label">
         장소
       </label>
       <div>
@@ -61,8 +75,8 @@ function RestaurantSearch({
           id="restaurant"
           name="restaurant"
           value={searchKeyword}
-          onChange={event => handleChange(event)}
-          onKeyUp={event => onKeyUp(event)}
+          onChange={e => setSearchKeyword(e.target.value)}
+          onKeyUp={event => handleKeyUp(event)}
           disabled={!!isForUpdate}
           margin="dense"
           startAdornment={<InputAdornment position="start">@</InputAdornment>}
@@ -78,14 +92,15 @@ function RestaurantSearch({
             {searchResult.length > 0 ? (
               searchResult.map(searchItem => (
                 <li
-                  key={searchItem.restaurantId}
+                  key={searchItem.id}
                   onClick={() => {
-                    setSelectedRestaurantId(searchItem.restaurantId);
-                    setSearchKeyword(searchItem.name);
+                    setSelectedRestaurantId(searchItem.id);
+                    setSearchKeyword(searchItem.resInfo.name);
                     setIsSearch(false);
                   }}
                 >
-                  {searchItem.name}
+                  <p>{searchItem.resInfo.name}</p>
+                  <p>{searchItem.resInfo.address}</p>
                 </li>
               ))
             ) : (
@@ -94,15 +109,15 @@ function RestaurantSearch({
           </SearchList>
         )}
       </div>
-    </>
+    </SearchContainer>
   );
 }
 
-RestaurantSearch.propTypes = {
+RestaurantSearchForm.propTypes = {
   isForUpdate: PropTypes.bool.isRequired,
   searchKeyword: PropTypes.string.isRequired,
   setSearchKeyword: PropTypes.func.isRequired,
   setSelectedRestaurantId: PropTypes.func.isRequired,
 };
 
-export default RestaurantSearch;
+export default RestaurantSearchForm;
