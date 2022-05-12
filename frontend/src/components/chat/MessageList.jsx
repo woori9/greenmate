@@ -29,7 +29,7 @@ MessageList.propTypes = {
       content: PropTypes.string,
       sentBy: PropTypes.shape({
         id: PropTypes.string,
-        veganType: PropTypes.number,
+        vegeType: PropTypes.number,
         nickname: PropTypes.string,
       }),
       sentAt: PropTypes.shape({

@@ -13,6 +13,8 @@ import { timestampNextDay, timestamp1YearLater } from '../utils/timestamp';
 import RestaurantSearch from '../components/common/RestaurantSearch';
 import GoBackBar from '../components/common/GoBackBar';
 import { createMoim, updateMoim } from '../api/moim';
+import { createMoimChat } from '../service/chat_service';
+import useUserInfo from '../hooks/useUserInfo';
 
 const Form = styled.form`
   display: flex;
@@ -51,6 +53,7 @@ function MoimForm() {
   const [content, setContent] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
+  const userInfo = useUserInfo();
 
   useEffect(() => {
     if (location.state) {
@@ -101,7 +104,11 @@ function MoimForm() {
           title,
           content,
         },
-        () => navigate('/'),
+        () => {
+          const moimIdCreated = '1';
+          createMoimChat(moimIdCreated, userInfo);
+          navigate('/');
+        },
         err => console.log(err),
       );
     }

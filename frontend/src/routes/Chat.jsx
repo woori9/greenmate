@@ -41,7 +41,7 @@ function Chat() {
 
   const user = {
     id: '1',
-    veganType: 1,
+    vegeType: 1,
     nickname: '1번유저',
   };
 
