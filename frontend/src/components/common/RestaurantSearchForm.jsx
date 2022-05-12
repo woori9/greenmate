@@ -92,7 +92,7 @@ function RestaurantSearchForm({
 
   return (
     <SearchContainer>
-      <label htmlFor="title" className="input-label">
+      <label htmlFor="restaurant" className="input-label">
         장소
       </label>
       <div>
