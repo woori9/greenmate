@@ -3,12 +3,25 @@ import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useAtom } from 'jotai';
+import DesktopNavbar from '../components/common/navbar/DesktopNavbar';
 import GoBackBar from '../components/common/GoBackBar';
 import UserInfo from '../components/moim/UserInfo';
 import ConfirmExitMember from '../components/moim/ConfirmExitMember';
 import { openSheetAtom } from '../atoms/bottomSheet';
 import { getMoimDetail, acceptGuest, declineGuest } from '../api/moim';
 import { snakeToCamel } from '../utils/formatKey';
+import useWindowDimensions from '../utils/windowDimension';
+
+const Container = styled.div`
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 5rem 1rem 5rem 1rem;
+
+  @media screen and (min-width: 1025px) {
+    margin: 112px 0 0 130px;
+    padding: 0 2rem;
+  }
+`;
 
 const MemberBox = styled.div`
   margin-bottom: 2rem;
@@ -54,6 +67,7 @@ const Ul = styled.ul`
 `;
 
 function ManageMember() {
+  const { width } = useWindowDimensions();
   const { moimId } = useParams();
   const [needUpdate, setNeedUpdate] = useState(0);
   const [waitList, setWaitList] = useState([]);
@@ -94,7 +108,8 @@ function ManageMember() {
   }, [needUpdate]);
 
   return (
-    <>
+    <Container>
+      {width > 1024 && <DesktopNavbar />}
       <GoBackBar title="멤버 관리" />
       <MemberBox>
         <h2>
@@ -144,7 +159,7 @@ function ManageMember() {
           </Ul>
         )}
       </MemberBox>
-    </>
+    </Container>
   );
 }
 

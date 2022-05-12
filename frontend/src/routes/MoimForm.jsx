@@ -17,9 +17,7 @@ import { timestampNextDay, timestamp1YearLater } from '../utils/timestamp';
 import useWindowDimensions from '../utils/windowDimension';
 
 const Container = styled.div`
-  @media screen and (max-width: 1024px) {
-    padding: 5rem 1rem 5rem 1rem;
-  }
+  padding: 5rem 1rem 5rem 1rem;
 
   @media screen and (min-width: 1025px) {
     margin: 60px 17rem 0 calc(130px + 17rem);
