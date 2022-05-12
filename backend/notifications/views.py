@@ -22,8 +22,8 @@ User = get_user_model()
 
 @api_view(['POST'])
 def create_update_token(request):
-    user = get_object_or_404(User, pk=1)
-    # user = get_request_user(request)
+    # user = get_object_or_404(User, pk=1)
+    user = get_request_user(request)
 
     if not user:
         return Response(status=HTTP_401_UNAUTHORIZED)
