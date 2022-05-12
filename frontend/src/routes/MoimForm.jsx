@@ -9,10 +9,23 @@ import Input from '@mui/material/Input';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { timestampNextDay, timestamp1YearLater } from '../utils/timestamp';
-import RestaurantSearch from '../components/common/RestaurantSearch';
+import RestaurantSearchForm from '../components/common/RestaurantSearchForm';
+import DesktopNavbar from '../components/common/navbar/DesktopNavbar';
 import GoBackBar from '../components/common/GoBackBar';
 import { createMoim, updateMoim } from '../api/moim';
+import { timestampNextDay, timestamp1YearLater } from '../utils/timestamp';
+import useWindowDimensions from '../utils/windowDimension';
+
+const Container = styled.div`
+  @media screen and (max-width: 1024px) {
+    padding: 5rem 1rem 5rem 1rem;
+  }
+
+  @media screen and (min-width: 1025px) {
+    margin: 60px 0 0 130px;
+    padding: 0 14rem;
+  }
+`;
 
 const Form = styled.form`
   display: flex;
@@ -26,21 +39,30 @@ const Form = styled.form`
     margin-bottom: 1rem;
   }
 
+  .help-text {
+    font-size: 0.7rem;
+    color: #a9a9a9;
+    margin: 0.3rem 0 1rem 0;
+  }
+
   .submit-btn {
-    position: fixed;
-    left: 1rem;
-    bottom: 5rem;
-    width: 90%;
+    width: 100%;
     color: #fff;
     font-weight: 600;
     background-color: #fcb448;
     border: none;
     border-radius: 5px;
     padding: 0.5rem 0;
+    margin-top: 1rem;
+  }
+  .mini-btn {
+    width: 4.5rem;
+    margin-left: auto;
   }
 `;
 
 function MoimForm() {
+  const { width } = useWindowDimensions();
   const [isForUpdate, setIsForUpdate] = useState(false);
   const [moimId, setMoimId] = useState(null);
   const [title, setTitle] = useState('');
@@ -80,6 +102,10 @@ function MoimForm() {
       alert('입력하지 않은 정보가 있습니다.');
       return;
     }
+    if (count < 2 || count > 1000) {
+      alert('인원은 최소 2명, 최대 1000명까지 가능합니다.');
+      return;
+    }
 
     const datetimeLocaleKo = new Date(datetimeValue);
     datetimeLocaleKo.setHours(datetimeLocaleKo.getHours() + 9);
@@ -108,8 +134,8 @@ function MoimForm() {
   }
 
   return (
-    <>
-      <GoBackBar title="메이트 구하기" />
+    <Container>
+      {width > 1024 ? <DesktopNavbar /> : <GoBackBar title="메이트 구하기" />}
       <Form>
         <label htmlFor="title">모임 제목</label>
         <TextField
@@ -121,7 +147,7 @@ function MoimForm() {
           margin="normal"
           variant="standard"
         />
-        <RestaurantSearch
+        <RestaurantSearchForm
           isForUpdate={isForUpdate}
           searchKeyword={searchKeyword}
           setSearchKeyword={setSearchKeyword}
@@ -141,9 +167,8 @@ function MoimForm() {
             renderInput={params => <TextField {...params} margin="normal" />}
           />
         </LocalizationProvider>
-        <label htmlFor="count" className="input-label">
-          인원 (본인 포함)
-        </label>
+        <label htmlFor="count">인원 (본인 포함)</label>
+        <p className="help-text">인원을 채우지 못하면 모임이 취소됩니다.</p>
         <Input
           id="count"
           name="count"
@@ -154,7 +179,9 @@ function MoimForm() {
           endAdornment={<InputAdornment position="end">명</InputAdornment>}
           inputProps={{
             min: 2,
+            max: 1000,
             'aria-label': 'count',
+            type: 'number',
           }}
           sx={{
             width: '6rem',
@@ -175,13 +202,13 @@ function MoimForm() {
         />
         <button
           type="button"
-          className="submit-btn"
+          className={`submit-btn ${width > 1024 && 'mini-btn'}`}
           onClick={() => handleSubmit()}
         >
           작성
         </button>
       </Form>
-    </>
+    </Container>
   );
 }
 

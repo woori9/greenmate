@@ -9,7 +9,7 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import CommentIcon from '@mui/icons-material/Comment';
 import styled from 'styled-components';
-import ResponsiveNavbar from '../components/common/navbar/ResponsiveNavbar';
+import DesktopNavbar from '../components/common/navbar/DesktopNavbar';
 import GoBackBar from '../components/common/GoBackBar';
 import UserInfo from '../components/moim/UserInfo';
 import ProfileImage from '../components/common/ProfileImage';
@@ -24,8 +24,8 @@ import {
 } from '../api/moim';
 import { openSheetAtom } from '../atoms/bottomSheet';
 import { userInfoAtom } from '../atoms/accounts';
-
 import { snakeToCamel } from '../utils/formatKey';
+import useWindowDimensions from '../utils/windowDimension';
 
 const Container = styled.div`
   @media screen and (max-width: 1024px) {
@@ -34,7 +34,7 @@ const Container = styled.div`
 
   @media screen and (min-width: 1025px) {
     margin: 112px 0 0 130px;
-    padding: 0 2rem;
+    padding: 0 10rem;
   }
 `;
 
@@ -77,6 +77,10 @@ const MainBox = styled.div`
     font-size: 1.2rem;
     margin-bottom: 1.2rem;
     order: 2;
+  }
+
+  @media screen and (min-width: 1025px) {
+    margin-top: calc(112px + 2rem);
   }
 `;
 
@@ -123,14 +127,7 @@ const H2 = styled.h2`
 `;
 
 const ButtonDiv = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
   position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 62px;
   border-top: 1px solid #a9a9a9;
 
   button {
@@ -143,9 +140,31 @@ const ButtonDiv = styled.div`
     border-radius: 10px;
     cursor: pointer;
   }
+
+  @media screen and (max-width: 1024px) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 62px;
+  }
+
+  @media screen and (min-width: 1025px) {
+    border-top: none;
+    bottom: 2rem;
+    right: 1rem;
+
+    button {
+      width: 10rem;
+      border-radius: 50px;
+    }
+  }
 `;
 
 function MoimDetail() {
+  const { width } = useWindowDimensions();
   const navigate = useNavigate();
   const [moimInfo, setMoimInfo] = useState({
     id: null,
@@ -247,7 +266,7 @@ function MoimDetail() {
 
   return (
     <Container>
-      <ResponsiveNavbar />
+      {width > 1024 && <DesktopNavbar />}
       <GoBackBar title="">
         {userInfo.id === moimInfo.author.id &&
           diff2hour(moimInfo.time, new Date()) &&

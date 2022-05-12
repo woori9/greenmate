@@ -17,7 +17,6 @@ const Container = styled.div`
 
   @media screen and (min-width: 1025px) {
     margin: 60px 0 0 130px;
-    /* TODO : 데스크탑 좌우 여백 통일 */
     padding: 0 2rem;
 
     .moim-card-container {
