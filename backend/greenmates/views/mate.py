@@ -228,43 +228,17 @@ def evaluate_mate(request):
         return Response(status=HTTP_401_UNAUTHORIZED)
     elif user == 'EXPIRED_TOKEN':
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
-    
-    cnt = 0
-    for review in request.data:
-        mate = get_object_or_404(Mate, pk=review['mate']) 
-        moim = mate.moim
-        
-        # 1/ 자기 자신을 평가하는 경우
-        if mate.user.pk == user.id:
-            cnt += 1
-            continue
 
-        # 2/ 이 모임에 참여한 유저가 아닌 경우,
-        user_in_moim = Mate.objects.filter(moim=moim.pk, user=user.id, mate_status=4) 
-        if len(user_in_moim) == 0:
-            cnt += 1
-            continue
-        
-        # 3/ 이미 평가한 경우
-        user_in_review = UserReview.objects.filter(mate=review['mate'], me=user.id)
-        if len(user_in_review):
-            cnt += 1
-            continue
-
-        serializer = UserReviewPostSerializer(
-            data=review, 
-            context={'user':user, 'evaluation': review['evaluation']}
+    evaluations_list = request.data
+    evaluations_dict = {x['mate']:x['evaluation'] for x in evaluations_list}
+    serializer = UserReviewPostSerializer(
+        data=evaluations_list, 
+        many=True, 
+        context={'user':user, 'evaluations': evaluations_dict}
         )
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-
-    if cnt < len(request.data):
+    if serializer.is_valid(raise_exception=True):
+        serializer.save()
         return Response(
-        data=f'{len(request.data)}개의 평가 중 {cnt}개 등록 성공',
-        status=HTTP_201_CREATED
-    )
-    
-    return Response(
-    data='접근 권한이 없습니다.',
-    status=HTTP_403_FORBIDDEN
-    )
+            status=HTTP_201_CREATED
+        )
+    return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
