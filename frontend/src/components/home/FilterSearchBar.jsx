@@ -29,32 +29,40 @@ function FilterSearchBar({ searchKeyword, setSearchKeyword }) {
   const [day, setDay] = useState(0);
   const [, setMoimList] = useAtom(moimListAtom);
 
+  function apiSearch(periodInput, dayInput) {
+    searchMoim(
+      searchKeyword,
+      periodInput > 0 ? periodInput : null,
+      dayInput > 0 ? dayInput : null,
+      res => {
+        const formattedData = res.data.map(item => ({
+          ...snakeToCamel(item),
+          time: new Date(item.time),
+        }));
+        setMoimList(formattedData);
+      },
+      err => console.log(err),
+    );
+  }
+
   function handlePeriodChange(e) {
     setPeriod(e.target.value);
+    apiSearch(e.target.value > 0 ? e.target.value : undefined, day);
   }
 
   function handleDayChange(e) {
     setDay(e.target.value);
-  }
-
-  function onSearchKeyUp(e) {
-    if (e.keyCode === 13 && searchKeyword.length > 0) {
-      searchMoim(
-        e.target.value,
-        res => {
-          const formattedData = res.data.map(item => ({
-            ...snakeToCamel(item),
-            time: new Date(item.time),
-          }));
-          setMoimList(formattedData);
-        },
-        err => console.log(err),
-      );
-    }
+    apiSearch(period, e.target.value > 0 ? e.target.value : undefined);
   }
 
   function handleKeywordChange(e) {
     setSearchKeyword(e.target.value);
+  }
+
+  function onSearchKeyUp(e) {
+    if (e.keyCode === 13 && searchKeyword.length > 0) {
+      apiSearch();
+    }
   }
 
   return (
