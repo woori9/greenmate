@@ -48,8 +48,11 @@ def get_create_moim_list(request):
         content_trans = n2mt(request.data['content'])
         if serializer.is_valid(raise_exception=True):
             serializer.save(author=author, content_trans=content_trans)
+            context = {
+                'id': serializer.data['id']
+            }
             return Response(
-                data='모임이 정상적으로 작성되었습니다.',
+                data=context,
                 status=HTTP_201_CREATED
             )
     
