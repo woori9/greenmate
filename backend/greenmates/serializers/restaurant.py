@@ -17,7 +17,7 @@ class RestaurantSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Restaurant
-        fields = ('id', 'category', 'call', 'score', 'is_like')
+        fields = ('id', 'category', 'call', 'img_url', 'score', 'is_like')
 
     def to_representation(self, instance):
         response = super().to_representation(instance)   
@@ -40,14 +40,14 @@ class RestaurantSimpleSerializer(RestaurantSerializer):
 
     class Meta:
         model = Restaurant
-        fields = ('id', 'category', 'score', 'is_like')
+        fields = ('id', 'category', 'img_url', 'score', 'is_like')
 
 
 class RestaurantDetailSerializer(RestaurantSerializer):
 
     class Meta:
         model = Restaurant
-        fields = ('id', 'category', 'call', 'score', 'is_like')
+        fields = ('id', 'category', 'img_url', 'call', 'score', 'is_like')
 
     def to_representation(self, instance):
         from .feed import FeedReviewSerializer
@@ -94,11 +94,14 @@ class RestaurantMoimDataSerializer(serializers.ModelSerializer):
 
 
 class RestaurantLikeSerializer(serializers.ModelSerializer):
-    
+    img_url = serializers.SerializerMethodField()
+
     class Meta:
         model = RestaurantInfo
-        fields = ('restaurant', 'name', 'vege_types')
+        fields = ('restaurant', 'name', 'vege_types', 'img_url')
 
+    def get_img_url(self, obj):
+        return Restaurant.objects.filter(pk=obj.restaurant.pk).values('img_url')[0]['img_url']
 
 class RestaurantNameSerializer(serializers.ModelSerializer):
 
