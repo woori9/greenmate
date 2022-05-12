@@ -5,3 +5,6 @@ export const categoryAtom = atom(0);
 
 // 현재 사용자에게 보여지는 모임 리스트
 export const moimListAtom = atom([]);
+
+// 모임 평가
+export const evaluationAtom = atom([]);
