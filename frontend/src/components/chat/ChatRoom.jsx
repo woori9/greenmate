@@ -51,7 +51,6 @@ function ChatRoom({ selectedChat, isFromChatPage }) {
   };
 
   const currentChat = isFromChatPage ? selectedChat : location.state;
-  // const joinDate = currentChat.membersInfo.find()
 
   const handleSend = async () => {
     const content = messageRef.current.value;
@@ -121,13 +120,14 @@ ChatRoom.propTypes = {
         id: PropTypes.string,
         nickname: PropTypes.string,
         vegeType: PropTypes.number,
-        joinDate: PropTypes.shape({
-          nanoseconds: PropTypes.number,
-          seconds: PropTypes.number,
-        }),
       }),
     ),
     type: PropTypes.number.isRequired,
+    chatTitle: PropTypes.string.isRequired,
+    joinDate: PropTypes.shape({
+      nanoseconds: PropTypes.number,
+      seconds: PropTypes.number,
+    }),
   }),
   isFromChatPage: PropTypes.bool,
 };
