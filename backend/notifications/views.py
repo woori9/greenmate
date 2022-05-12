@@ -22,6 +22,9 @@ User = get_user_model()
 
 @api_view(['POST'])
 def create_update_token(request):
+    '''
+    POST: 유저, 토큰이 일치하는 값이 DB에 없을 경우 저장, 있을 경우 updated_at 수정
+    '''
     # user = get_object_or_404(User, pk=1)
     user = get_request_user(request)
 
@@ -46,6 +49,9 @@ def create_update_token(request):
 
 @api_view(['DELETE'])
 def delete_token(request, token_id):
+    '''
+    DELETE: 유저, 토큰이 일치하면 DB에서 삭제
+    '''
     # user = get_object_or_404(User, pk=1)
     user = get_request_user(request)
 
@@ -64,19 +70,23 @@ def delete_token(request, token_id):
 
 @api_view(['POST'])
 def send_chat_alarm(request, moim_id):
-    # user = get_object_or_404(User, pk=1)
-    user = get_request_user(request)
+    '''
+    POST: 작성자를 제외한 모임 참여자들에게 알림 발송
+    '''
+    user = get_object_or_404(User, pk=1)
+    # user = get_request_user(request)
 
     if not user:
         return Response(status=HTTP_401_UNAUTHORIZED)
     elif user == 'EXPIRED_TOKEN':
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
 
-    tokens = FirebaseToken.objects.filter(user__mate__moim_id=moim_id).values('registration_token').exclude(user=user)
+    tokens = FirebaseToken.objects.filter(user__mate__moim_id=moim_id).values_list('registration_token', flat=True).exclude(user=user)
+
     if not tokens:
         return Response(data='메세지 보낼 사람이 없습니다.', status=HTTP_204_NO_CONTENT)
 
-    token_list = [token['registration_token'] for token in tokens]
+    token_list = list(tokens)
     body = f'{user.nickname}님이 메세지를 보냈습니다.'
 
     if send_message(token_list, body):
