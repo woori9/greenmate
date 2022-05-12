@@ -208,20 +208,6 @@ const getMembersInfo = async members => {
   return membersInfo;
 };
 
-const checkUserIsInMember = async (chatRoomId, user) => {
-  const roomRef = doc(db, 'rooms', chatRoomId);
-  const roomDocSnap = await getDoc(roomRef);
-  const { members } = roomDocSnap.data();
-  const targetMember = members.find(member => member === user.id);
-
-  if (!targetMember) {
-    await updateDoc(roomRef, {
-      members: arrayUnion(user.id),
-    });
-    await addRoomToUser(user.id, chatRoomId, 1);
-  }
-};
-
 const joinMoimChat = async (moimId, userId) => {
   console.log('JOIN MOIM CHAT', moimId, userId);
   try {
@@ -336,7 +322,6 @@ export {
   deactivateChatRoom,
   getMessages,
   getMoimChatRoom,
-  checkUserIsInMember,
   createMoimChat,
   increaseUnreadMessage,
   resetUnreadMessage,
