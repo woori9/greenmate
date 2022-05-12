@@ -82,7 +82,7 @@ function ChatItem({ chat, onChatClick, user, countUnreadMessage }) {
       <p className="nickname horizon-align">{pair.nickname}</p>
       <p className="color-gray text-right font-12 horizon-align">{time}</p>
       <p className="color-gray">{recentMessage.content}</p>
-      {countUnreadMessage !== 0 && (
+      {countUnreadMessage > 0 && (
         <div className="m-5">
           <div className="temp">
             <div className="circle-red">
@@ -107,7 +107,7 @@ ChatItem.propTypes = {
           seconds: PropTypes.number,
         }),
         nickname: PropTypes.string,
-        veganType: PropTypes.number,
+        vegeType: PropTypes.number,
       }),
     ),
     recentMessage: PropTypes.shape({

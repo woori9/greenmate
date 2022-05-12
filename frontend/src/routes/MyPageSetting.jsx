@@ -15,7 +15,7 @@ import GoBackBar from '../components/common/GoBackBar';
 import SettingGoBackBar from '../components/mypage/SettingGoBackBar';
 
 const Container = styled.div`
-  margin: ${props =>
+  padding: ${props =>
     props.isDesktop ? '0 2rem 0 34rem' : '62px 1rem 5rem 1rem'};
 `;
 
@@ -43,7 +43,7 @@ function MyPageSetting() {
     setNickname: '내 정보',
     setLanguage: '언어 설정',
     registerNewRestau: '식당 등록 요청',
-    deleteUser: null,
+    deleteUser: '',
   };
   const settingGoBackHandler = () => {
     if (pageStatus !== 'settingLst') {
