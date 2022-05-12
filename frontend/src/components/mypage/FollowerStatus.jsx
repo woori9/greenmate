@@ -17,19 +17,19 @@ const Li = styled.li`
   }
 `;
 
-function FollowerStatus({ userInfo, isDesktop }) {
+function FollowerStatus({ profileInfo, isDesktop }) {
   const statusLst = [
     {
       name: '팔로워',
-      cnt: userInfo.follower_cnt,
+      cnt: profileInfo.follower_cnt,
     },
     {
       name: '팔로잉',
-      cnt: userInfo.following_cnt,
+      cnt: profileInfo.following_cnt,
     },
     {
       name: '모임횟수',
-      cnt: userInfo.moim_cnt,
+      cnt: profileInfo.moim_cnt,
     },
   ];
   return (
@@ -44,7 +44,7 @@ function FollowerStatus({ userInfo, isDesktop }) {
   );
 }
 FollowerStatus.propTypes = {
-  userInfo: PropTypes.shape().isRequired,
+  profileInfo: PropTypes.shape().isRequired,
   isDesktop: PropTypes.bool.isRequired,
 };
 

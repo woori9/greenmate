@@ -20,6 +20,7 @@ class Restaurant(models.Model):
     latitude = models.FloatField()
     longitude = models.FloatField()
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_restaurants')
+    img_url = models.TextField()
 
 
 class RestaurantInfo(models.Model):
