@@ -27,9 +27,10 @@ import ChatRoom from './components/chat/ChatRoom';
 import Test from './routes/Test';
 import { checkToken, onMessageListener } from './service/notification_service';
 import useNotificationStatus from './hooks/useNotification';
+import { deleteToken } from './api/notification';
 
 function App() {
-  const [isTokenFound, setIsTokenFound] = useState(false);
+  const [tokenId, setTokenId] = useState(null);
   const notificationStatus = useNotificationStatus();
 
   useEffect(() => {
@@ -40,14 +41,13 @@ function App() {
     }
 
     if (notificationStatus === 'granted') {
-      // 서버에 token 보내기 (저장)
-      checkToken(setIsTokenFound);
-      unsubscribe = onMessageListener('1');
+      checkToken(setTokenId);
+      unsubscribe = onMessageListener('1'); // userId
     }
 
-    if (notificationStatus !== 'granted' && isTokenFound) {
-      // 서버에 기존 token delete 요청
-      setIsTokenFound(false);
+    if (notificationStatus !== 'granted' && tokenId !== null) {
+      deleteToken(tokenId);
+      setTokenId(null);
     }
 
     return unsubscribe;
