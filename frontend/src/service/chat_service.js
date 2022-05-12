@@ -194,6 +194,24 @@ const getMoimChatRoom = async moimId => {
   return roomDocSnap.data();
 };
 
+const getJoinDate = async (userId, chatRoomId) => {
+  try {
+    const userRoomRef = doc(db, 'users', userId, 'rooms', chatRoomId);
+    const { joinDate } = (await getDoc(userRoomRef)).data();
+    return joinDate;
+  } catch (err) {
+    throw new Error(err);
+  }
+};
+
+const getMembersInfo = async members => {
+  const usersRef = collection(db, 'users');
+  const q = query(usersRef, where('id', 'in', members));
+  const querySnapshot = await getDocs(q);
+  const membersInfo = querySnapshot.docs.map(snapshot => snapshot.data());
+  return membersInfo;
+};
+
 const checkUserIsInMember = async (chatRoomId, user) => {
   const roomRef = doc(db, 'rooms', chatRoomId);
   const roomDocSnap = await getDoc(roomRef);
@@ -294,6 +312,25 @@ const excludeFromChatRoom = async (moimId, userId) => {
   }
 };
 
+const queryChatRoomInfo = async moimId => {
+  const moimChatRoom = await getMoimChatRoom(`${moimId}`);
+
+  if (!moimChatRoom) {
+    alert('해당 모임이 존재하지 않습니다.');
+    return null;
+  }
+
+  const joinDate = await getJoinDate('1', moimChatRoom.id); // userId, roomId
+  const membersInfo = await getMembersInfo(moimChatRoom.members);
+  const chatRoom = {
+    ...moimChatRoom,
+    joinDate,
+    membersInfo,
+  };
+
+  return chatRoom;
+};
+
 export {
   signInFirebase,
   sendMessage,
@@ -311,4 +348,5 @@ export {
   saveNotification,
   joinMoimChat,
   excludeFromChatRoom,
+  queryChatRoomInfo,
 };
