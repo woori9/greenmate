@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
-import logo from '../assets/logo.png';
 import ResponsiveMapNavbar from '../components/common/navbar/ResponsiveMapNavbar';
 import ResponsiveSideSheet from '../components/map/SideSheet/ResponsiveSideSheet';
+import { apiGetAllRestau } from '../api/map';
+import mapPinImg from '../assets/map-pin.png';
 
 const { kakao } = window;
 const KakaoMap = styled.div`
@@ -27,41 +28,57 @@ const BoxMyLocationIcon = styled.div`
     cursor: pointer;
   }
 `;
+
 function setMapCurrentPosition() {
   const container = document.getElementById('myMap'); // 지도를 담을 영역의 DOM 레퍼런스
   const options = {
-    center: new kakao.maps.LatLng(36.35531199154453, 127.298467693343), // 지도의 중심좌표(필수):LatLng(위도_latitude, 경도, longitude)
+    center: new kakao.maps.LatLng(37.4989043009984, 127.0321282915444), // 지도의 중심좌표(필수):LatLng(위도_latitude, 경도, longitude)
     level: 3, // 지도의 레벨(확대, 축소 정도)
   };
-  const map = new kakao.maps.Map(container, options); // 지도 생성 및 객체 리턴
+  const mapContainer = new kakao.maps.Map(container, options); // 지도 생성 및 객체 리턴
+
   if (navigator.geolocation) {
     // GeoLocation을 이용해 접속 위치 받기
     navigator.geolocation.getCurrentPosition(function (position) {
       const lat = position.coords.latitude;
       const lon = position.coords.longitude;
       const locPosition = new kakao.maps.LatLng(lat, lon);
-      map.setCenter(locPosition);
-      // 지도에 마킹하기
-      // 마킹 이미지 설정
-      // const imgSrc = <EnergySavingsLeafIcon />;
-      const imgSrc = logo;
-      const imgSize = new kakao.maps.Size(50, 50);
-      const imgOption = { offset: new kakao.maps.Point(27, 69) };
-
-      const markerImg = new kakao.maps.MarkerImage(imgSrc, imgSize, imgOption);
-
-      const marker = new kakao.maps.Marker({
-        position: locPosition,
-        image: markerImg,
-      });
-      marker.setMap(map);
-      // 클릭이벤트
-      kakao.maps.event.addListener(marker, 'click', function () {
-        console.log('짜잔');
-      });
+      mapContainer.setCenter(locPosition);
     });
   } else {
     alert('위치 정보 수집에 동의해주세요');
+  }
+}
+async function markingAllRestau() {
+  const container = document.getElementById('myMap'); // 지도를 담을 영역의 DOM 레퍼런스
+  const options = {
+    center: new kakao.maps.LatLng(37.4989043009984, 127.0321282915444), // 지도의 중심좌표(필수):LatLng(위도_latitude, 경도, longitude)
+    level: 3, // 지도의 레벨(확대, 축소 정도)
+  };
+  const mapContainer = new kakao.maps.Map(container, options); // 지도 생성 및 객체 리턴
+  // 지도에 마킹하기
+  // 식당 리스트
+  const restauAllLst = await apiGetAllRestau();
+  const imgSrc = mapPinImg;
+  for (let i = 0; i < restauAllLst.length; i += 1) {
+    const imgSize = new kakao.maps.Size(80, 80);
+    const imgOption = { offset: new kakao.maps.Point(57, 100) };
+    const markerImg = new kakao.maps.MarkerImage(imgSrc, imgSize, imgOption);
+    const latLng = new kakao.maps.LatLng(
+      restauAllLst[i].latitude,
+      restauAllLst[i].longitude,
+    );
+    const marker = new kakao.maps.Marker({
+      map: mapContainer,
+      position: latLng,
+      title: restauAllLst[i].title,
+      image: markerImg,
+    });
+    // 클릭이벤트
+    kakao.maps.event.addListener(marker, 'click', function () {
+      console.log(restauAllLst[i].id);
+      console.log(restauAllLst[i].name);
+    });
   }
 }
 function placesSearchCB(data, status) {
@@ -91,7 +108,7 @@ const setMapSearchKeyword = async inputKeyword => {
 function Map() {
   const [keyword, setKeyword] = useState('');
   useEffect(() => {
-    setMapCurrentPosition();
+    markingAllRestau();
   }, []);
   return (
     <>
