@@ -104,8 +104,9 @@ function MoimForm() {
           title,
           content,
         },
-        () => {
-          const moimIdCreated = '1';
+        result => {
+          const { data } = result;
+          const moimIdCreated = `${data.id}`;
           createMoimChat(moimIdCreated, userInfo);
           navigate('/');
         },
