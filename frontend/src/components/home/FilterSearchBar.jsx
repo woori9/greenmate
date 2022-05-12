@@ -8,6 +8,10 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import SearchIcon from '@mui/icons-material/Search';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import { useAtom } from 'jotai';
+import { moimListAtom } from '../../atoms/moim';
+import { searchMoim } from '../../api/moim';
+import { snakeToCamel } from '../../utils/formatKey';
 
 const Container = styled.div`
   @media screen and (min-width: 1025px) {
@@ -15,7 +19,7 @@ const Container = styled.div`
     justify-content: space-between;
 
     .MuiInputBase-fullWidth {
-      width: 25rem;
+      width: 30rem;
     }
   }
 `;
@@ -23,6 +27,7 @@ const Container = styled.div`
 function FilterSearchBar({ searchKeyword, setSearchKeyword }) {
   const [period, setPeriod] = useState(0);
   const [day, setDay] = useState(0);
+  const [, setMoimList] = useAtom(moimListAtom);
 
   function handlePeriodChange(e) {
     setPeriod(e.target.value);
@@ -34,7 +39,17 @@ function FilterSearchBar({ searchKeyword, setSearchKeyword }) {
 
   function onSearchKeyUp(e) {
     if (e.keyCode === 13 && searchKeyword.length > 0) {
-      console.log('ok');
+      searchMoim(
+        e.target.value,
+        res => {
+          const formattedData = res.data.map(item => ({
+            ...snakeToCamel(item),
+            time: new Date(item.time),
+          }));
+          setMoimList(formattedData);
+        },
+        err => console.log(err),
+      );
     }
   }
 
@@ -101,6 +116,7 @@ function FilterSearchBar({ searchKeyword, setSearchKeyword }) {
         }}
         sx={{
           width: '18rem',
+          maxWidth: '100%',
           borderRadius: '15px',
         }}
       />
