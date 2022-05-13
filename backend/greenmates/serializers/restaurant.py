@@ -17,8 +17,9 @@ class RestaurantSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Restaurant
-        fields = ('id', 'category', 'call', 'img_url', 'score', 'is_like')
-
+        # fields = ('id', 'category', 'call', 'img_url', 'score', 'is_like', 'latitude', 'longitude')
+        exclude = ('like_users',)
+        
     def to_representation(self, instance):
         response = super().to_representation(instance)   
         res_info = RestaurantInfo.objects.filter(restaurant=instance.id, language=self.context['user'].language)
@@ -40,14 +41,13 @@ class RestaurantSimpleSerializer(RestaurantSerializer):
 
     class Meta:
         model = Restaurant
-        fields = ('id', 'category', 'img_url', 'score', 'is_like')
-
+        exclude = ('call', 'like_users')
 
 class RestaurantDetailSerializer(RestaurantSerializer):
 
     class Meta:
         model = Restaurant
-        fields = ('id', 'category', 'img_url', 'call', 'score', 'is_like')
+        exclude = ('like_users',)
 
     def to_representation(self, instance):
         from .feed import FeedReviewSerializer
