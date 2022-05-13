@@ -113,8 +113,7 @@ class MoimFinishedSerializer(MoimAllSerializer):
             )
 
     def get_is_evaluated(self, obj):
-        mate = Mate.objects.filter(moim=obj)[0]
-        if UserReview.objects.filter(mate=mate, me=self.context['user']).exists():
+        if UserReview.objects.filter(mate__moim=obj, me=self.context['user']).exists():
             return True
         return False
         
