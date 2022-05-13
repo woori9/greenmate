@@ -50,7 +50,7 @@ def apply_mate(request, moim_id):
     serializer = MatePutPostSerializer(data={'moim': moim_id, 'user': user.id, 'mate_staus': 0})
     if serializer.is_valid(raise_exception=True):
         serializer.save()
-        body = f'[{moim.title[:6]}…] {user.nickname}님이 모임 참여 신청하셨습니다.'
+        body = f'[{moim.title[:6]}…] {user.nickname}님이 모임 참여 신청했습니다.'
         make_massage(moim.author, body)
         return Response(
             data=f'{moim_id}번 모임에 대기 신청되었습니다.',
@@ -80,10 +80,9 @@ def cancle_mate(request, mate_id):
             status=HTTP_409_CONFLICT
         )
     moim = mate.moim
-    body = f'[{moim.title[:6]}…] {user.nickname}님이 모임 신청을 취소하셨습니다.'
+    body = f'[{moim.title[:6]}…] {user.nickname}님이 모임 신청을 취소했습니다.'
     make_massage(moim.author, body)
     mate.delete()
-
     return Response(
         data='대기 신청이 정상적으로 취소되었습니다.',
         status=HTTP_204_NO_CONTENT
@@ -206,7 +205,7 @@ def out_mate(request, mate_id):
         if moim_serializer['now_cnt'] < moim_serializer['head_cnt'] and moim.status == 1:
             moim.status = 0
             moim.save()
-        body = f'[{moim.title[:6]}…] {user.nickname}님이 모임을 나가셨습니다.'
+        body = f'[{moim.title[:6]}…] {user.nickname}님이 모임을 나갔습니다.'
         make_massage(moim.author, body)
         return Response(
             data='모임을 나갔습니다.',
