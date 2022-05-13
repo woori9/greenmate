@@ -131,6 +131,7 @@ function MoimCard({ moimInfo, setNeedUpdate, showStatus }) {
           mateId={moimInfo.userMateId}
           mateList={moimInfo.mates}
           setNeedUpdate={setNeedUpdate}
+          moimTitle={moimInfo.title}
         />
       )}
     </Card>

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { useAtom } from 'jotai';
 import { onDismissAtom } from '../../atoms/bottomSheet';
 import { declineGuest } from '../../api/moim';
+import { excludeFromChatRoom } from '../../service/chat_service';
 
 const Container = styled.div`
   display: flex;
@@ -35,7 +36,7 @@ const Container = styled.div`
   }
 `;
 
-function ConfirmExitMember({ mateId, setNeedUpdate }) {
+function ConfirmExitMember({ mateId, userId, moimId, setNeedUpdate }) {
   const [, onDismiss] = useAtom(onDismissAtom);
 
   return (
@@ -44,14 +45,16 @@ function ConfirmExitMember({ mateId, setNeedUpdate }) {
       <button
         type="button"
         className="delete-btn"
-        onClick={() =>
+        onClick={() => {
           declineGuest(mateId)
             .then(() => {
               setNeedUpdate(prev => prev + 1);
               onDismiss();
             })
-            .catch(err => console.log(err))
-        }
+            .catch(err => console.log(err));
+
+          excludeFromChatRoom(`${moimId}`, `${userId}`);
+        }}
       >
         확인
       </button>
@@ -64,6 +67,8 @@ function ConfirmExitMember({ mateId, setNeedUpdate }) {
 
 ConfirmExitMember.propTypes = {
   mateId: PropTypes.number.isRequired,
+  userId: PropTypes.number.isRequired,
+  moimId: PropTypes.string.isRequired,
   setNeedUpdate: PropTypes.func.isRequired,
 };
 

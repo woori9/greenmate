@@ -30,7 +30,7 @@ const vegeTypeList = [vegan, lacto, ovo, lactoOvo, pesco, polo, flexi];
 
 function ProfileImage({ vegeType, isBig }) {
   return (
-    <ImgContainer isBig={isBig}>
+    <ImgContainer isBig={isBig} className="profile-img">
       <img src={vegeTypeList[vegeType]} alt="사용자의 채식 타입" />
     </ImgContainer>
   );

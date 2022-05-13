@@ -26,12 +26,26 @@ const SearchHeader = styled.div`
 `;
 const Summary = styled.div`
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  padding-bottom: 4rem;
+  .no-content {
+    padding-top: 4rem;
+    margin: 0 auto;
+  }
+`;
+const SummaryContainer = styled.div`
   border-bottom: 1px solid #f2f2f2;
 `;
 
-function SearchLst({ keyword, setSearchPage }) {
+function SearchLst({
+  getSummaryRestau,
+  searchResults,
+  keyword,
+  setSearchPage,
+  markingAllRestau,
+}) {
   const { width } = useWindowDimensions();
+  const ArrayResults = Object.values(searchResults);
 
   return (
     <>
@@ -40,17 +54,37 @@ function SearchLst({ keyword, setSearchPage }) {
           <SearchIcon className="search-icon" />
           <div>
             <p className="search-keyword">{keyword}</p>
-            <p className="search-cnt">20개의 검색결과</p>
+            <p className="search-cnt">{searchResults.length}개의 검색결과</p>
           </div>
         </div>
-        <CloseIcon onClick={() => setSearchPage('searchBox')} />
+        <CloseIcon
+          onClick={() => {
+            setSearchPage('searchBox');
+            markingAllRestau();
+          }}
+        />
       </SearchHeader>
-      <Summary
-        onClick={() =>
-          width > 1024 ? setSearchPage('detail') : setSearchPage('summary')
-        }
-      >
-        <RestaurantInfoCard />
+      <Summary>
+        {ArrayResults.length ? (
+          <>
+            {ArrayResults.map(arrayResult => (
+              <SummaryContainer
+                key={arrayResult.id}
+                onClick={() =>
+                  width > 1024
+                    ? setSearchPage('detail')
+                    : getSummaryRestau(arrayResult.id)
+                }
+              >
+                <RestaurantInfoCard arrayResult={arrayResult} />
+              </SummaryContainer>
+            ))}
+          </>
+        ) : (
+          <div className="no-content">
+            <p>검색결과가 없습니다</p>
+          </div>
+        )}
       </Summary>
     </>
   );
@@ -58,6 +92,17 @@ function SearchLst({ keyword, setSearchPage }) {
 SearchLst.propTypes = {
   setSearchPage: PropTypes.func.isRequired,
   keyword: PropTypes.string.isRequired,
+  searchResults: PropTypes.arrayOf(
+    PropTypes.shape({
+      category: PropTypes.number.isRequired,
+      id: PropTypes.number.isRequired,
+      is_like: PropTypes.bool.isRequired,
+      res_info: PropTypes.shape(),
+      score: PropTypes.number.isRequired,
+    }),
+  ).isRequired,
+  getSummaryRestau: PropTypes.func.isRequired,
+  markingAllRestau: PropTypes.func.isRequired,
 };
 
 export default SearchLst;

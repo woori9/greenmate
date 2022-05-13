@@ -9,8 +9,8 @@ import Feeds from '../components/community/Feeds';
 import GoBackBar from '../components/common/GoBackBar';
 
 function Community() {
-  const [category, setCategory] = useState('');
-  const [vegeType, setVegeType] = useState('');
+  const [category, setCategory] = useState(0);
+  const [vegeType, setVegeType] = useState(0);
   const handleCategoryChange = event => {
     setCategory(event.target.value);
   };
@@ -60,7 +60,7 @@ function Community() {
           </Select>
         </FormControl>
       </div>
-      <Feeds />
+      <Feeds categoryValue={category} vegeTypeValue={vegeType} />
       <ResponsiveNavbar />
       <FloatingActionBtn isForMoim={false} />
     </>

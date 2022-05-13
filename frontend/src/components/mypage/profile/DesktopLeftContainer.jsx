@@ -4,7 +4,7 @@ import Nickname from '../Nickname';
 import FollowerStatus from '../FollowerStatus';
 import ButtonContainer from '../ButtonContainer';
 import ProfileLst from '../ProfileLst';
-import logo from '../../../assets/logo.png';
+import ProfileImg from '../../common/ProfileImage';
 
 const LeftContainer = styled.div`
   position: fixed;
@@ -20,23 +20,22 @@ const NameNStatus = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 1.5rem;
 `;
-const Img = styled.img`
-  width: 60px;
-  height: 60px;
-  border-radius: 20px;
-  object-fit: cover;
-  margin-top: 1rem;
-`;
-function DesktopProfile({ profileInfo, isDesktop }) {
+
+function DesktopProfile({ getProfileInfo, profileInfo, isDesktop }) {
+  const isBig = true;
   return (
     <LeftContainer>
       <NameNStatus>
-        <Img src={logo} alt="profile-img" />
+        <ProfileImg vegeType={profileInfo.vege_type} isBig={isBig} />
         <Nickname profileInfo={profileInfo} isDesktop={isDesktop} />
         <FollowerStatus profileInfo={profileInfo} isDesktop={isDesktop} />
       </NameNStatus>
-      <ButtonContainer profileInfo={profileInfo} />
+      <ButtonContainer
+        getProfileInfo={getProfileInfo}
+        profileInfo={profileInfo}
+      />
       <ProfileLst />
     </LeftContainer>
   );
@@ -44,5 +43,6 @@ function DesktopProfile({ profileInfo, isDesktop }) {
 DesktopProfile.propTypes = {
   profileInfo: PropTypes.shape().isRequired,
   isDesktop: PropTypes.bool.isRequired,
+  getProfileInfo: PropTypes.func.isRequired,
 };
 export default DesktopProfile;

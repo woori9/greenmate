@@ -26,16 +26,32 @@ import BottomSheetBase from './components/common/BottomSheetBase';
 import ChatRoom from './components/chat/ChatRoom';
 import Test from './routes/Test';
 import { checkToken, onMessageListener } from './service/notification_service';
+import useNotificationStatus from './hooks/useNotification';
+import { deleteToken } from './api/notification';
 
 function App() {
-  const [isTokenFound, setTokenFound] = useState(false);
+  const [tokenId, setTokenId] = useState(null);
+  const notificationStatus = useNotificationStatus();
 
   useEffect(() => {
-    checkToken(setTokenFound);
-    onMessageListener('1');
-  }, []);
+    let unsubscribe;
 
-  console.log('APP', isTokenFound);
+    if (notificationStatus === 'default') {
+      Notification.requestPermission();
+    }
+
+    if (notificationStatus === 'granted') {
+      checkToken(setTokenId);
+      unsubscribe = onMessageListener('1'); // userId
+    }
+
+    if (notificationStatus !== 'granted' && tokenId !== null) {
+      deleteToken(tokenId);
+      setTokenId(null);
+    }
+
+    return unsubscribe;
+  }, [notificationStatus]);
 
   return (
     <BrowserRouter>

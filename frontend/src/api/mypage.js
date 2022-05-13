@@ -1,7 +1,7 @@
 import apiInstance from '../utils/apiInstance';
 
 /* 프로필 조회 */
-export function getProfileInfo(data, res, err) {
+export function apiGetProfileInfo(data, res, err) {
   apiInstance.get(`/greenmates/profile/${data.userId}/`).then(res).catch(err);
 }
 

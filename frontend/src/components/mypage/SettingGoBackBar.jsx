@@ -11,7 +11,9 @@ const Bar = styled.div`
   height: 52px;
   background-color: white;
   z-index: 3;
-
+  .icon {
+    cursor: pointer;
+  }
   p {
     font-size: 1.25rem;
     text-align: center;
@@ -31,6 +33,7 @@ function SettingGoBackBar({ title, setPageStatus }) {
   return (
     <Bar>
       <ChevronLeftIcon
+        className="icon"
         sx={{ width: '35px', height: '35px' }}
         onClick={() => setPageStatus('settingLst')}
       />

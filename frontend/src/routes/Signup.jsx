@@ -5,6 +5,7 @@ import { useAtom } from 'jotai';
 import { userInfoAtom } from '../atoms/accounts';
 import { apiCheckNickname, apiPutUserInfo } from '../api/accounts';
 import logo from '../assets/logo.png';
+import { signInFirebase } from '../service/chat_service';
 
 const VegeTypes = styled.div`
   display: flex;
@@ -96,6 +97,11 @@ function Signup() {
             },
             () => navigate('/'),
           );
+          signInFirebase({
+            id: `${userInfo.id}`,
+            nickname: newNickname,
+            vegeType: newVegeType,
+          });
         }}
       >
         가입완료

@@ -22,11 +22,17 @@ const SearchContainer = styled.div`
   }
 `;
 
-function SearchBox({ setMapSearchKeyword, setSearchPage, setKeyword }) {
+function SearchBox({
+  getSearchRestau,
+  setMapSearchKeyword,
+  setSearchPage,
+  setKeyword,
+}) {
   function handleKeyPress(event) {
     if (event.key === 'Enter') {
       setMapSearchKeyword(event.target.value);
       setKeyword(event.target.value);
+      getSearchRestau(event.target.value);
       document.getElementById('search-input').value = '';
       setSearchPage('searchLst');
     }
@@ -46,6 +52,7 @@ SearchBox.propTypes = {
   setMapSearchKeyword: PropTypes.func.isRequired,
   setSearchPage: PropTypes.func.isRequired,
   setKeyword: PropTypes.func.isRequired,
+  getSearchRestau: PropTypes.func.isRequired,
 };
 
 export default SearchBox;

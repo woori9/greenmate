@@ -1,34 +1,32 @@
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import app from './firebase';
 import { saveNotification } from './chat_service';
+import { sendToken } from '../api/notification';
 
 const messaging = getMessaging(app);
 
-export const checkToken = async setTokenFound => {
+export const checkToken = async setTokenId => {
   try {
     const currentToken = await getToken(messaging, {
       vapidKey: process.env.REACT_APP_FIREBASE_CLOUD_MESSAGE_KEY,
     });
 
     if (currentToken) {
-      setTokenFound(true);
-      // Track the token -> client mapping, by sending to backend server
-      // show on the UI that permission is secured
+      const tokenId = await sendToken(currentToken);
+      setTokenId(tokenId);
     } else {
-      console.log(
-        'No registration token available. Request permission to generate one.',
-      );
-      setTokenFound(false);
-      // shows on the UI that permission is required
+      setTokenId(null);
     }
-  } catch (e) {
-    throw new Error(e);
+  } catch (err) {
+    setTokenId(null);
+    throw new Error('An error occurred while retrieving token. ', err);
   }
 };
 
 export const onMessageListener = userId => {
-  onMessage(messaging, payload => {
-    const { notification } = payload;
-    saveNotification(userId, notification);
+  return onMessage(messaging, payload => {
+    const { data } = payload;
+    console.log('Foreground Message', data);
+    saveNotification(userId, data);
   });
 };

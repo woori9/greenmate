@@ -16,7 +16,7 @@ const Container = styled.div`
   }
 
   button {
-    width: 18rem;
+    width: 80%;
     height: 2.8rem;
     font-size: 1rem;
     border: none;

@@ -7,15 +7,20 @@ const Containter = styled.div`
   display: flex;
 `;
 
-function DesktopProfile({ profileInfo, isDesktop }) {
+function DesktopProfile({ getProfileInfo, profileInfo, isDesktop }) {
   return (
     <Containter>
-      <DesktopLeftContainer profileInfo={profileInfo} isDesktop={isDesktop} />
+      <DesktopLeftContainer
+        getProfileInfo={getProfileInfo}
+        profileInfo={profileInfo}
+        isDesktop={isDesktop}
+      />
     </Containter>
   );
 }
 DesktopProfile.propTypes = {
   profileInfo: PropTypes.shape().isRequired,
   isDesktop: PropTypes.bool.isRequired,
+  getProfileInfo: PropTypes.func.isRequired,
 };
 export default DesktopProfile;
