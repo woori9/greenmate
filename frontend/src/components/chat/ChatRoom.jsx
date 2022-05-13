@@ -16,6 +16,8 @@ import GoBackBar from '../common/GoBackBar';
 import useUserInfo from '../../hooks/useUserInfo';
 import formatUserInfo from '../../utils/formatUserInfo';
 import { sendNotification } from '../../api/notification';
+import useWindowDimensions from '../../utils/windowDimension';
+import DesktopNavbar from '../common/navbar/DesktopNavbar';
 
 const StyledChatRoom = styled.div`
   width: 100%;
@@ -50,6 +52,9 @@ function ChatRoom({ selectedChat, isFromChatPage }) {
   const location = useLocation();
   const currentChat = isFromChatPage ? selectedChat : location.state;
   const chatTitle = currentChat ? currentChat.chatTitle : '';
+  const needDesktopNavbar = isFromChatPage
+    ? false
+    : useWindowDimensions().width > 1024;
   // 나중에 실시간으로 member listen ?
 
   const handleSend = async () => {
@@ -94,6 +99,7 @@ function ChatRoom({ selectedChat, isFromChatPage }) {
 
   return (
     <StyledChatRoom className="room" isFromChatPage={isFromChatPage}>
+      {needDesktopNavbar && <DesktopNavbar />}
       {!isFromChatPage && <GoBackBar title={isFromChatPage ? '' : chatTitle} />}
       {currentChat ? (
         <>
