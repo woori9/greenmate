@@ -33,8 +33,7 @@ const Container = styled.div`
   }
 
   @media screen and (min-width: 1025px) {
-    margin: 112px 0 0 130px;
-    padding: 0 10rem;
+    padding: 112px 10rem 0 calc(130px + 10rem);
   }
 `;
 
@@ -81,7 +80,7 @@ const MainBox = styled.div`
   }
 
   @media screen and (min-width: 1025px) {
-    margin-top: calc(112px + 4rem);
+    margin-top: 4rem;
   }
 `;
 

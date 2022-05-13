@@ -20,8 +20,7 @@ const Container = styled.div`
   }
 
   @media screen and (min-width: 1025px) {
-    margin: 60px 0 0 130px;
-    padding: 0 2rem;
+    padding: 60px 2rem 0 calc(130px + 2rem);
 
     .moim-card-container {
       display: flex;

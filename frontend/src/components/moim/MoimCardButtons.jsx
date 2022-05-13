@@ -24,15 +24,18 @@ const Button = styled.button`
   border: 1px solid #a9a9a9;
   border-radius: 5px;
   cursor: pointer;
+
+  &:disabled {
+    color: #a9a9a9;
+    cursor: inherit;
+  }
+
+  &:disabled:after {
+    content: ' 완료';
+  }
 `;
 
-function MoimCardButtons({
-  moimId,
-  mateId,
-  mateList,
-  setNeedUpdate,
-  moimTitle,
-}) {
+function MoimCardButtons({ moimInfo, setNeedUpdate }) {
   const [selectedCategory] = useAtom(categoryAtom);
   const navigate = useNavigate();
 
@@ -44,7 +47,7 @@ function MoimCardButtons({
           type="button"
           onClick={() =>
             cancleApplyMoim(
-              mateId,
+              moimInfo.userMateId,
               () => setNeedUpdate(prev => prev + 1),
               err => console.log(err),
             )
@@ -60,12 +63,12 @@ function MoimCardButtons({
           type="button"
           onClick={() => {
             exitMoim(
-              mateId,
+              moimInfo.userMateId,
               () => setNeedUpdate(prev => prev + 1),
               err => console.log(err),
             );
 
-            excludeFromChatRoom(`${moimId}`, `${useUserInfo.id}`);
+            excludeFromChatRoom(`${moimInfo.id}`, `${useUserInfo.id}`);
           }}
         >
           참여 취소
@@ -73,8 +76,8 @@ function MoimCardButtons({
         <Button
           type="button"
           onClick={async () => {
-            const chatRoomInfo = await queryChatRoomInfo(`${moimId}`);
-            chatRoomInfo.chatTitle = moimTitle;
+            const chatRoomInfo = await queryChatRoomInfo(`${moimInfo.id}`);
+            chatRoomInfo.chatTitle = moimInfo.title;
             navigate('/chatRoom', {
               state: chatRoomInfo,
             });
@@ -90,8 +93,18 @@ function MoimCardButtons({
         <Button
           type="button"
           onClick={() =>
-            navigate(`/moim/${moimId}/evaluation`, { state: { mateList } })
+            navigate(`/moim/${moimInfo.id}/evaluation`, {
+              state: {
+                moimInfo: {
+                  title: moimInfo.title,
+                  time: moimInfo.time,
+                  restaurantName: moimInfo.restaurant.name,
+                },
+                mateList: moimInfo.mates,
+              },
+            })
           }
+          disabled={moimInfo.isEvaluated}
         >
           모임 평가
         </Button>
@@ -104,14 +117,14 @@ function MoimCardButtons({
           onClick={() => {
             const waitList = [];
             const joinList = [];
-            mateList.forEach((mate, idx) => {
+            moimInfo.mates.forEach((mate, idx) => {
               if (mate.mateStatus === 0) {
                 waitList.push(mate);
               } else if (mate.mateStatus === 1 && idx !== 0) {
                 joinList.push(mate);
               }
             });
-            navigate(`/moim/${moimId}/member`, {
+            navigate(`/moim/${moimInfo.id}/member`, {
               state: { waitList, joinList },
             });
           }}
@@ -121,8 +134,8 @@ function MoimCardButtons({
         <Button
           type="button"
           onClick={async () => {
-            const chatRoomInfo = await queryChatRoomInfo(`${moimId}`);
-            chatRoomInfo.chatTitle = moimTitle;
+            const chatRoomInfo = await queryChatRoomInfo(`${moimInfo.id}`);
+            chatRoomInfo.chatTitle = moimInfo.title;
             navigate('/chatRoom', {
               state: chatRoomInfo,
             });
@@ -138,27 +151,46 @@ function MoimCardButtons({
 }
 
 MoimCardButtons.propTypes = {
-  moimId: PropTypes.number.isRequired,
-  mateId: PropTypes.number,
-  mateList: PropTypes.oneOfType([
-    PropTypes.objectOf(PropTypes.any),
-    PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.number,
-        userId: PropTypes.number,
-        nickname: PropTypes.string,
-        vegeType: PropTypes.number,
-        mateStatus: PropTypes.number,
-      }),
-    ),
-  ]),
+  moimInfo: PropTypes.shape({
+    id: PropTypes.number,
+    author: PropTypes.shape({
+      id: PropTypes.number,
+      nickname: PropTypes.string,
+      vegeType: PropTypes.number,
+    }),
+    title: PropTypes.string,
+    content: PropTypes.string,
+    time: PropTypes.instanceOf(Date),
+    status: PropTypes.number,
+    headCnt: PropTypes.number,
+    nowCnt: PropTypes.number,
+    userMateId: PropTypes.number,
+    userMateStatus: PropTypes.number,
+    mates: PropTypes.oneOfType([
+      PropTypes.objectOf(PropTypes.any),
+      PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.number,
+          userId: PropTypes.number,
+          nickname: PropTypes.string,
+          vegeType: PropTypes.number,
+          mateStatus: PropTypes.number,
+        }),
+      ),
+    ]),
+    restaurant: PropTypes.shape({
+      address: PropTypes.string,
+      id: PropTypes.number,
+      name: PropTypes.string,
+    }),
+    isEvaluated: PropTypes.bool,
+  }).isRequired,
   setNeedUpdate: PropTypes.func,
-  moimTitle: PropTypes.string.isRequired,
 };
 
 MoimCardButtons.defaultProps = {
-  mateId: null,
   setNeedUpdate: null,
+  isEvaluated: false,
 };
 
 export default MoimCardButtons;

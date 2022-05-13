@@ -137,13 +137,7 @@ function MoimCard({ moimInfo, setNeedUpdate, showStatus }) {
         </ProfileWithInfo>
       </div>
       {[0, 1, 4, 5].includes(selectedCategory) && (
-        <MoimCardButtons
-          moimId={moimInfo.id}
-          mateId={moimInfo.userMateId}
-          mateList={moimInfo.mates}
-          setNeedUpdate={setNeedUpdate}
-          moimTitle={moimInfo.title}
-        />
+        <MoimCardButtons moimInfo={moimInfo} setNeedUpdate={setNeedUpdate} />
       )}
     </Card>
   );
@@ -182,6 +176,7 @@ MoimCard.propTypes = {
       id: PropTypes.number,
       name: PropTypes.string,
     }),
+    isEvaluated: PropTypes.bool,
   }).isRequired,
   setNeedUpdate: PropTypes.func,
   showStatus: PropTypes.bool.isRequired,
