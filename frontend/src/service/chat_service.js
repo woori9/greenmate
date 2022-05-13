@@ -143,19 +143,19 @@ const findPrivateChatRoom = async (pairId, userId) => {
   return targetRoom ? targetRoom.data() : null;
 };
 
-const createPrivateRoom = async (pair, user) => {
+const createPrivateRoom = async (pairId, userId) => {
   try {
     const newRoomRef = doc(collection(db, 'rooms'));
 
     const newRoom = {
       id: newRoomRef.id,
       type: 1, // type 2: moim, 1: private,
-      members: [pair.id, user.id],
+      members: [pairId, userId],
     };
 
+    addRoomToUser(userId, newRoomRef.id, 1);
+    addRoomToUser(pairId, newRoomRef.id, 1);
     await setDoc(newRoomRef, newRoom); // 방 생성
-    await addRoomToUser(user.id, newRoomRef.id, 1);
-    await addRoomToUser(pair.id, newRoomRef.id, 1);
     const querySnapshot = await getDoc(doc(db, 'rooms', newRoomRef.id));
     return querySnapshot.data();
   } catch (e) {
@@ -294,7 +294,7 @@ const excludeFromChatRoom = async (moimId, userId) => {
   }
 };
 
-const queryChatRoomInfo = async moimId => {
+const queryMoimChatRoomInfo = async (moimId, userId) => {
   const moimChatRoom = await getMoimChatRoom(`${moimId}`);
 
   if (!moimChatRoom) {
@@ -302,7 +302,7 @@ const queryChatRoomInfo = async moimId => {
     return null;
   }
 
-  const joinDate = await getJoinDate('1', moimChatRoom.id); // userId, roomId
+  const joinDate = await getJoinDate(userId, moimChatRoom.id); // userId, roomId
   const membersInfo = await getMembersInfo(moimChatRoom.members);
   const chatRoom = {
     ...moimChatRoom,
@@ -311,6 +311,27 @@ const queryChatRoomInfo = async moimId => {
   };
 
   return chatRoom;
+};
+
+const getPrivateChatRoom = async (pairId, userId) => {
+  const chatRoom = await findPrivateChatRoom(pairId, userId);
+  if (chatRoom) {
+    return chatRoom;
+  }
+  const createdRoom = await createPrivateRoom(pairId, userId);
+  return createdRoom;
+};
+
+const queryPrivateChatRoomInfo = async (pairId, userId) => {
+  const chatRoom = await getPrivateChatRoom(pairId, userId);
+  const joinDate = await getJoinDate(userId, chatRoom.id); // userId, roomId
+  const membersInfo = await getMembersInfo(chatRoom.members);
+
+  return {
+    ...chatRoom,
+    joinDate,
+    membersInfo,
+  };
 };
 
 export {
@@ -328,5 +349,6 @@ export {
   saveNotification,
   joinMoimChat,
   excludeFromChatRoom,
-  queryChatRoomInfo,
+  queryMoimChatRoomInfo,
+  queryPrivateChatRoomInfo,
 };
