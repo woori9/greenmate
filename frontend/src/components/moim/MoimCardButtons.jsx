@@ -38,6 +38,7 @@ const Button = styled.button`
 function MoimCardButtons({ moimInfo, setNeedUpdate }) {
   const [selectedCategory] = useAtom(categoryAtom);
   const navigate = useNavigate();
+  const userInfo = useUserInfo();
 
   const buttonDict = {
     0: (
@@ -68,7 +69,7 @@ function MoimCardButtons({ moimInfo, setNeedUpdate }) {
               err => console.log(err),
             );
 
-            excludeFromChatRoom(`${moimInfo.id}`, `${useUserInfo.id}`);
+            excludeFromChatRoom(`${moimInfo.id}`, `${userInfo.id}`);
           }}
         >
           참여 취소
@@ -78,7 +79,7 @@ function MoimCardButtons({ moimInfo, setNeedUpdate }) {
           onClick={async () => {
             const chatRoomInfo = await queryMoimChatRoomInfo(
               `${moimInfo.id}`,
-              `${useUserInfo.id}`,
+              `${userInfo.id}`,
             );
             chatRoomInfo.chatTitle = moimInfo.title;
             chatRoomInfo.notificationTargetId = `${moimInfo.id}`;
@@ -140,7 +141,7 @@ function MoimCardButtons({ moimInfo, setNeedUpdate }) {
           onClick={async () => {
             const chatRoomInfo = await queryMoimChatRoomInfo(
               `${moimInfo.id}`,
-              `${useUserInfo.id}`,
+              `${userInfo.id}`,
             );
             chatRoomInfo.chatTitle = moimInfo.title;
             chatRoomInfo.notificationTargetId = `${moimInfo.id}`;
