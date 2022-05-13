@@ -5,7 +5,7 @@ import Input from '@mui/material/Input';
 import InputAdornment from '@mui/material/InputAdornment';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { searchRestaurant } from '../../api/restaurant';
+import { apiGetSearchRestau } from '../../api/map';
 import { snakeToCamel } from '../../utils/formatKey';
 
 const SearchContainer = styled.div`
@@ -50,15 +50,15 @@ function RestaurantSearchForm({
     if (e.keyCode === 13 && searchKeyword.length > 0) {
       setIsSearch(true);
       setSearchKeyword(e.target.value);
-      searchRestaurant(
-        searchKeyword,
+      apiGetSearchRestau(
+        { keyword: searchKeyword },
         res => {
           const formattedData = res.data.map(item => ({
             ...snakeToCamel(item),
           }));
           setSearchResult(formattedData);
         },
-        err => console.log(err),
+        () => {},
       );
     }
   }
