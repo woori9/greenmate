@@ -26,6 +26,7 @@ const Bar = styled.div`
   @media screen and (min-width: 1025px) {
     top: 60px;
     left: 130px;
+    width: calc(100% - 130px);
   }
 `;
 
