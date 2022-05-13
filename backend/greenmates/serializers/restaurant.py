@@ -72,11 +72,6 @@ class RestaurantMapSerializer(serializers.ModelSerializer):
             data = '준비중입니다.'
         return data
 
-# 모임 글 조회 시 보여 질 식당 정보
-class RestaurantInfoMoimSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RestaurantInfo
-        fields = ('restaurant', 'name', 'address')
 
 # 모임 글에 보일 식당 정보
 class RestaurantMoimDataSerializer(serializers.ModelSerializer):
@@ -102,6 +97,7 @@ class RestaurantLikeSerializer(serializers.ModelSerializer):
 
     def get_img_url(self, obj):
         return Restaurant.objects.filter(pk=obj.restaurant.pk).values('img_url')[0]['img_url']
+
 
 class RestaurantNameSerializer(serializers.ModelSerializer):
 
