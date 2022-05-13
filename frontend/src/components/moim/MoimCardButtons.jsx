@@ -78,6 +78,7 @@ function MoimCardButtons({
               `${useUserInfo.id}`,
             );
             chatRoomInfo.chatTitle = moimTitle;
+            chatRoomInfo.notificationTargetId = `${moimId}`;
             navigate('/chatRoom', {
               state: chatRoomInfo,
             });
@@ -129,6 +130,7 @@ function MoimCardButtons({
               `${useUserInfo.id}`,
             );
             chatRoomInfo.chatTitle = moimTitle;
+            chatRoomInfo.notificationTargetId = `${moimId}`;
             navigate('/chatRoom', {
               state: chatRoomInfo,
             });
