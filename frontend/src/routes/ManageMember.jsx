@@ -129,7 +129,7 @@ function ManageMember() {
                     type="button"
                     onClick={() => {
                       accept(member.id);
-                      joinMoimChat(moimId, member);
+                      joinMoimChat(moimId, `${member.userId}`);
                     }}
                   >
                     수락
@@ -154,6 +154,8 @@ function ManageMember() {
                       component: (
                         <ConfirmExitMember
                           mateId={member.id}
+                          userId={member.userId}
+                          moimId={moimId}
                           setNeedUpdate={setNeedUpdate}
                         />
                       ),
