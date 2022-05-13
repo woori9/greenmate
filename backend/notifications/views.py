@@ -73,8 +73,8 @@ def send_chat_alarm(request, moim_id):
     '''
     POST: 작성자를 제외한 모임 참여자들에게 알림 발송
     '''
-    user = get_object_or_404(User, pk=1)
-    # user = get_request_user(request)
+    # user = get_object_or_404(User, pk=1)
+    user = get_request_user(request)
 
     if not user:
         return Response(status=HTTP_401_UNAUTHORIZED)
