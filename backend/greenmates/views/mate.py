@@ -5,6 +5,8 @@ from ..models import Moim, Mate, UserReview
 from ..serializers.moim import MoimDetailSerializer, MoimSerializer
 from ..serializers.mate import MatePutPostSerializer
 from ..serializers.evaluation import UserReviewPostSerializer
+from notifications.views import send_message
+from notifications.models import FirebaseToken
 from rest_framework.status import (
     HTTP_201_CREATED,
     HTTP_204_NO_CONTENT,
@@ -19,7 +21,13 @@ from django.contrib.auth import get_user_model
 from accounts.views.token import get_request_user
 
 User = get_user_model()
-# user = User.objects.get(pk=2)
+# user = User.objects.get(pk=3)
+
+def make_massage(user, body):
+    token = FirebaseToken.objects.filter(user=user).values_list('registration_token', flat=True)
+    if token:
+        send_message(list(token), body)
+
 @api_view(['POST'])
 def apply_mate(request, moim_id):
     '''
@@ -42,6 +50,8 @@ def apply_mate(request, moim_id):
     serializer = MatePutPostSerializer(data={'moim': moim_id, 'user': user.id, 'mate_staus': 0})
     if serializer.is_valid(raise_exception=True):
         serializer.save()
+        body = f'[{moim.title[:6]}…] {user.nickname}님이 모임 참여 신청했습니다.'
+        make_massage(moim.author, body)
         return Response(
             data=f'{moim_id}번 모임에 대기 신청되었습니다.',
             status=HTTP_201_CREATED
@@ -69,7 +79,9 @@ def cancle_mate(request, mate_id):
             data='대기 취소가 불가합니다.',
             status=HTTP_409_CONFLICT
         )
-
+    moim = mate.moim
+    body = f'[{moim.title[:6]}…] {user.nickname}님이 모임 신청을 취소했습니다.'
+    make_massage(moim.author, body)
     mate.delete()
     return Response(
         data='대기 신청이 정상적으로 취소되었습니다.',
@@ -105,6 +117,8 @@ def accept_mate(request, mate_id):
     if moim_serializer['now_cnt'] == moim_serializer['head_cnt']:
         moim.status = 1
         moim.save()
+    body = f'[{moim.title[:6]}…] 모임 참여가 수락되었습니다.'
+    make_massage(mate.user, body)
     return Response(
         data='게스트 참여를 수락했습니다.',
         status=HTTP_201_CREATED
@@ -143,6 +157,8 @@ def decline_mate(request, mate_id):
             )
     mate.mate_status = 2
     mate.save()
+    body = f'[{moim.title[:6]}…] 모임 참여가 거절되었습니다.'
+    make_massage(mate.user, body)
     return Response(
         data='게스트 참여를 거절했습니다.',
         status=HTTP_201_CREATED
@@ -189,6 +205,8 @@ def out_mate(request, mate_id):
         if moim_serializer['now_cnt'] < moim_serializer['head_cnt'] and moim.status == 1:
             moim.status = 0
             moim.save()
+        body = f'[{moim.title[:6]}…] {user.nickname}님이 모임을 나갔습니다.'
+        make_massage(moim.author, body)
         return Response(
             data='모임을 나갔습니다.',
             status=HTTP_204_NO_CONTENT
