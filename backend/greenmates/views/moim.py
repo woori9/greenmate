@@ -11,6 +11,7 @@ from ..serializers.moim import (
     MoimAllSerializer,
     MoimTransSerializer,
     MoimPostPutSerializer,
+    MoimFinishedSerializer,
 )
 
 from rest_framework.status import (
@@ -192,7 +193,7 @@ def get_finished_moim(request):
     
     three_months = datetime.datetime.now() - relativedelta(months=3)
     moims_list = Moim.objects.filter(time__gte=three_months, mate__user=user.id, mate__mate_status=4).order_by('-time')
-    serializer = MoimAllSerializer(moims_list, context={'user': user}, many=True) 
+    serializer = MoimFinishedSerializer(moims_list, context={'user': user}, many=True) 
     return Response(serializer.data)
 
 @api_view(['GET'])
