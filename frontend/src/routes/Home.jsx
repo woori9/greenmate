@@ -11,14 +11,12 @@ import { getMoimList } from '../api/moim';
 import { snakeToCamel } from '../utils/formatKey';
 
 const Container = styled.div`
+  padding: 5rem 1rem 5rem 1rem;
+
   .inform-txt-container {
     width: 100%;
     text-align: center;
     margin: 3rem 0;
-  }
-
-  @media screen and (max-width: 1024px) {
-    padding: 5rem 1rem 5rem 1rem;
   }
 
   @media screen and (min-width: 1025px) {

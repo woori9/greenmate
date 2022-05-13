@@ -15,6 +15,8 @@ import { snakeToCamel } from '../../utils/formatKey';
 import useWindowDimensions from '../../utils/windowDimension';
 
 const Card = styled.div`
+  margin-top: 1rem;
+
   ${props =>
     props.hasBorder
       ? css`
@@ -35,6 +37,13 @@ const Card = styled.div`
             margin-bottom: 1rem;
           }
         `}
+  .status-text {
+    display: inline-block;
+    background-color: #92c769;
+    padding: 0.5rem;
+    border-radius: 50px;
+    margin-left: 0.5rem;
+  }
 `;
 
 const ProfileWithInfo = styled.div`
@@ -90,7 +99,9 @@ function MoimCard({ moimInfo, setNeedUpdate, showStatus }) {
         role="button"
         tabIndex="0"
       >
-        {showStatus && <p>{moimStatus[moimInfo.status]}</p>}
+        {showStatus && (
+          <span className="status-text">{moimStatus[moimInfo.status]}</span>
+        )}
         <ProfileWithInfo>
           <ProfileImage vegeType={moimInfo.author.vegeType} isBig />
           <div>

@@ -85,7 +85,7 @@ const SliderItem = styled.div`
   p {
     font-size: 1.1rem;
     font-weight: 600;
-    margin-left: 0.5rem;
+    margin-left: 1rem;
   }
 
   @media screen and (min-width: 1025px) {

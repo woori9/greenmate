@@ -8,8 +8,6 @@ import PropTypes from 'prop-types';
 import { searchRestaurant } from '../../api/restaurant';
 import { snakeToCamel } from '../../utils/formatKey';
 
-// TODO: 테스트 필요
-
 const SearchContainer = styled.div`
   position: relative;
 `;
@@ -33,7 +31,7 @@ const SearchList = styled.ul`
     }
 
     p:last-child {
-      color: #a
+      color: #a9a9a9;
       font-size: 0.8rem;
     }
   }

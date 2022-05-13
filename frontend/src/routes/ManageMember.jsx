@@ -15,11 +15,11 @@ import useWindowDimensions from '../utils/windowDimension';
 
 const Container = styled.div`
   max-width: 500px;
-  margin: 0 auto;
   padding: 5rem 1rem 5rem 1rem;
+  margin: 0 auto;
 
   @media screen and (min-width: 1025px) {
-    margin: 112px 0 0 130px;
+    margin: 112px auto 0 auto;
     padding: 0 2rem;
   }
 `;

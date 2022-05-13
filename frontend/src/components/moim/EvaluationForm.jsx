@@ -19,8 +19,10 @@ const ScoreButton = styled.button`
   display: flex;
   flex-direction: column;
   align-items: center;
+  color: #000;
   background: none;
   border: none;
+  cursor: pointer;
 
   svg {
     width: 3.7rem;
