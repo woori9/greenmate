@@ -4,6 +4,11 @@ import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { categoryAtom } from '../../atoms/moim';
 import { cancleApplyMoim, exitMoim } from '../../api/moim';
+import {
+  excludeFromChatRoom,
+  queryChatRoomInfo,
+} from '../../service/chat_service';
+import useUserInfo from '../../hooks/useUserInfo';
 
 const ButtonDiv = styled.div`
   display: flex;
@@ -21,7 +26,13 @@ const Button = styled.button`
   cursor: pointer;
 `;
 
-function MoimCardButtons({ moimId, mateId, mateList, setNeedUpdate }) {
+function MoimCardButtons({
+  moimId,
+  mateId,
+  mateList,
+  setNeedUpdate,
+  moimTitle,
+}) {
   const [selectedCategory] = useAtom(categoryAtom);
   const navigate = useNavigate();
 
@@ -47,17 +58,30 @@ function MoimCardButtons({ moimId, mateId, mateList, setNeedUpdate }) {
       <ButtonDiv>
         <Button
           type="button"
-          onClick={() =>
+          onClick={() => {
             exitMoim(
               mateId,
               () => setNeedUpdate(prev => prev + 1),
               err => console.log(err),
-            )
-          }
+            );
+
+            excludeFromChatRoom(`${moimId}`, `${useUserInfo.id}`);
+          }}
         >
           참여 취소
         </Button>
-        <Button type="button">채팅방 입장</Button>
+        <Button
+          type="button"
+          onClick={async () => {
+            const chatRoomInfo = await queryChatRoomInfo(`${moimId}`);
+            chatRoomInfo.chatTitle = moimTitle;
+            navigate('/chatRoom', {
+              state: chatRoomInfo,
+            });
+          }}
+        >
+          채팅방 입장
+        </Button>
       </ButtonDiv>
     ),
     4: (
@@ -94,7 +118,18 @@ function MoimCardButtons({ moimId, mateId, mateList, setNeedUpdate }) {
         >
           멤버 관리
         </Button>
-        <Button type="button">채팅방 입장</Button>
+        <Button
+          type="button"
+          onClick={async () => {
+            const chatRoomInfo = await queryChatRoomInfo(`${moimId}`);
+            chatRoomInfo.chatTitle = moimTitle;
+            navigate('/chatRoom', {
+              state: chatRoomInfo,
+            });
+          }}
+        >
+          채팅방 입장
+        </Button>
       </ButtonDiv>
     ),
   };
@@ -118,6 +153,7 @@ MoimCardButtons.propTypes = {
     ),
   ]),
   setNeedUpdate: PropTypes.func,
+  moimTitle: PropTypes.string.isRequired,
 };
 
 MoimCardButtons.defaultProps = {
