@@ -9,12 +9,15 @@ import { evaluateMoim } from '../api/moim';
 import { evaluationAtom } from '../atoms/moim';
 
 const Container = styled.div`
+  max-width: 500px;
+  margin: 0 auto;
+
   @media screen and (max-width: 1024px) {
     padding: 52px 1rem;
   }
 
   @media screen and (min-width: 1025px) {
-    margin: 112px 0 0 130px;
+    margin: 112px auto 0 auto;
     padding: 0 2rem;
   }
 `;

@@ -14,8 +14,10 @@ import {
   orderBy,
   onSnapshot,
   increment,
+  deleteDoc,
 } from 'firebase/firestore';
 import app from './firebase';
+import formatUserInfo from '../utils/formatUserInfo';
 
 const db = getFirestore(app);
 
@@ -23,7 +25,10 @@ const signInFirebase = async payload => {
   const { id } = payload;
   const userRef = doc(db, 'users', id);
   const docSnap = await getDoc(userRef);
-  if (docSnap.exists()) return;
+  if (docSnap.exists()) {
+    alert('id가 겹치는 회원이 있습니다.');
+    return;
+  }
 
   try {
     await setDoc(doc(db, 'users', id), payload);
@@ -36,6 +41,7 @@ const addRoomToUser = async (userId, chatRoomId, type) => {
   const userRoomRef = doc(db, 'users', userId, 'rooms', chatRoomId);
   await setDoc(userRoomRef, {
     countUnreadMessage: 0,
+    joinDate: new Date(),
     type,
   });
 };
@@ -47,7 +53,6 @@ const activateChatRoom = async (userId, chatRoomId) => {
   });
 };
 
-// 채팅방이 unmount 될 때 비활성화
 const deactivateChatRoom = async (userId, chatRoomId) => {
   console.log('deactivate ', userId, ' s', chatRoomId);
   const userRef = doc(db, 'users', userId);
@@ -87,18 +92,14 @@ const sendMessage = async (roomId, content, user) => {
   }
 };
 
-const getCurrentMembers = async chatRoomId => {
-  const roomRef = doc(db, 'rooms', chatRoomId);
-  const docSnap = await getDoc(roomRef);
-  const { members } = docSnap.data();
-  return members;
-};
-
 const increaseUnreadMessage = async (chatRoomId, memberId) => {
-  console.log('increase member', memberId, 's unread message');
   const userRef = doc(db, 'users', memberId);
   const snapShot = await getDoc(userRef);
   const { activatedChatRooms } = snapShot.data();
+
+  // activatedChatRooms 가 한번도 조작되지 않았다면 undefined
+  if (!activatedChatRooms || !activatedChatRooms.length) return;
+
   const userRoomRef = doc(db, 'users', memberId, 'rooms', chatRoomId);
 
   if (!activatedChatRooms.includes(chatRoomId)) {
@@ -150,16 +151,6 @@ const createPrivateRoom = async (pair, user) => {
       id: newRoomRef.id,
       type: 1, // type 2: moim, 1: private,
       members: [pair.id, user.id],
-      membersInfo: [
-        {
-          ...user,
-          joinDate: new Date(),
-        },
-        {
-          ...pair,
-          joinDate: new Date(),
-        },
-      ],
     };
 
     await setDoc(newRoomRef, newRoom); // 방 생성
@@ -174,7 +165,7 @@ const createPrivateRoom = async (pair, user) => {
 
 const getMessages = (selectedChat, callback) => {
   const q = query(
-    collection(db, 'message', selectedChat, 'messages'),
+    collection(db, 'message', selectedChat.id, 'messages'),
     // 내가 join 한 시점 이후의 메세지만
     // where('timestamp', '>', 'joinTimestamp'),
     orderBy('sentAt'),
@@ -188,57 +179,77 @@ const getMessages = (selectedChat, callback) => {
 const getMoimChatRoom = async moimId => {
   const moimRef = doc(db, 'moims', moimId);
   const docSnap = await getDoc(moimRef);
-  // const chatRoomId = docSnap.data().roomId;
-  return docSnap.exists() ? docSnap.data() : null;
+  if (!docSnap.exists()) {
+    console.log('해당 모임이 존재하지 않습니다.');
+    return null;
+  }
+
+  const { roomId } = docSnap.data();
+  const roomRef = doc(db, 'rooms', roomId);
+  const roomDocSnap = await getDoc(roomRef);
+  return roomDocSnap.data();
 };
 
-const checkUserIsInMember = async (chatRoomId, user) => {
-  const roomRef = doc(db, 'rooms', chatRoomId);
-  const roomDocSnap = await getDoc(roomRef);
-  const { members } = roomDocSnap.data();
-  const targetMember = members.find(member => member === user.id);
-
-  if (!targetMember) {
-    await updateDoc(roomRef, {
-      members: arrayUnion(user.id),
-    });
-
-    await updateDoc(roomRef, {
-      membersInfo: arrayUnion({
-        ...user,
-        joinDate: new Date(),
-      }),
-    });
-
-    await addRoomToUser(user.id, chatRoomId, 0);
+const getJoinDate = async (userId, chatRoomId) => {
+  try {
+    const userRoomRef = doc(db, 'users', userId, 'rooms', chatRoomId);
+    const { joinDate } = (await getDoc(userRoomRef)).data();
+    return joinDate;
+  } catch (err) {
+    throw new Error(err);
   }
 };
 
-const createMoimChat = async (moimId, user) => {
+const getMembersInfo = async members => {
+  const usersRef = collection(db, 'users');
+  const q = query(usersRef, where('id', 'in', members));
+  const querySnapshot = await getDocs(q);
+  const membersInfo = querySnapshot.docs.map(snapshot => snapshot.data());
+  return membersInfo;
+};
+
+const joinMoimChat = async (moimId, userId) => {
+  console.log('JOIN MOIM CHAT', moimId, userId);
+  try {
+    const moimRef = doc(db, 'moims', moimId);
+    const docSnap = await getDoc(moimRef);
+    if (!docSnap.exists()) {
+      alert('해당 모임이 존재하지 않습니다.');
+      return;
+    }
+
+    const { roomId } = docSnap.data();
+    const roomRef = doc(db, 'rooms', roomId);
+
+    updateDoc(roomRef, {
+      members: arrayUnion(userId),
+    });
+    addRoomToUser(userId, roomId, 2);
+  } catch (e) {
+    throw new Error(e);
+  }
+};
+
+const createMoimChat = (moimId, userInfo) => {
+  // veteType이 undefined면 에러
+  const user = formatUserInfo(userInfo);
   try {
     // new chat room id
     const newRoomRef = doc(collection(db, 'rooms'));
 
     // new moim
-    await setDoc(doc(db, 'moims', moimId), {
-      id: moimId,
+    setDoc(doc(db, 'moims', moimId), {
       roomId: newRoomRef.id,
     });
 
     const newRoom = {
       id: newRoomRef.id,
       members: [user.id],
-      membersInfo: [
-        {
-          ...user,
-          joinDate: new Date(),
-        },
-      ],
       type: 2, // type 1: private 2: moim
     };
 
-    await setDoc(newRoomRef, newRoom);
-    await addRoomToUser(user.id, newRoomRef.id, 2);
+    setDoc(newRoomRef, newRoom);
+    addRoomToUser(user.id, newRoomRef.id, 2);
     return newRoomRef.id;
   } catch (e) {
     throw new Error(e);
@@ -256,6 +267,52 @@ const saveNotification = async (userId, payload) => {
   await addDoc(notificationRef, notification);
 };
 
+const deleteRoomFromUser = async (roomId, userId) => {
+  const userRoomRef = doc(db, 'users', userId, 'rooms', roomId);
+  await deleteDoc(userRoomRef);
+};
+
+const excludeFromChatRoom = async (moimId, userId) => {
+  try {
+    const moimRef = doc(db, 'moims', moimId);
+    const docSnap = await getDoc(moimRef);
+    if (!docSnap.exists()) {
+      alert('해당 모임이 존재하지 않습니다.');
+      return;
+    }
+
+    const { roomId } = docSnap.data();
+    const roomRef = doc(db, 'rooms', roomId);
+
+    updateDoc(roomRef, {
+      members: arrayRemove(userId),
+    });
+
+    deleteRoomFromUser(roomId, userId);
+  } catch (e) {
+    throw new Error(e);
+  }
+};
+
+const queryChatRoomInfo = async moimId => {
+  const moimChatRoom = await getMoimChatRoom(`${moimId}`);
+
+  if (!moimChatRoom) {
+    alert('해당 모임이 존재하지 않습니다.');
+    return null;
+  }
+
+  const joinDate = await getJoinDate('1', moimChatRoom.id); // userId, roomId
+  const membersInfo = await getMembersInfo(moimChatRoom.members);
+  const chatRoom = {
+    ...moimChatRoom,
+    joinDate,
+    membersInfo,
+  };
+
+  return chatRoom;
+};
+
 export {
   signInFirebase,
   sendMessage,
@@ -265,10 +322,11 @@ export {
   deactivateChatRoom,
   getMessages,
   getMoimChatRoom,
-  checkUserIsInMember,
   createMoimChat,
-  getCurrentMembers,
   increaseUnreadMessage,
   resetUnreadMessage,
   saveNotification,
+  joinMoimChat,
+  excludeFromChatRoom,
+  queryChatRoomInfo,
 };

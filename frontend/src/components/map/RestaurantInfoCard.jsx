@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import StarIcon from '@mui/icons-material/Star';
 import resImg from '../../assets/logo.png';
@@ -22,7 +23,7 @@ const Text = styled.div`
 const VegeTypeLst = styled.div`
   display: flex;
   .vege-type {
-    width: 35px;
+    width: 43px;
     height: 17px;
     border-radius: 15px;
     background-color: #fcb448;
@@ -68,24 +69,37 @@ const RestaurantRate = styled.div`
   }
 `;
 
-function RestaurantInfoCard() {
-  const category = '한식';
-  const score = '4.5';
-  const name = '불난버섯집';
-  const address = '평택시 고덕면';
-  const vegeTypes = '락토';
+function RestaurantInfoCard({ arrayResult }) {
+  const categoryLst = [
+    '한식',
+    '양식',
+    '일식',
+    '중식',
+    '분식',
+    '동남아',
+    '인도/중동',
+    '술집',
+    '카페',
+    '베이커리',
+  ];
+  const { category, score } = arrayResult;
+  const { name, address } = arrayResult.res_info;
+  const VegeTypes = arrayResult.res_info.vege_types.split(' ');
   return (
     <Container>
       <Img src={resImg} alt="restaurant-img" />
       <Text>
         <VegeTypeLst>
-          <div className="vege-type">{vegeTypes}</div>
-          <div className="vege-type">{vegeTypes}</div>
+          {VegeTypes.map((vegeType, idx) => (
+            <div key={idx && vegeType} className="vege-type">
+              {vegeType}
+            </div>
+          ))}
         </VegeTypeLst>
         <RestaurantInfo>
           <div className="restaurant-name">
             <p className="name">{name}</p>
-            <p className="category">{category}</p>
+            <p className="category">{categoryLst[category]}</p>
           </div>
           <div className="restaurant-address">
             <p>{address}</p>
@@ -99,5 +113,7 @@ function RestaurantInfoCard() {
     </Container>
   );
 }
-
+RestaurantInfoCard.propTypes = {
+  arrayResult: PropTypes.shape().isRequired,
+};
 export default RestaurantInfoCard;

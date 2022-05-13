@@ -9,11 +9,12 @@ import {
   sendMessage,
   activateChatRoom,
   deactivateChatRoom,
-  getCurrentMembers,
   increaseUnreadMessage,
   resetUnreadMessage,
 } from '../../service/chat_service';
 import GoBackBar from '../common/GoBackBar';
+import useUserInfo from '../../hooks/useUserInfo';
+import formatUserInfo from '../../utils/formatUserInfo';
 
 const StyledChatRoom = styled.div`
   width: 100%;
@@ -41,23 +42,19 @@ const StyledChatRoom = styled.div`
 `;
 
 function ChatRoom({ selectedChat, isFromChatPage }) {
+  const userInfo = useUserInfo();
+  const user = formatUserInfo(userInfo);
   const [messages, setMessages] = useState([]);
   const messageRef = useRef();
   const location = useLocation();
-  const user = {
-    id: '1',
-    veganType: 1,
-    nickname: '1번유저',
-  };
-
   const currentChat = isFromChatPage ? selectedChat : location.state;
+  const { members } = currentChat; // 나중에 실시간으로 member listen ?
 
   const handleSend = async () => {
     const content = messageRef.current.value;
     if (!content) return;
 
     await sendMessage(currentChat.id, content, user);
-    const members = await getCurrentMembers(currentChat.id);
 
     for (let i = 0; i < members.length; i += 1) {
       if (members[i] !== user.id) {
@@ -78,7 +75,7 @@ function ChatRoom({ selectedChat, isFromChatPage }) {
       );
     };
 
-    const unsubscribe = getMessages(currentChat.id, callback);
+    const unsubscribe = getMessages(currentChat, callback);
     activateChatRoom(user.id, currentChat.id);
     resetUnreadMessage(user.id, currentChat.id);
 
@@ -119,14 +116,15 @@ ChatRoom.propTypes = {
       PropTypes.shape({
         id: PropTypes.string,
         nickname: PropTypes.string,
-        veganType: PropTypes.number,
-        joinDate: PropTypes.shape({
-          nanoseconds: PropTypes.number,
-          seconds: PropTypes.number,
-        }),
+        vegeType: PropTypes.number,
       }),
     ),
     type: PropTypes.number.isRequired,
+    chatTitle: PropTypes.string.isRequired,
+    joinDate: PropTypes.shape({
+      nanoseconds: PropTypes.number,
+      seconds: PropTypes.number,
+    }),
   }),
   isFromChatPage: PropTypes.bool,
 };
