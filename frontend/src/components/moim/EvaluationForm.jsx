@@ -156,9 +156,9 @@ function EvaluationForm({ selectedMateId, selectedMateNickname }) {
                   type="checkbox"
                   name="evaluation"
                   label={evaluationItem}
-                  value={idx + 1}
+                  value={idx}
                   onChange={e => handleCheckChange(e)}
-                  checked={getChecked(idx + 1)}
+                  checked={getChecked(idx)}
                   sx={{
                     color: '#a9a9a9',
                     '&.Mui-checked': {

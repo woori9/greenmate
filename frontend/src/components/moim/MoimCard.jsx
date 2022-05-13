@@ -39,8 +39,9 @@ const Card = styled.div`
         `}
   .status-text {
     display: inline-block;
-    background-color: #92c769;
+    color: #92c769;
     padding: 0.5rem;
+    border: 2px solid #92c769;
     border-radius: 50px;
     margin-left: 0.5rem;
   }
