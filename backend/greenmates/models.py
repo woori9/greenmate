@@ -1,10 +1,13 @@
 import os
-from unicodedata import category
-from django.db import models
 from django.conf import settings
-from uuid import uuid4
+from django.core.validators import (
+    MinValueValidator, 
+    MaxValueValidator
+)
 from django.utils import timezone
-
+from django.db import models
+from uuid import uuid4
+from unicodedata import category
 
 # def image_path(instance, filename):
 #     username = instance.username
@@ -27,8 +30,9 @@ class RestaurantInfo(models.Model):
     '''
     다국어 서비스 정보
     '''
+    LAN_CHOICE = [(0, 0), (1, 1)]
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
-    language = models.IntegerField()
+    language = models.IntegerField(choices=LAN_CHOICE)
     name = models.CharField(max_length=255)
     address = models.TextField()
     menus = models.TextField()
@@ -42,11 +46,11 @@ class Moim(models.Model):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=30)
-    content = models.TextField()
+    content = models.TextField(max_length=100)
     content_trans = models.TextField()
-    status = models.IntegerField(default=0)
+    status = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(3)], default=0)
     time = models.DateTimeField()
-    head_cnt = models.IntegerField()
+    head_cnt = models.IntegerField(validators=[MinValueValidator(2), MaxValueValidator(20)])
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -56,11 +60,11 @@ class Moim(models.Model):
 
 class Mate(models.Model):
     '''
-    is_joined: 0(대기)/1(합류)/2(거절)
+    mate_status: 0(대기)/1(합류)/2(거절)/3(모임 취소)/4(모임 완료)
     '''
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     moim = models.ForeignKey(Moim, on_delete=models.CASCADE)
-    mate_status = models.IntegerField(default=0)
+    mate_status = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(4)], default=0)
 
 
 class UserReview(models.Model):
@@ -69,15 +73,18 @@ class UserReview(models.Model):
     '''
     me = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='you', on_delete=models.CASCADE) 
     mate = models.ForeignKey(Mate, on_delete=models.PROTECT)
-    score = models.IntegerField()
+    score = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(2)])
     created_at = models.DateTimeField(auto_now_add=True)
     # me = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='evaluator')
     # you = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='target')
 
 
 class UserEvaluation(models.Model):
+    '''
+    evaluation: 0/1/2/3
+    '''
     user_review = models.ForeignKey(UserReview, on_delete=models.PROTECT)
-    evaluation = models.IntegerField()
+    evaluation = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(3)])
 
 
 class Feed(models.Model):
@@ -86,11 +93,11 @@ class Feed(models.Model):
     '''
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, null=True)
-    score = models.IntegerField(null=True)
-    category = models.IntegerField()
+    score = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)], null=True)
+    category = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(3)])
     content = models.CharField(max_length=100)
     content_trans = models.TextField()
-    vege_type = models.IntegerField(null=True)
+    vege_type = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(6)], null=True)
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_feeds')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -113,7 +120,7 @@ class Comment(models.Model):
     feed = models.ForeignKey(Feed, on_delete=models.CASCADE)
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True)
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_comments')
-    content = models.TextField()
+    content = models.TextField(max_length=100)
     content_trans = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
