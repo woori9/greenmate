@@ -1,42 +1,13 @@
-# ★★★★★ ENTER 금지 ★★★★★★
-
 from django.urls import path
-from .views import noti_ma, noti_sm, noti_wr
+from .views import (
+    create_update_token,
+    delete_token,
+    send_chat_alarm
+)
 
 
 urlpatterns = [
-    # 1
-
-
-
-
-
-
-
-
-
-
-    # 2
-
-
-
-
-
-
-
-
-
-
-    # 3
-    path('test/', noti_wr.test),
-
-
-
-
-
-
-
-
-
-
+    path('set/', create_update_token),
+    path('cancel/<int:token_id>/', delete_token),
+    path('chat/<int:moim_id>/', send_chat_alarm),
 ]
