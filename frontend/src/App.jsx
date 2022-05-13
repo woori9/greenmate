@@ -24,7 +24,7 @@ import MyPageSetting from './routes/MyPageSetting';
 import Chat from './routes/Chat';
 import BottomSheetBase from './components/common/BottomSheetBase';
 import ChatRoom from './components/chat/ChatRoom';
-import Test from './routes/Test';
+// import Test from './routes/Test';
 import { checkToken, onMessageListener } from './service/notification_service';
 import useNotificationStatus from './hooks/useNotification';
 import { deleteToken } from './api/notification';
@@ -94,7 +94,7 @@ function App() {
         <Route path="/mypage/:userPk/setting" element={<MyPageSetting />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="/chatRoom" element={<ChatRoom />} />
-        <Route path="/test" element={<Test />} />
+        {/* <Route path="/test" element={<Test />} /> */}
       </Routes>
       <BottomSheetBase />
     </BrowserRouter>

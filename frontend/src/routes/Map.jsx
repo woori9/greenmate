@@ -123,9 +123,9 @@ function Map() {
     // 식당 리스트
     const restauAllLst = await apiGetAllRestau();
     const imgSrc = mapPinImg;
+    const imgSize = new kakao.maps.Size(80, 80);
+    const imgOption = { offset: new kakao.maps.Point(27, 69) };
     for (let i = 0; i < restauAllLst.length; i += 1) {
-      const imgSize = new kakao.maps.Size(80, 80);
-      const imgOption = { offset: new kakao.maps.Point(27, 69) };
       const markerImg = new kakao.maps.MarkerImage(imgSrc, imgSize, imgOption);
       const latLng = new kakao.maps.LatLng(
         restauAllLst[i].latitude,
