@@ -88,7 +88,7 @@ def send_moim_chat_alarm(request, moim_id):
     
     moim_title = moim.title[:6]
     token_list = list(tokens)
-    body = f'[{moim_title}…] {user.nickname}님이 메세지를 보냈습니다.'
+    body = f'[{moim_title}…] {user.nickname}님이 메시지를 보냈습니다.'
 
     if send_message(token_list, body):
         return Response(status=HTTP_200_OK)
@@ -117,7 +117,7 @@ def send_personal_chat_alarm(request, user_id):
         return Response(data='메세지 알림을 허용하지 않은 사용자 입니다.', status=HTTP_204_NO_CONTENT)
 
     token_list = list(tokens)
-    body = f'{me.nickname}님이 메세지를 보냈습니다.'
+    body = f'{me.nickname}님이 메시지를 보냈습니다.'
 
     if send_message(token_list, body):
         return Response(status=HTTP_200_OK)
