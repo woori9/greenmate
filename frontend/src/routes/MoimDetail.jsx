@@ -14,6 +14,8 @@ import GoBackBar from '../components/common/GoBackBar';
 import UserInfo from '../components/moim/UserInfo';
 import ProfileImage from '../components/common/ProfileImage';
 import ConfirmDeleteMoim from '../components/moim/ConfirmDeleteMoim';
+import { openSheetAtom } from '../atoms/bottomSheet';
+import { userInfoAtom } from '../atoms/accounts';
 import { formattedDatetime } from '../utils/formattedDate';
 import { diff2hour } from '../utils/timestamp';
 import {
@@ -21,11 +23,12 @@ import {
   exitMoim,
   cancleApplyMoim,
   getMoimDetail,
+  getMoimContentTranslation,
 } from '../api/moim';
-import { openSheetAtom } from '../atoms/bottomSheet';
-import { userInfoAtom } from '../atoms/accounts';
 import { snakeToCamel } from '../utils/formatKey';
 import useWindowDimensions from '../utils/windowDimension';
+
+import useUserInfo from '../hooks/useUserInfo';
 
 const Container = styled.div`
   @media screen and (max-width: 1024px) {
@@ -178,6 +181,7 @@ function MoimDetail() {
     status: null,
     time: null,
   });
+  const [translation, setTranslation] = useState('');
   const [needUpdate, setNeedUpdate] = useState(0);
   const [, setOpen] = useAtom(openSheetAtom);
   const [userInfo] = useAtom(userInfoAtom);
@@ -314,7 +318,20 @@ function MoimDetail() {
             <dd>
               {moimInfo.restaurant.name}
               {/* TODO: 지도 연결 */}
-              <button className="go-map-btn" type="button">
+              <button
+                className="go-map-btn"
+                type="button"
+                onClick={() =>
+                  navigate('/map', {
+                    state: {
+                      selectedRestauId: moimInfo.restaurant.id,
+                      selectedRestauName: moimInfo.restaurant.name,
+                      selectedRestauLat: moimInfo.restaurant.latitude,
+                      selectedRestauLong: moimInfo.restaurant.longitude,
+                    },
+                  })
+                }
+              >
                 지도 보기
               </button>
             </dd>
@@ -336,6 +353,19 @@ function MoimDetail() {
             <CommentIcon sx={{ color: '#a9a9a9', marginRight: '0.5rem' }} />
           </dd>
           <dd>{moimInfo.content}</dd>
+          {useUserInfo.language !== 0 && (
+            <button
+              type="button"
+              onClick={() => {
+                getMoimContentTranslation(moimInfo.id, res =>
+                  setTranslation(res.data.content_tran),
+                );
+              }}
+            >
+              번역 보기
+            </button>
+          )}
+          {translation && translation.length > 0 && <dd>{translation}</dd>}
         </div>
       </DataList>
 
