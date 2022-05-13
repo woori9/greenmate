@@ -13,16 +13,22 @@ function Comment({ feedId }) {
     getComments();
   }, []);
   return (
-    <CardContent>
-      {comments.map(comment => (
-        <div key={comment.id}>
-          <h1>{comment.id}</h1>
-          <p>{comment.nickname}</p>
-          <p>{comment.created_at}</p>
-          <p>{comment.is_like}</p>
-        </div>
-      ))}
-    </CardContent>
+    <div>
+      {comments ? (
+        <CardContent>댓글이 없습니다.</CardContent>
+      ) : (
+        <CardContent>
+          {comments.map(comment => (
+            <div key={comment.id}>
+              <h1>{comment.id}</h1>
+              <p>{comment.nickname}</p>
+              <p>{comment.created_at}</p>
+              <p>{comment.is_like}</p>
+            </div>
+          ))}
+        </CardContent>
+      )}
+    </div>
   );
 }
 
