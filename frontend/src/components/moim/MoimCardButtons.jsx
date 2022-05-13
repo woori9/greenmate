@@ -6,7 +6,8 @@ import { categoryAtom } from '../../atoms/moim';
 import { cancleApplyMoim, exitMoim } from '../../api/moim';
 import {
   excludeFromChatRoom,
-  queryMoimChatRoomInfo,
+  getMoimChatRoom,
+  getJoinDate,
 } from '../../service/chat_service';
 import useUserInfo from '../../hooks/useUserInfo';
 
@@ -77,14 +78,20 @@ function MoimCardButtons({ moimInfo, setNeedUpdate }) {
         <Button
           type="button"
           onClick={async () => {
-            const chatRoomInfo = await queryMoimChatRoomInfo(
-              `${moimInfo.id}`,
-              `${userInfo.id}`,
-            );
-            chatRoomInfo.chatTitle = moimInfo.title;
-            chatRoomInfo.notificationTargetId = `${moimInfo.id}`;
+            const chatRoom = await getMoimChatRoom(`${moimInfo.id}`);
+
+            if (!chatRoom) {
+              alert('해당 모임이 존재하지 않습니다.');
+              return;
+            }
+
+            const joinDate = await getJoinDate(`${userInfo.id}`, chatRoom.id); // userId, roomId
+
+            chatRoom.joinDate = joinDate;
+            chatRoom.chatTitle = moimInfo.title;
+            chatRoom.notificationTargetId = `${moimInfo.id}`;
             navigate('/chatRoom', {
-              state: chatRoomInfo,
+              state: chatRoom,
             });
           }}
         >
@@ -139,14 +146,20 @@ function MoimCardButtons({ moimInfo, setNeedUpdate }) {
         <Button
           type="button"
           onClick={async () => {
-            const chatRoomInfo = await queryMoimChatRoomInfo(
-              `${moimInfo.id}`,
-              `${userInfo.id}`,
-            );
-            chatRoomInfo.chatTitle = moimInfo.title;
-            chatRoomInfo.notificationTargetId = `${moimInfo.id}`;
+            const chatRoom = await getMoimChatRoom(`${moimInfo.id}`);
+
+            if (!chatRoom) {
+              alert('해당 모임이 존재하지 않습니다.');
+              return;
+            }
+
+            const joinDate = await getJoinDate(`${userInfo.id}`, chatRoom.id); // userId, roomId
+
+            chatRoom.joinDate = joinDate;
+            chatRoom.chatTitle = moimInfo.title;
+            chatRoom.notificationTargetId = `${moimInfo.id}`;
             navigate('/chatRoom', {
-              state: chatRoomInfo,
+              state: chatRoom,
             });
           }}
         >

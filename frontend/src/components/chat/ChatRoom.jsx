@@ -130,20 +130,14 @@ ChatRoom.propTypes = {
   selectedChat: PropTypes.shape({
     id: PropTypes.string,
     members: PropTypes.arrayOf(PropTypes.string),
-    membersInfo: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.string,
-        nickname: PropTypes.string,
-        vegeType: PropTypes.number,
-      }),
-    ),
+    membersInfo: PropTypes.shape(),
     type: PropTypes.number.isRequired,
     chatTitle: PropTypes.string.isRequired,
     joinDate: PropTypes.shape({
       nanoseconds: PropTypes.number,
       seconds: PropTypes.number,
     }),
-    notificationTargetId: PropTypes.string,
+    notificationTargetId: PropTypes.string.isRequired,
   }),
   isFromChatPage: PropTypes.bool,
 };

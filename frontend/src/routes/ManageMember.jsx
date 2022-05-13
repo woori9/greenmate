@@ -171,7 +171,7 @@ function ManageMember() {
                     type="button"
                     onClick={() => {
                       accept(member.id);
-                      joinMoimChat(moimId, `${member.userId}`);
+                      joinMoimChat(moimId, member);
                     }}
                   >
                     수락
