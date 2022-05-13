@@ -10,7 +10,7 @@ import ScaleIcon from '@mui/icons-material/Scale';
 import RoomServiceIcon from '@mui/icons-material/RoomService';
 import AdjustIcon from '@mui/icons-material/Adjust';
 import { createFeed } from '../api/community';
-import RestaurantSearch from '../components/common/RestaurantSearch';
+import RestaurantSearchForm from '../components/common/RestaurantSearchForm';
 import Rating from '../components/community/rating';
 
 const Form = styled.form`
@@ -344,7 +344,7 @@ function CommunityForm() {
       </Stack>
       {isCategoryClick === 2 ? (
         <div className="review_margin">
-          <RestaurantSearch
+          <RestaurantSearchForm
             searchKeyword={searchKeyword}
             setSearchKeyword={setSearchKeyword}
             setSelectedRestaurantId={setSelectedRestaurantId}
