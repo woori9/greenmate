@@ -14,6 +14,8 @@ import GoBackBar from '../components/common/GoBackBar';
 import UserInfo from '../components/moim/UserInfo';
 import ProfileImage from '../components/common/ProfileImage';
 import ConfirmDeleteMoim from '../components/moim/ConfirmDeleteMoim';
+import { openSheetAtom } from '../atoms/bottomSheet';
+import { userInfoAtom } from '../atoms/accounts';
 import { formattedDatetime } from '../utils/formattedDate';
 import { diff2hour } from '../utils/timestamp';
 import {
@@ -21,11 +23,12 @@ import {
   exitMoim,
   cancleApplyMoim,
   getMoimDetail,
+  getMoimContentTranslation,
 } from '../api/moim';
-import { openSheetAtom } from '../atoms/bottomSheet';
-import { userInfoAtom } from '../atoms/accounts';
 import { snakeToCamel } from '../utils/formatKey';
 import useWindowDimensions from '../utils/windowDimension';
+
+import useUserInfo from '../hooks/useUserInfo';
 
 const Container = styled.div`
   @media screen and (max-width: 1024px) {
@@ -33,8 +36,7 @@ const Container = styled.div`
   }
 
   @media screen and (min-width: 1025px) {
-    margin: 112px 0 0 130px;
-    padding: 0 10rem;
+    padding: 112px 10rem 0 calc(130px + 10rem);
   }
 `;
 
@@ -81,7 +83,7 @@ const MainBox = styled.div`
   }
 
   @media screen and (min-width: 1025px) {
-    margin-top: calc(112px + 4rem);
+    margin-top: 4rem;
   }
 `;
 
@@ -107,17 +109,38 @@ const DataList = styled.dl`
       margin-bottom: 0.5rem;
     }
 
+    .mini-btn {
+      color: #f5a468;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
     .restaurant-data {
       display: flex;
       flex-direction: column;
+    }
+  }
 
-      .go-map-btn {
-        color: #f5a468;
-        background: none;
-        border: none;
-        margin-left: 0.5rem;
-        cursor: pointer;
-      }
+  .translation-box {
+    display: flex;
+    flex-flow: column wrap;
+
+    div {
+      display: flex;
+      flex-flow: row wrap;
+    }
+
+    button {
+      display: inline-block;
+      text-align: left;
+      padding: 0;
+      margin-left: 32px;
+    }
+
+    .translation-txt {
+      margin-top: 0.8rem;
+      margin-left: 32px;
     }
   }
 `;
@@ -179,6 +202,7 @@ function MoimDetail() {
     status: null,
     time: null,
   });
+  const [translation, setTranslation] = useState('');
   const [needUpdate, setNeedUpdate] = useState(0);
   const [, setOpen] = useAtom(openSheetAtom);
   const [userInfo] = useAtom(userInfoAtom);
@@ -315,7 +339,20 @@ function MoimDetail() {
             <dd>
               {moimInfo.restaurant.name}
               {/* TODO: 지도 연결 */}
-              <button className="go-map-btn" type="button">
+              <button
+                className="mini-btn"
+                type="button"
+                onClick={() =>
+                  navigate('/map', {
+                    state: {
+                      selectedRestauId: moimInfo.restaurant.id,
+                      selectedRestauName: moimInfo.restaurant.name,
+                      selectedRestauLat: moimInfo.restaurant.latitude,
+                      selectedRestauLong: moimInfo.restaurant.longitude,
+                    },
+                  })
+                }
+              >
                 지도 보기
               </button>
             </dd>
@@ -331,12 +368,28 @@ function MoimDetail() {
           <dd>{moimInfo.headCnt}명</dd>
         </div>
 
-        <div className="info-data">
+        <div className="info-data translation-box">
           <dt className="sr-only">내용</dt>
-          <dd>
-            <CommentIcon sx={{ color: '#a9a9a9', marginRight: '0.5rem' }} />
-          </dd>
-          <dd>{moimInfo.content}</dd>
+          <div>
+            <dd>
+              <CommentIcon sx={{ color: '#a9a9a9', marginRight: '0.5rem' }} />
+            </dd>
+            <dd>{moimInfo.content}</dd>
+          </div>
+          {useUserInfo.language !== 0 && (
+            <button
+              type="button"
+              className="mini-btn translate-btn"
+              onClick={() => {
+                getMoimContentTranslation(moimInfo.id, res => {
+                  setTranslation(res.data.content_trans);
+                });
+              }}
+            >
+              번역 보기
+            </button>
+          )}
+          <dd className="translation-txt">{translation}</dd>
         </div>
       </DataList>
 

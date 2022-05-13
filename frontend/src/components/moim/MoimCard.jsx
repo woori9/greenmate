@@ -15,6 +15,8 @@ import { snakeToCamel } from '../../utils/formatKey';
 import useWindowDimensions from '../../utils/windowDimension';
 
 const Card = styled.div`
+  margin-top: 1rem;
+
   ${props =>
     props.hasBorder
       ? css`
@@ -35,6 +37,14 @@ const Card = styled.div`
             margin-bottom: 1rem;
           }
         `}
+  .status-text {
+    display: inline-block;
+    color: #92c769;
+    padding: 0.5rem;
+    border: 2px solid #92c769;
+    border-radius: 50px;
+    margin-left: 0.5rem;
+  }
 `;
 
 const ProfileWithInfo = styled.div`
@@ -90,7 +100,9 @@ function MoimCard({ moimInfo, setNeedUpdate, showStatus }) {
         role="button"
         tabIndex="0"
       >
-        {showStatus && <p>{moimStatus[moimInfo.status]}</p>}
+        {showStatus && (
+          <span className="status-text">{moimStatus[moimInfo.status]}</span>
+        )}
         <ProfileWithInfo>
           <ProfileImage vegeType={moimInfo.author.vegeType} isBig />
           <div>
@@ -126,13 +138,7 @@ function MoimCard({ moimInfo, setNeedUpdate, showStatus }) {
         </ProfileWithInfo>
       </div>
       {[0, 1, 4, 5].includes(selectedCategory) && (
-        <MoimCardButtons
-          moimId={moimInfo.id}
-          mateId={moimInfo.userMateId}
-          mateList={moimInfo.mates}
-          setNeedUpdate={setNeedUpdate}
-          moimTitle={moimInfo.title}
-        />
+        <MoimCardButtons moimInfo={moimInfo} setNeedUpdate={setNeedUpdate} />
       )}
     </Card>
   );
@@ -171,6 +177,7 @@ MoimCard.propTypes = {
       id: PropTypes.number,
       name: PropTypes.string,
     }),
+    isEvaluated: PropTypes.bool,
   }).isRequired,
   setNeedUpdate: PropTypes.func,
   showStatus: PropTypes.bool.isRequired,

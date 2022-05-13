@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
 import ResponsiveMapNavbar from '../components/common/navbar/ResponsiveMapNavbar';
@@ -85,6 +86,9 @@ function Map() {
   const [searchResults, setSearchResults] = useState([]);
   const [summaryRestau, setSummaryRestau] = useState({});
   const [detailRestau, setDetailRestau] = useState({});
+  const location = useLocation();
+  let selectedRestau;
+
   const getSearchRestau = inputKeyword => {
     apiGetSearchRestau(
       { keyword: inputKeyword },
@@ -92,6 +96,7 @@ function Map() {
       () => alert('검색에 실패했습니다'),
     );
   };
+
   const getSummaryRestau = inputRestauPk => {
     apiGetSummaryRestau(
       { restauId: inputRestauPk },
@@ -102,6 +107,7 @@ function Map() {
       () => alert('검색에 실패했습니다'),
     );
   };
+
   const getDetailRestau = inputRestauPk => {
     apiGetDetailRestau(
       { restauId: inputRestauPk },
@@ -112,6 +118,7 @@ function Map() {
       () => alert('검색에 실패했습니다'),
     );
   };
+
   const markingAllRestau = async () => {
     const container = document.getElementById('myMap'); // 지도를 담을 영역의 DOM 레퍼런스
     const options = {
@@ -143,9 +150,26 @@ function Map() {
       });
     }
   };
+
   useEffect(() => {
     markingAllRestau();
+    if (location.state) {
+      const {
+        selectedRestauName,
+        selectedRestauId,
+        selectedRestauLat,
+        selectedRestauLong,
+      } = location.state;
+      selectedRestau = {
+        selectedRestauName,
+        selectedRestauId,
+        selectedRestauLat,
+        selectedRestauLong,
+      };
+      console.log(selectedRestau);
+    }
   }, []);
+
   return (
     <>
       <ResponsiveMapNavbar />
