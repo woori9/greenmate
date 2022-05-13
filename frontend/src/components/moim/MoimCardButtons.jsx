@@ -6,7 +6,7 @@ import { categoryAtom } from '../../atoms/moim';
 import { cancleApplyMoim, exitMoim } from '../../api/moim';
 import {
   excludeFromChatRoom,
-  queryChatRoomInfo,
+  queryMoimChatRoomInfo,
 } from '../../service/chat_service';
 import useUserInfo from '../../hooks/useUserInfo';
 
@@ -73,7 +73,10 @@ function MoimCardButtons({
         <Button
           type="button"
           onClick={async () => {
-            const chatRoomInfo = await queryChatRoomInfo(`${moimId}`);
+            const chatRoomInfo = await queryMoimChatRoomInfo(
+              `${moimId}`,
+              `${useUserInfo.id}`,
+            );
             chatRoomInfo.chatTitle = moimTitle;
             navigate('/chatRoom', {
               state: chatRoomInfo,
@@ -121,7 +124,10 @@ function MoimCardButtons({
         <Button
           type="button"
           onClick={async () => {
-            const chatRoomInfo = await queryChatRoomInfo(`${moimId}`);
+            const chatRoomInfo = await queryMoimChatRoomInfo(
+              `${moimId}`,
+              `${useUserInfo.id}`,
+            );
             chatRoomInfo.chatTitle = moimTitle;
             navigate('/chatRoom', {
               state: chatRoomInfo,
