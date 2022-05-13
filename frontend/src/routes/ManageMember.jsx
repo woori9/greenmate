@@ -6,7 +6,8 @@ import { useAtom } from 'jotai';
 import DesktopNavbar from '../components/common/navbar/DesktopNavbar';
 import GoBackBar from '../components/common/GoBackBar';
 import UserInfo from '../components/moim/UserInfo';
-import ConfirmExitMember from '../components/moim/ConfirmExitMember';
+import DesktopConfirmExitMember from '../components/moim/confirmExit/DesktopConfirmExitMember';
+import MobileConfirmExitMember from '../components/moim/confirmExit/MobileConfirmExitMember';
 import { openSheetAtom } from '../atoms/bottomSheet';
 import { getMoimDetail, acceptGuest, declineGuest } from '../api/moim';
 import { snakeToCamel } from '../utils/formatKey';
@@ -190,19 +191,29 @@ function ManageMember() {
                 <UserInfo userInfo={member} />
                 <LogoutIcon
                   onClick={() => {
-                    setOpen({
-                      open: true,
-                      component: (
-                        <ConfirmExitMember
-                          mateId={member.id}
-                          userId={member.userId}
-                          moimId={moimId}
-                          setNeedUpdate={setNeedUpdate}
-                        />
-                      ),
-                    });
+                    if (width > 1024) {
+                      document.querySelector('#dialog').showModal();
+                    } else {
+                      setOpen({
+                        open: true,
+                        component: (
+                          <MobileConfirmExitMember
+                            mateId={member.id}
+                            userId={member.userId}
+                            moimId={moimId}
+                            setNeedUpdate={setNeedUpdate}
+                          />
+                        ),
+                      });
+                    }
                   }}
                   sx={{ color: '#797979' }}
+                />
+                <DesktopConfirmExitMember
+                  mateId={member.id}
+                  userId={member.userId}
+                  moimId={moimId}
+                  setNeedUpdate={setNeedUpdate}
                 />
               </li>
             ))}
