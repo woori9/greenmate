@@ -84,7 +84,7 @@ def send_moim_chat_alarm(request, moim_id):
     tokens = FirebaseToken.objects.filter(user__mate__moim_id=moim_id).values_list('registration_token', flat=True).exclude(user=user)
 
     if not tokens:
-        return Response(data='메세지 보낼 사람이 없습니다.', status=HTTP_204_NO_CONTENT)
+        return Response(data='메시지 보낼 사람이 없습니다.', status=HTTP_204_NO_CONTENT)
     
     moim_title = moim.title[:6]
     token_list = list(tokens)
@@ -114,7 +114,7 @@ def send_personal_chat_alarm(request, user_id):
     
     tokens = FirebaseToken.objects.filter(user=you).values_list('registration_token', flat=True)
     if not tokens:
-        return Response(data='메세지 알림을 허용하지 않은 사용자 입니다.', status=HTTP_204_NO_CONTENT)
+        return Response(data='메시지 알림을 허용하지 않은 사용자 입니다.', status=HTTP_204_NO_CONTENT)
 
     token_list = list(tokens)
     body = f'{me.nickname}님이 메시지를 보냈습니다.'
