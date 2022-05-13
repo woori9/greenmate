@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ..models import Moim, Mate
+from ..models import Moim, Mate, UserReview
 from accounts.serializers import UserSerializer
 from .restaurant import (
     RestaurantMoimDataSerializer
@@ -99,7 +99,24 @@ class MoimAllSerializer(MoimSimpleSerializer):
 
     def get_mates(self, obj):
         return MateSerializer(obj.mate_set, many=True).data
-   
+
+# 기본 모임 정보 + 식당정보 + mate_status 전부 + 평가 여부
+class MoimFinishedSerializer(MoimAllSerializer):
+    is_evaluated = serializers.SerializerMethodField() 
+    
+    class Meta:
+        model = Moim
+        fields = (
+            'id','author',
+            'title', 'content', 'status', 'time', 'head_cnt', 'now_cnt',
+            'mates', 'restaurant', 'is_evaluated'
+            )
+
+    def get_is_evaluated(self, obj):
+        if UserReview.objects.filter(mate__moim=obj, me=self.context['user']).exists():
+            return True
+        return False
+        
 # 번역된 글 
 class MoimTransSerializer(serializers.ModelSerializer):
     class Meta:
