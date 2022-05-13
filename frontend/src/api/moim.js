@@ -29,6 +29,14 @@ export function getMoimDetail(moimId, res, err) {
   apiInstance.get(`/greenmates/mates/${moimId}/`).then(res).catch(err);
 }
 
+/* 모임 상세 내용 번역 보기 */
+export function getMoimContentTranslation(moimId, res, err) {
+  apiInstance
+    .get(`/greenmates/mates/translate/${moimId}/`)
+    .then(res)
+    .catch(err);
+}
+
 /* 모임 검색 및 필터 */
 export function searchMoim(word, period, day, res, err) {
   apiInstance

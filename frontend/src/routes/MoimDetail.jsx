@@ -109,17 +109,38 @@ const DataList = styled.dl`
       margin-bottom: 0.5rem;
     }
 
+    .mini-btn {
+      color: #f5a468;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
     .restaurant-data {
       display: flex;
       flex-direction: column;
+    }
+  }
 
-      .go-map-btn {
-        color: #f5a468;
-        background: none;
-        border: none;
-        margin-left: 0.5rem;
-        cursor: pointer;
-      }
+  .translation-box {
+    display: flex;
+    flex-flow: column wrap;
+
+    div {
+      display: flex;
+      flex-flow: row wrap;
+    }
+
+    button {
+      display: inline-block;
+      text-align: left;
+      padding: 0;
+      margin-left: 32px;
+    }
+
+    .translation-txt {
+      margin-top: 0.8rem;
+      margin-left: 32px;
     }
   }
 `;
@@ -319,7 +340,7 @@ function MoimDetail() {
               {moimInfo.restaurant.name}
               {/* TODO: 지도 연결 */}
               <button
-                className="go-map-btn"
+                className="mini-btn"
                 type="button"
                 onClick={() =>
                   navigate('/map', {
@@ -347,25 +368,28 @@ function MoimDetail() {
           <dd>{moimInfo.headCnt}명</dd>
         </div>
 
-        <div className="info-data">
+        <div className="info-data translation-box">
           <dt className="sr-only">내용</dt>
-          <dd>
-            <CommentIcon sx={{ color: '#a9a9a9', marginRight: '0.5rem' }} />
-          </dd>
-          <dd>{moimInfo.content}</dd>
+          <div>
+            <dd>
+              <CommentIcon sx={{ color: '#a9a9a9', marginRight: '0.5rem' }} />
+            </dd>
+            <dd>{moimInfo.content}</dd>
+          </div>
           {useUserInfo.language !== 0 && (
             <button
               type="button"
+              className="mini-btn translate-btn"
               onClick={() => {
-                getMoimContentTranslation(moimInfo.id, res =>
-                  setTranslation(res.data.content_tran),
-                );
+                getMoimContentTranslation(moimInfo.id, res => {
+                  setTranslation(res.data.content_trans);
+                });
               }}
             >
               번역 보기
             </button>
           )}
-          {translation && translation.length > 0 && <dd>{translation}</dd>}
+          <dd className="translation-txt">{translation}</dd>
         </div>
       </DataList>
 
