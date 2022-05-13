@@ -20,23 +20,26 @@ import useWindowDimensions from '../../utils/windowDimension';
 import DesktopNavbar from '../common/navbar/DesktopNavbar';
 
 const StyledChatRoom = styled.div`
+  padding-top: ${props => props.needDesktopNavbar && '120px'};
+  padding-left: ${props => props.needDesktopNavbar && '130px'};
   width: 100%;
-  padding-top: ${props => !props.isFromChatPage && '52px'};
-  height: 90vh;
+  height: 100vh;
   background-color: #f5f5f5;
   overflow: auto;
 
   .input-container {
+    width: ${props =>
+      props.needDesktopNavbar ? 'calc(100% - 130px)' : '100%'};
     display: flex;
     justify-content: center;
     position: fixed;
-    bottom: 0;
-    width: 100%;
+    bottom: 10px;
     right: 0;
     background-color: azure;
+    padding: 0 1rem;
 
     input {
-      width: 90%;
+      width: 100%;
       height: 2.5rem;
       border: 1px solid #a9a9a9;
       border-radius: 25px;
@@ -98,7 +101,11 @@ function ChatRoom({ selectedChat, isFromChatPage }) {
   }, [currentChat]);
 
   return (
-    <StyledChatRoom className="room" isFromChatPage={isFromChatPage}>
+    <StyledChatRoom
+      className="room"
+      isFromChatPage={isFromChatPage}
+      needDesktopNavbar={needDesktopNavbar}
+    >
       {needDesktopNavbar && <DesktopNavbar />}
       {!isFromChatPage && <GoBackBar title={isFromChatPage ? '' : chatTitle} />}
       {currentChat ? (
