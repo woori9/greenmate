@@ -77,7 +77,7 @@ class RestaurantMapSerializer(serializers.ModelSerializer):
 class RestaurantMoimDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = Restaurant
-        exclude = ('category', 'call', 'latitude', 'longitude', 'like_users',)
+        exclude = ('category', 'call', 'like_users',)
 
     def to_representation(self, instance):
         response = super().to_representation(instance)    
