@@ -17,7 +17,7 @@ function ChatList({ chats, onChatClick, user, unreadMessage }) {
           chat={chat}
           onChatClick={onChatClick}
           user={user}
-          countUnreadMessage={unreadMessage[chat.id]}
+          countUnreadMessage={unreadMessage[chat.id] || 0}
         />
       ))}
     </StyledChatList>
@@ -31,8 +31,12 @@ ChatList.propTypes = {
       members: PropTypes.arrayOf(PropTypes.string),
       recentMessage: PropTypes.shape({
         content: PropTypes.string,
-        sentBy: PropTypes.string,
         readBy: PropTypes.arrayOf(PropTypes.string),
+        sentBy: PropTypes.shape({
+          id: PropTypes.string,
+          nickname: PropTypes.string,
+          vegeType: PropTypes.number,
+        }),
         sentAt: PropTypes.shape({
           nanoseconds: PropTypes.number,
           seconds: PropTypes.number,
@@ -43,7 +47,7 @@ ChatList.propTypes = {
   ).isRequired,
   onChatClick: PropTypes.func.isRequired,
   user: PropTypes.string.isRequired,
-  unreadMessage: PropTypes.objectOf(PropTypes.number.isRequired),
+  unreadMessage: PropTypes.shape(),
 };
 
 ChatList.defaultProps = {
