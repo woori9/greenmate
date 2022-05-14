@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { useState, useEffect, useRef } from 'react';
@@ -58,7 +59,16 @@ function ChatRoom({ selectedChat, isFromChatPage }) {
   const needDesktopNavbar = isFromChatPage
     ? false
     : useWindowDimensions().width > 1024;
-  // 나중에 실시간으로 member listen ?
+
+  useEffect(() => {
+    if (!currentChat) return () => {};
+    const listener = e => {
+      deactivateChatRoom(user.id, currentChat.id);
+      e.returnValue = '';
+    };
+    window.addEventListener('beforeunload', listener);
+    return () => window.removeEventListener('beforeunload', listener);
+  }, [currentChat]);
 
   const handleSend = async () => {
     const content = messageRef.current.value;
