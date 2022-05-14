@@ -47,17 +47,17 @@ const addRoomToUser = async (userId, chatRoomId, type) => {
 };
 
 const activateChatRoom = async (userId, chatRoomId) => {
-  const userRef = doc(db, 'users', userId);
-  await updateDoc(userRef, {
-    activatedChatRooms: arrayUnion(chatRoomId),
+  const roomRef = doc(db, 'rooms', chatRoomId);
+  await updateDoc(roomRef, {
+    activatedUsers: arrayUnion(userId),
   });
 };
 
 const deactivateChatRoom = async (userId, chatRoomId) => {
   console.log('deactivate ', userId, ' s', chatRoomId);
-  const userRef = doc(db, 'users', userId);
-  await updateDoc(userRef, {
-    activatedChatRooms: arrayRemove(chatRoomId),
+  const roomRef = doc(db, 'rooms', chatRoomId);
+  await updateDoc(roomRef, {
+    activatedUsers: arrayRemove(userId),
   });
 };
 
@@ -93,16 +93,14 @@ const sendMessage = async (roomId, content, user) => {
 };
 
 const increaseUnreadMessage = async (chatRoomId, memberId) => {
-  const userRef = doc(db, 'users', memberId);
-  const snapShot = await getDoc(userRef);
-  const { activatedChatRooms } = snapShot.data();
-
-  // activatedChatRooms 가 한번도 조작되지 않았다면 undefined
-  if (!activatedChatRooms || !activatedChatRooms.length) return;
+  console.log('increaseUnreadMessage', chatRoomId, memberId);
+  const chatRoomRef = doc(db, 'rooms', chatRoomId);
+  const snapShot = await getDoc(chatRoomRef);
+  const { activatedUsers } = snapShot.data();
 
   const userRoomRef = doc(db, 'users', memberId, 'rooms', chatRoomId);
 
-  if (!activatedChatRooms.includes(chatRoomId)) {
+  if (!activatedUsers.includes(memberId)) {
     await setDoc(
       userRoomRef,
       {
@@ -157,6 +155,7 @@ const createPrivateRoom = async (pair, user) => {
       type: 1, // type 2: moim, 1: private,
       members: [pair.id, user.id],
       membersInfo,
+      activatedUsers: [],
     };
 
     addRoomToUser(user.id, newRoomRef.id, 1);
@@ -240,6 +239,7 @@ const createMoimChat = (moimId, userInfo) => {
       members: [id],
       type: 2, // type 1: private 2: moim
       membersInfo,
+      activatedUsers: [],
     };
 
     setDoc(newRoomRef, newRoom);
