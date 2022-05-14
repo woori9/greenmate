@@ -15,6 +15,9 @@ import GoBackBar from '../components/common/GoBackBar';
 import useWindowDimensions from '../utils/windowDimension';
 import DesktopNavbar from '../components/common/navbar/DesktopNavbar';
 import ChatList from '../components/chat/ChatList';
+import useUserInfo from '../hooks/useUserInfo';
+import formatUserInfo from '../utils/formatUserInfo';
+import { getJoinDate } from '../service/chat_service';
 
 const db = getFirestore(app);
 
@@ -33,36 +36,34 @@ function Chat() {
   const [selectedChat, setSelectedChat] = useState(null);
   const [chatList, setChatList] = useState([]);
   const [unreadMessage, setUnreadMessage] = useState({});
+  const userInfo = formatUserInfo(useUserInfo());
+
   const goBackHandler = () => {
     if (selectedChat) {
       setSelectedChat(null);
     }
   };
 
-  const user = {
-    id: '1',
-    vegeType: 1,
-    nickname: '1번유저',
-  };
-
   useEffect(() => {
     // 내 채팅 목록 실시간 업데이트(최근메세지)
-    if (!user) return () => {};
+    if (!userInfo) return () => {};
 
     const roomsRef = collection(db, 'rooms');
     const q = query(
       roomsRef,
-      where('members', 'array-contains', user.id),
+      where('members', 'array-contains', userInfo.id),
       where('type', '==', 1),
-      orderBy('recentMessage.sentAt'),
+      orderBy('recentMessage.sentAt', 'desc'),
     );
 
     const unsubscribe = onSnapshot(q, snapshot => {
       setChatList(
-        snapshot.docs.map(docChatRoom => ({
-          ...docChatRoom.data(),
-          id: docChatRoom.id,
-        })),
+        snapshot.docs.map(docChatRoom => {
+          return {
+            ...docChatRoom.data(),
+            id: docChatRoom.id,
+          };
+        }),
       );
     });
 
@@ -71,9 +72,9 @@ function Chat() {
 
   useEffect(() => {
     // 목록에서 count를 실시간으로 보기 위함
-    if (!user) return () => {};
+    if (!userInfo) return () => {};
     const q = query(
-      collection(db, 'users', user.id, 'rooms'),
+      collection(db, 'users', userInfo.id, 'rooms'),
       where('type', '==', 1),
     );
 
@@ -82,16 +83,23 @@ function Chat() {
         const copyObj = { ...obj };
         copyObj[docUserRoom.id] = docUserRoom.data().countUnreadMessage;
         return copyObj;
-      }, {});
-
+      }, unreadMessage);
       setUnreadMessage(unreadMessageObj);
     });
 
     return unsubscribe;
   }, []);
 
-  const selectChat = chatRoom => {
-    setSelectedChat(chatRoom);
+  const selectChat = async chatRoom => {
+    const { id, members, membersInfo } = chatRoom;
+    const joinDate = await getJoinDate(userInfo.id, id);
+    const pairId = members.find(member => member !== userInfo.id);
+    setSelectedChat({
+      ...chatRoom,
+      joinDate,
+      notificationTargetId: pairId,
+      chatTitle: membersInfo[`nickname${pairId}`],
+    });
   };
 
   return (
@@ -103,7 +111,7 @@ function Chat() {
             <ChatList
               chats={chatList}
               onChatClick={selectChat}
-              user={user.id}
+              user={userInfo.id}
               unreadMessage={unreadMessage}
             />
             <ChatRoom selectedChat={selectedChat} isFromChatPage />
@@ -122,7 +130,7 @@ function Chat() {
             <ChatList
               chats={chatList}
               onChatClick={selectChat}
-              user={user.id}
+              user={userInfo.id}
               unreadMessage={unreadMessage}
             />
           ) : (
