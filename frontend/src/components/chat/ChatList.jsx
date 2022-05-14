@@ -8,7 +8,7 @@ const StyledChatList = styled.ul`
   margin: 0;
 `;
 
-function ChatList({ chats, onChatClick, user, unreadMessage }) {
+function ChatList({ chats, onChatClick, user, unreadMessage, selectChatId }) {
   return (
     <StyledChatList>
       {chats.map(chat => (
@@ -18,6 +18,7 @@ function ChatList({ chats, onChatClick, user, unreadMessage }) {
           onChatClick={onChatClick}
           user={user}
           countUnreadMessage={unreadMessage[chat.id] || 0}
+          isSelected={selectChatId === chat.id}
         />
       ))}
     </StyledChatList>
@@ -48,10 +49,12 @@ ChatList.propTypes = {
   onChatClick: PropTypes.func.isRequired,
   user: PropTypes.string.isRequired,
   unreadMessage: PropTypes.shape(),
+  selectChatId: PropTypes.string,
 };
 
 ChatList.defaultProps = {
   unreadMessage: {},
+  selectChatId: undefined,
 };
 
 export default ChatList;

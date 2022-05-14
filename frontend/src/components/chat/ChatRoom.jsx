@@ -21,10 +21,11 @@ import useWindowDimensions from '../../utils/windowDimension';
 import DesktopNavbar from '../common/navbar/DesktopNavbar';
 
 const StyledChatRoom = styled.div`
-  padding-top: ${props => props.needDesktopNavbar && '120px'};
+  padding-top: ${props => (props.needDesktopNavbar ? '120px' : '52px')};
+  padding-top: ${props => props.isFromChatPage && '0px'};
   padding-left: ${props => props.needDesktopNavbar && '130px'};
   width: 100%;
-  height: 100vh;
+  height: 92vh;
   background-color: #f5f5f5;
   overflow: auto;
 
@@ -55,7 +56,6 @@ function ChatRoom({ selectedChat, isFromChatPage }) {
   const messageRef = useRef();
   const location = useLocation();
   const currentChat = isFromChatPage ? selectedChat : location.state;
-  const chatTitle = currentChat ? currentChat.chatTitle : '';
   const needDesktopNavbar = isFromChatPage
     ? false
     : useWindowDimensions().width > 1024;
@@ -117,7 +117,9 @@ function ChatRoom({ selectedChat, isFromChatPage }) {
       needDesktopNavbar={needDesktopNavbar}
     >
       {needDesktopNavbar && <DesktopNavbar />}
-      {!isFromChatPage && <GoBackBar title={isFromChatPage ? '' : chatTitle} />}
+      {!isFromChatPage && (
+        <GoBackBar title={currentChat ? currentChat.chatTitle : ''} />
+      )}
       {currentChat ? (
         <>
           <MessageList messages={messages} userId={user.id} />
