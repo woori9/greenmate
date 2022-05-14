@@ -27,12 +27,17 @@ import ChatRoom from './components/chat/ChatRoom';
 import { checkToken, onMessageListener } from './service/notification_service';
 import useNotificationStatus from './hooks/useNotification';
 import { deleteToken } from './api/notification';
+import useUserInfo from './hooks/useUserInfo';
+import PrivateRoute from './routes/PrivateRoute';
 
 function App() {
   const [tokenId, setTokenId] = useState(null);
   const notificationStatus = useNotificationStatus();
+  const userInfo = useUserInfo();
 
   useEffect(() => {
+    if (!userInfo) return () => {};
+
     let unsubscribe;
 
     if (notificationStatus === 'default') {
@@ -41,7 +46,7 @@ function App() {
 
     if (notificationStatus === 'granted') {
       checkToken(setTokenId);
-      unsubscribe = onMessageListener('1'); // userId
+      unsubscribe = onMessageListener(`${userInfo.id}`); // userId
     }
 
     if (notificationStatus !== 'granted' && tokenId !== null) {
@@ -50,7 +55,7 @@ function App() {
     }
 
     return unsubscribe;
-  }, [notificationStatus]);
+  }, [notificationStatus, userInfo]);
 
   return (
     <BrowserRouter>
@@ -62,37 +67,42 @@ function App() {
           element={<KakaoRedirectHandler />}
         />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/" element={<Home />} />
-        <Route path="/community" element={<Community />} />
-        <Route path="/community/form" element={<CommunityForm />} />
-        <Route path="/map" element={<Map />} />
-        <Route path="/mymoim" element={<MyMoim />} />
-        <Route path="/moim/form" element={<MoimForm />} />
-        <Route path="/moim/:moimId" element={<MoimDetail />} />
-        <Route path="/moim/:moimId/member" element={<ManageMember />} />
-        <Route path="/moim/:moimId/evaluation" element={<EvaluateMoim />} />
-        <Route path="/mypage/:userPk" element={<MyPage />} />
-        <Route
-          path="/mypage/:userPk/liked-restaurants"
-          element={<MyPageLikedRestaurants />}
-        />
-        <Route
-          path="/mypage/:userPk/liked-feeds"
-          element={<MyPageLikedFeeds />}
-        />
-        <Route
-          path="/mypage/:userPk/liked-reviews"
-          element={<MyPageLikedReview />}
-        />
-        <Route
-          path="/mypage/:userPk/evaluation"
-          element={<MyPageEvaluation />}
-        />
-        <Route path="/mypage/:userPk/my-reviews" element={<MyPageReviews />} />
-        <Route path="/mypage/:userPk/my-feeds" element={<MyPageFeeds />} />
-        <Route path="/mypage/:userPk/setting" element={<MyPageSetting />} />
-        <Route path="/chat" element={<Chat />} />
-        <Route path="/chatRoom" element={<ChatRoom />} />
+        <Route element={<PrivateRoute isLoggedIn={!!userInfo} />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/community" element={<Community />} />
+          <Route path="/community/form" element={<CommunityForm />} />
+          <Route path="/map" element={<Map />} />
+          <Route path="/mymoim" element={<MyMoim />} />
+          <Route path="/moim/form" element={<MoimForm />} />
+          <Route path="/moim/:moimId" element={<MoimDetail />} />
+          <Route path="/moim/:moimId/member" element={<ManageMember />} />
+          <Route path="/moim/:moimId/evaluation" element={<EvaluateMoim />} />
+          <Route path="/mypage/:userPk" element={<MyPage />} />
+          <Route
+            path="/mypage/:userPk/liked-restaurants"
+            element={<MyPageLikedRestaurants />}
+          />
+          <Route
+            path="/mypage/:userPk/liked-feeds"
+            element={<MyPageLikedFeeds />}
+          />
+          <Route
+            path="/mypage/:userPk/liked-reviews"
+            element={<MyPageLikedReview />}
+          />
+          <Route
+            path="/mypage/:userPk/evaluation"
+            element={<MyPageEvaluation />}
+          />
+          <Route
+            path="/mypage/:userPk/my-reviews"
+            element={<MyPageReviews />}
+          />
+          <Route path="/mypage/:userPk/my-feeds" element={<MyPageFeeds />} />
+          <Route path="/mypage/:userPk/setting" element={<MyPageSetting />} />
+          <Route path="/chat" element={<Chat />} />
+          <Route path="/chatRoom" element={<ChatRoom />} />
+        </Route>
       </Routes>
       <BottomSheetBase />
     </BrowserRouter>
