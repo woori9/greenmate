@@ -9,6 +9,7 @@ import {
 } from 'firebase/firestore';
 import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 import ChatRoom from '../components/chat/ChatRoom';
 import app from '../service/firebase';
 import GoBackBar from '../components/common/GoBackBar';
@@ -22,8 +23,8 @@ import { getJoinDate } from '../service/chat_service';
 const db = getFirestore(app);
 
 const StyledDiv = styled.div`
-  padding-top: ${props => (props.isDesktop ? '70px' : '52px')};
-  padding-left: ${props => props.isDesktop && '140px'};
+  padding-top: ${props => (props.isDesktop ? '60px' : '52px')};
+  padding-left: ${props => props.isDesktop && '130px'};
 `;
 
 const GridChatContainer = styled.div`
@@ -37,10 +38,13 @@ function Chat() {
   const [chatList, setChatList] = useState([]);
   const [unreadMessage, setUnreadMessage] = useState({});
   const userInfo = formatUserInfo(useUserInfo());
+  const navigate = useNavigate();
 
   const goBackHandler = () => {
     if (selectedChat) {
       setSelectedChat(null);
+    } else {
+      navigate(-1);
     }
   };
 
@@ -113,13 +117,17 @@ function Chat() {
               onChatClick={selectChat}
               user={userInfo.id}
               unreadMessage={unreadMessage}
+              selectChatId={selectedChat && selectedChat.id}
             />
             <ChatRoom selectedChat={selectedChat} isFromChatPage />
           </GridChatContainer>
         </>
       ) : (
         <>
-          <GoBackBar title="채팅" handleOnClick={goBackHandler}>
+          <GoBackBar
+            title={selectedChat ? selectedChat.chatTitle : '채팅'}
+            handleOnClick={goBackHandler}
+          >
             {!selectedChat && (
               <ForwardToInboxIcon
                 sx={{ fontSize: 28, marginRight: '1rem', marginTop: '0.5rem' }}

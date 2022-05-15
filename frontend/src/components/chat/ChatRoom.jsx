@@ -21,28 +21,31 @@ import useWindowDimensions from '../../utils/windowDimension';
 import DesktopNavbar from '../common/navbar/DesktopNavbar';
 
 const StyledChatRoom = styled.div`
-  padding-top: ${props => (props.needDesktopNavbar ? '120px' : '52px')};
-  padding-top: ${props => props.isFromChatPage && '0px'};
-  padding-left: ${props => props.needDesktopNavbar && '130px'};
   width: 100%;
-  height: 92vh;
+  padding-top: ${props => (props.needDesktopNavbar ? '110px' : '52px')};
+  padding-top: ${props => props.isFromChatPage && '0px'};
+  padding-left: ${props => props.needDesktopNavbar && '150px'};
+  height: 100vh;
+  padding-bottom: 4.5rem;
   background-color: #f5f5f5;
-  overflow: auto;
+  position: relative;
 
   .input-container {
     width: ${props =>
       props.needDesktopNavbar ? 'calc(100% - 130px)' : '100%'};
+    width: ${props => props.isFromChatPage && 'calc((100% - 130px)*0.6)'};
     display: flex;
     justify-content: center;
     position: fixed;
-    bottom: 10px;
+    bottom: 0px;
     right: 0;
-    background-color: azure;
-    padding: 0 1rem;
-
+    padding: 0rem 0.5rem;
+    @media screen and (max-width: 1024px) {
+      width: 100%;
+    }
     input {
       width: 100%;
-      height: 2.5rem;
+      height: 3rem;
       border: 1px solid #a9a9a9;
       border-radius: 25px;
     }
