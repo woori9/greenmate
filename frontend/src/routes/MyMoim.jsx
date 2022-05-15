@@ -8,13 +8,13 @@ import MoimCard from '../components/moim/MoimCard';
 import { categoryAtom, moimListAtom } from '../atoms/moim';
 import { getMyMoimList } from '../api/moim';
 import { snakeToCamel } from '../utils/formatKey';
+import useWindowDimensions from '../utils/windowDimension';
 
 const Container = styled.div`
   padding: 5rem 1rem 5rem 1rem;
 
   @media screen and (min-width: 1025px) {
-    margin: 60px 0 0 130px;
-    padding: 0 2rem;
+    padding: 60px 2rem 0 calc(130px + 2rem);
   }
 `;
 
@@ -23,9 +23,14 @@ const CategoryDiv = styled.ul`
   justify-content: space-around;
   list-style: none;
   padding-left: 0px;
+
+  @media screen and (min-width: 1025px) {
+    justify-content: flex-end;
+  }
 `;
 
 function MyMoim() {
+  const { width } = useWindowDimensions();
   const [selectedCategory, setSelectedCategory] = useAtom(categoryAtom);
   const [moimList, setMoimList] = useAtom(moimListAtom);
   const [needUpdate, setNeedUpdate] = useState(0);
@@ -71,7 +76,7 @@ function MyMoim() {
           />
         ))}
       </CategoryDiv>
-      <hr />
+      {width <= 1024 && <hr />}
       {moimList.length > 0 &&
         moimList.map(moimInfo => (
           <MoimCard

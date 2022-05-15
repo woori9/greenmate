@@ -25,7 +25,6 @@ const Summary = styled.div`
 `;
 const BookMark = styled.div`
   align-self: center;
-  padding-right: 10px;
   .bookmark {
     font-size: 30px;
     color: #fcb448;
@@ -153,7 +152,7 @@ function DetailInfo({ setSearchPage, detailRestau }) {
         {splitMenus.map(menu => (
           <div key={menu} className="menu">
             <p>{menu.split('(')[0]}</p>
-            <p className="vege-type">{menu.split('(')[1].split(')')[0]}</p>
+            <p className="vege-type">{menu.split(/[(, )]/)[1]}</p>
           </div>
         ))}
       </Menu>

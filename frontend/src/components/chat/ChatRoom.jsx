@@ -15,6 +15,7 @@ import {
 import GoBackBar from '../common/GoBackBar';
 import useUserInfo from '../../hooks/useUserInfo';
 import formatUserInfo from '../../utils/formatUserInfo';
+import { sendNotification } from '../../api/notification';
 
 const StyledChatRoom = styled.div`
   width: 100%;
@@ -48,19 +49,25 @@ function ChatRoom({ selectedChat, isFromChatPage }) {
   const messageRef = useRef();
   const location = useLocation();
   const currentChat = isFromChatPage ? selectedChat : location.state;
-  const { members } = currentChat; // 나중에 실시간으로 member listen ?
+  const chatTitle = currentChat ? currentChat.chatTitle : '';
+  // 나중에 실시간으로 member listen ?
 
   const handleSend = async () => {
     const content = messageRef.current.value;
     if (!content) return;
 
-    await sendMessage(currentChat.id, content, user);
+    const { id, notificationTargetId, type } = currentChat;
+
+    await sendMessage(id, content, user);
+    const { members } = currentChat;
 
     for (let i = 0; i < members.length; i += 1) {
       if (members[i] !== user.id) {
-        increaseUnreadMessage(currentChat.id, members[i]);
+        increaseUnreadMessage(id, members[i]);
       }
     }
+
+    sendNotification(notificationTargetId, type);
   };
 
   useEffect(() => {
@@ -87,9 +94,7 @@ function ChatRoom({ selectedChat, isFromChatPage }) {
 
   return (
     <StyledChatRoom className="room" isFromChatPage={isFromChatPage}>
-      {!isFromChatPage && (
-        <GoBackBar title={isFromChatPage ? '' : currentChat.chatTitle} />
-      )}
+      {!isFromChatPage && <GoBackBar title={isFromChatPage ? '' : chatTitle} />}
       {currentChat ? (
         <>
           <MessageList messages={messages} userId={user.id} />
@@ -125,6 +130,7 @@ ChatRoom.propTypes = {
       nanoseconds: PropTypes.number,
       seconds: PropTypes.number,
     }),
+    notificationTargetId: PropTypes.string,
   }),
   isFromChatPage: PropTypes.bool,
 };

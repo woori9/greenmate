@@ -18,6 +18,7 @@ const Button = styled.button`
 
   @media screen and (min-width: 400px) {
     padding: 0.5rem 2rem;
+    border-bottom: none;
   }
 `;
 

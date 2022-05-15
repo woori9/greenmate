@@ -35,7 +35,7 @@ function GoBackBar({ title, children, handleOnClick }) {
   const onClickHander = handleOnClick || goBack;
 
   return (
-    <Bar>
+    <Bar className="go-back-bar">
       <ChevronLeftIcon
         sx={{ width: '35px', height: '35px' }}
         onClick={onClickHander}
