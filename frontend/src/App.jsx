@@ -29,6 +29,7 @@ import useNotificationStatus from './hooks/useNotification';
 import { deleteToken } from './api/notification';
 import useUserInfo from './hooks/useUserInfo';
 import PrivateRoute from './routes/PrivateRoute';
+import Notification from './routes/Notification';
 
 function App() {
   const [tokenId, setTokenId] = useState(null);
@@ -102,6 +103,7 @@ function App() {
           <Route path="/mypage/:userPk/setting" element={<MyPageSetting />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/chatRoom" element={<ChatRoom />} />
+          <Route path="/notification" element={<Notification />} />
         </Route>
       </Routes>
       <BottomSheetBase />
