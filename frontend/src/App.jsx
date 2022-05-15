@@ -55,6 +55,9 @@ function App() {
   const { open, message, vertical, horizontal } = alarm;
 
   const handleOpenSnackbar = body => {
+    const { pathname } = window.location;
+    if (pathname.includes('chat') || pathname.includes('notification')) return;
+
     const { innerWidth: width } = window;
 
     const style = width < 1025 ? mobileAlarmStyle : desktopAlamStyle;
