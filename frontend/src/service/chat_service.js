@@ -181,6 +181,31 @@ const getMessages = (selectedChat, callback) => {
   return unsubscribe;
 };
 
+const getChatRoomList = (userId, callback) => {
+  const roomsRef = collection(db, 'rooms');
+  const q = query(
+    roomsRef,
+    where('members', 'array-contains', userId),
+    where('type', '==', 1),
+    orderBy('recentMessage.sentAt', 'desc'),
+  );
+
+  const unsubscribe = onSnapshot(q, callback);
+
+  return unsubscribe;
+};
+
+const getCountUnreadMessages = (userId, callback) => {
+  const q = query(
+    collection(db, 'users', userId, 'rooms'),
+    where('type', '==', 1),
+  );
+
+  const unsubscribe = onSnapshot(q, callback);
+
+  return unsubscribe;
+};
+
 const getJoinDate = async (userId, chatRoomId) => {
   try {
     const userRoomRef = doc(db, 'users', userId, 'rooms', chatRoomId);
@@ -250,17 +275,6 @@ const createMoimChat = (moimId, userInfo) => {
   }
 };
 
-const saveNotification = async (userId, payload) => {
-  const userRef = doc(db, 'users', userId);
-  const notificationRef = collection(userRef, 'notifications');
-  const notification = {
-    notification: payload,
-    createdAt: new Date(),
-  };
-
-  await addDoc(notificationRef, notification);
-};
-
 const deleteRoomFromUser = async (roomId, userId) => {
   const userRoomRef = doc(db, 'users', userId, 'rooms', roomId);
   await deleteDoc(userRoomRef);
@@ -310,6 +324,21 @@ const getMoimChatRoom = async moimId => {
   return roomDocSnap.data();
 };
 
+const getNotifications = async userId => {
+  const notificationRef = collection(
+    db,
+    'notification',
+    userId,
+    'notifications',
+  );
+  const querySnapshot = await getDocs(notificationRef);
+
+  const notifications = querySnapshot.docs.map(notificationDoc => {
+    return notificationDoc.data();
+  });
+  return notifications;
+};
+
 export {
   signInFirebase,
   sendMessage,
@@ -322,8 +351,10 @@ export {
   createMoimChat,
   increaseUnreadMessage,
   resetUnreadMessage,
-  saveNotification,
   joinMoimChat,
   excludeFromChatRoom,
   getJoinDate,
+  getNotifications,
+  getChatRoomList,
+  getCountUnreadMessages,
 };
