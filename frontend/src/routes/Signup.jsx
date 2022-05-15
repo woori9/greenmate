@@ -18,28 +18,32 @@ const Container = styled.div`
   height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   padding: 2rem 0;
   @media screen and (min-width: 1025px) {
     flex-direction: row;
+    justify-content: center;
   }
+  background-color: #fcb448;
 `;
 const SignupContainer = styled.div`
-  width: 100vw;
+  position: relative;
+  width: 90%;
   max-width: 33rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   align-items: center;
-  padding: 0 2rem;
+  padding: 2rem 1rem;
+  border-radius: 10px;
+  background-color: white;
+  filter: drop-shadow(0 -1px 4px rgba(0, 0, 0, 0.25));
   .title {
     font-weight: 700;
   }
 `;
 const TextContainer = styled.div`
-  height: 40%;
-  width: 100%;
+  width: 90%;
   max-width: 33rem;
   display: flex;
   flex-direction: column;
@@ -48,9 +52,9 @@ const TextContainer = styled.div`
   font-size: 25px;
   font-weight: 700;
   line-height: 150%;
+  padding: 5rem 0;
   span {
-    color: #fcb448;
-    background-color: white;
+    color: white;
   }
 `;
 const NicknameContainer = styled.div`
@@ -61,7 +65,7 @@ const NicknameContainer = styled.div`
   .input-box {
     display: flex;
     flex-direction: column;
-    width: 60%;
+    width: 70%;
     input {
       height: 30px;
       border: none;
@@ -84,7 +88,7 @@ const VegeTypeContainer = styled.div`
 `;
 const VegeTypeLst = styled.div`
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
 `;
 const VegeTypeBox = styled.div`
   filter: ${props => (props.selected ? 'grayscale(100%)' : null)};
@@ -106,7 +110,8 @@ const VegeTypeBox = styled.div`
 `;
 const Page = styled.div`
   position: fixed;
-  top: 45%;
+  bottom: 10%;
+  right: 11%;
   padding: 1rem;
   z-index: 6;
   background-color: #fff;
@@ -155,14 +160,16 @@ const DescriptionVegeTypeTitle = styled.div`
   }
 `;
 const Button = styled.button`
-  width: 100%;
+  position: absolute;
+  bottom: 1rem;
+  width: 90%;
   height: 2.8rem;
-  color: #fff;
+  color: ${props => (props.disabled ? '#a9a9a9' : '#fff')};
   font-size: 1rem;
   border: none;
   border-radius: 10px;
-  background-color: #fcb448;
-  cursor: pointer;
+  background-color: ${props => (props.disabled ? '#f2f2f2' : '#fcb448')};
+  cursor: ${props => (props.disabled ? 'null' : 'pointer')};
 `;
 
 function Signup() {
@@ -227,7 +234,7 @@ function Signup() {
   function checkNickname(putNickname) {
     if (putNickname === '') {
       SetNicknameStatus(false);
-      setNewNickname(putNickname);
+      setNewNickname('');
       return;
     }
     apiCheckNickname(
@@ -311,7 +318,7 @@ function Signup() {
         </VegeTypeContainer>
         <Button
           type="button"
-          disabled={!(nicknameStatus && newVegeType !== null)}
+          disabled={!nicknameStatus || newVegeType === null}
           onClick={() => {
             apiPutUserInfo(
               {
