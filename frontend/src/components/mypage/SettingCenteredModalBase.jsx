@@ -90,7 +90,7 @@ const Description = styled.div`
   }
 `;
 const VegeTypeBox = styled.div`
-  filter: ${props => (props.selected ? null : 'grayscale(100%)')};
+  filter: ${props => (props.selected ? 'grayscale(100%)' : null)};
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -100,11 +100,18 @@ const VegeTypeBox = styled.div`
     width: 60%;
   }
   p {
-    font-size: 0.62rem;
+    font-size: 10px;
     color: ${props => (props.selected ? '#fcb448' : 'black')};
   }
   :hover {
     cursor: pointer;
+  }
+`;
+const DescriptionVegeTypeContainer = styled.div`
+  display: flex;
+  justify-content: start;
+  p {
+    font-size: 10px;
   }
 `;
 const DescriptionVegeTypeTitle = styled.div`
@@ -112,22 +119,14 @@ const DescriptionVegeTypeTitle = styled.div`
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  width: 2.7rem;
-  padding-bottom: 0.5rem;
+  width: 3rem;
+  padding-bottom: 0.3rem;
   margin-right: 1rem;
   img {
     width: 60%;
   }
   p {
-    font-size: 0.62rem;
     color: black;
-  }
-`;
-const DescriptionVegeTypeContainer = styled.div`
-  display: flex;
-  justify-content: start;
-  p {
-    font-size: 0.62rem;
   }
 `;
 
@@ -177,7 +176,7 @@ function SettingCenteredModalBase({ vegeType, mainAction }) {
       id: 6,
       title: '관심있어요',
       icon: flexiIcon,
-      rule: '채식 + 우유 + 유제품',
+      rule: '채식 + 우유 + 유제품 + 난류 + 바다동물 + 가금류 + 동물',
     },
   ];
   return (
