@@ -1,8 +1,10 @@
 import styled from 'styled-components';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import { useAtom } from 'jotai';
 import GoBackBar from '../components/common/GoBackBar';
 import ResponsiveNavbar from '../components/common/navbar/ResponsiveNavbar';
 import NotificationList from '../components/notification/NotificationList';
+import notificationAtom from '../atoms/notification';
 
 const StyledNotificationPage = styled.div`
   position: relative;
@@ -18,17 +20,7 @@ const StyledNotificationPage = styled.div`
 `;
 
 function Notification() {
-  const today = new Date().toLocaleDateString();
-  const [notifications] = useState([
-    {
-      id: '1',
-      title:
-        '타이틀타이틀타이틀타이틀타이틀타이이틀타이틀타이틀타이틀타이틀타이틀타이틀타이틀타이틀타이틀',
-      sentBy: '1',
-      createdAt: today,
-    },
-    { id: '2', title: '타이틀', sentBy: '2', createdAt: today },
-  ]);
+  const [notifications] = useAtom(notificationAtom);
 
   useEffect(() => {
     console.log('get notifications');
