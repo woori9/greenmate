@@ -1,6 +1,7 @@
 import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import Snackbar from '@mui/material/Snackbar';
 import KakaoRedirectHandler from './routes/KakaoRedirectHandler';
 import Intro from './routes/Intro';
 import Signup from './routes/Signup';
@@ -31,10 +32,39 @@ import useUserInfo from './hooks/useUserInfo';
 import PrivateRoute from './routes/PrivateRoute';
 import Notification from './routes/Notification';
 
+const initialAlarmState = {
+  open: false,
+  message: '',
+};
+
+const mobileAlarmStyle = { vertical: 'top', horizontal: 'center' };
+const desktopAlamStyle = {
+  vertical: 'bottom',
+  horizontal: 'right',
+};
+
 function App() {
   const [tokenId, setTokenId] = useState(null);
   const notificationStatus = useNotificationStatus();
   const userInfo = useUserInfo();
+  const [alarm, setAlarm] = useState({
+    ...initialAlarmState,
+    ...desktopAlamStyle,
+  });
+
+  const { open, message, vertical, horizontal } = alarm;
+
+  const handleOpenSnackbar = body => {
+    const { innerWidth: width } = window;
+
+    const style = width < 1025 ? mobileAlarmStyle : desktopAlamStyle;
+
+    setAlarm({
+      open: true,
+      message: body,
+      ...style,
+    });
+  };
 
   useEffect(() => {
     if (!userInfo) return () => {};
@@ -47,7 +77,7 @@ function App() {
 
     if (notificationStatus === 'granted') {
       checkToken(setTokenId);
-      unsubscribe = onMessageListener(`${userInfo.id}`); // userId
+      unsubscribe = onMessageListener(handleOpenSnackbar);
     }
 
     if (notificationStatus !== 'granted' && tokenId !== null) {
@@ -107,6 +137,15 @@ function App() {
         </Route>
       </Routes>
       <BottomSheetBase />
+      <Snackbar
+        anchorOrigin={{ vertical, horizontal }}
+        open={open}
+        autoHideDuration={5000}
+        onClose={() => {
+          setAlarm({ ...alarm, ...initialAlarmState });
+        }}
+        message={message}
+      />
     </BrowserRouter>
   );
 }
