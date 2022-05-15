@@ -48,23 +48,8 @@ function Message({ message, isMyMessage, showProfile }) {
     <StyledMessage isMyMessage={isMyMessage}>
       {showProfile && (
         <div className="profile">
-          {isMyMessage ? (
-            <>
-              <p>프로필</p>
-              <img
-                src={`${process.env.PUBLIC_URL}/logo192.png`}
-                alt="profile"
-              />
-            </>
-          ) : (
-            <>
-              <img
-                src={`${process.env.PUBLIC_URL}/logo192.png`}
-                alt="profile"
-              />
-              <p>프로필</p>
-            </>
-          )}
+          <img src={`${process.env.PUBLIC_URL}/logo192.png`} alt="profile" />
+          <p>프로필</p>
         </div>
       )}
       <StyledBox isMyMessage={isMyMessage}>
