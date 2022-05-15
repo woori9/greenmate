@@ -18,9 +18,8 @@ const Container = styled.div`
   height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
-  padding: 2rem 0;
   @media screen and (min-width: 1025px) {
     flex-direction: row;
     justify-content: center;
@@ -34,7 +33,7 @@ const SignupContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2rem 1rem;
+  padding: 1rem;
   border-radius: 10px;
   background-color: white;
   filter: drop-shadow(0 -1px 4px rgba(0, 0, 0, 0.25));
@@ -52,9 +51,13 @@ const TextContainer = styled.div`
   font-size: 25px;
   font-weight: 700;
   line-height: 150%;
-  padding: 5rem 0;
   span {
     color: white;
+  }
+  img {
+    padding: 1rem;
+    width: 7rem;
+    height: 7rem;
   }
 `;
 const NicknameContainer = styled.div`
@@ -89,6 +92,7 @@ const VegeTypeContainer = styled.div`
 const VegeTypeLst = styled.div`
   display: flex;
   justify-content: space-between;
+  padding: 1rem 0;
 `;
 const VegeTypeBox = styled.div`
   filter: ${props => (props.selected ? 'grayscale(100%)' : null)};
@@ -254,6 +258,11 @@ function Signup() {
   return (
     <Container>
       <TextContainer>
+        {newVegeType === null ? (
+          <img src={vegeTypeLst[6].icon} alt="lacto" />
+        ) : (
+          <img src={vegeTypeLst[newVegeType].icon} alt="lacto" />
+        )}
         <p>
           <span>{newSentence} </span>
           채식 지향을
