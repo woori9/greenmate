@@ -117,7 +117,7 @@ def get_update_moim_detail(request, moim_id):
             if tokens:
                 if send_message(list(tokens), body):
                     guests_list = moim.mate_set.values_list('user_id', flat=True).exclude(user_id=user.pk)
-                    create_multiple_alirm(guests_list, 2, moim.author.nickname, body, user.pk)
+                    create_multiple_alirm(guests_list, 2, '모임 시간 수정', body, user.pk)
             return Response(serializer.data)
 
     user = get_request_user(request)
