@@ -1,11 +1,15 @@
 import dayjs from 'dayjs';
 import ko from 'dayjs/locale/ko';
+import useUserInfo from '../hooks/useUserInfo';
 
 dayjs.locale(ko);
 
 function formattedDatetime(datetime) {
-  // TODO: 유저 lang 값에 따라 en/ko로 변경
-  return dayjs(datetime).format('M.D(ddd) A h시 m분');
+  if (useUserInfo.language === 0) {
+    return dayjs(datetime).format('M.D(ddd) A h시 m분');
+  }
+
+  return dayjs(datetime).locale('en').format('llll');
 }
 
 function formatChatDateTime(datetime) {

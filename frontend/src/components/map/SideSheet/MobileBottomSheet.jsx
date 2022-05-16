@@ -1,3 +1,4 @@
+import { useAtom } from 'jotai';
 import PropTypes from 'prop-types';
 import { BottomSheet } from 'react-spring-bottom-sheet';
 import styled from 'styled-components';
@@ -6,25 +7,14 @@ import SearchLst from '../SearchLst';
 import SummaryInfo from '../SummaryInfo';
 import DetailInfo from '../DetailInfo';
 import 'react-spring-bottom-sheet/dist/style.css';
+import { pageStatusAtom } from '../../../atoms/map';
 
 const BottomSheetBody = styled.div`
   padding: 0 1rem;
 `;
 
-function MobileBottomSheet({
-  getSearchRestau,
-  setMapSearchKeyword,
-  keyword,
-  setKeyword,
-  searchResults,
-  getSummaryRestau,
-  summaryRestau,
-  searchPage,
-  setSearchPage,
-  getDetailRestau,
-  detailRestau,
-  markingAllRestau,
-}) {
+function MobileBottomSheet({ getMapwithCommand }) {
+  const [pageStatus] = useAtom(pageStatusAtom);
   return (
     <BottomSheet
       open
@@ -32,63 +22,22 @@ function MobileBottomSheet({
       blocking={false}
     >
       <BottomSheetBody>
-        {searchPage === 'searchBox' ? (
-          <SearchBox
-            setMapSearchKeyword={setMapSearchKeyword}
-            setSearchPage={setSearchPage}
-            setKeyword={setKeyword}
-            getSearchRestau={getSearchRestau}
-          />
+        {pageStatus === 'searchBox' ? (
+          <SearchBox getMapwithCommand={getMapwithCommand} />
         ) : null}
-        {searchPage === 'searchLst' ? (
-          <SearchLst
-            keyword={keyword}
-            setSearchPage={setSearchPage}
-            searchResults={searchResults}
-            getSummaryRestau={getSummaryRestau}
-            markingAllRestau={markingAllRestau}
-          />
+        {pageStatus === 'searchLst' ? (
+          <SearchLst getMapwithCommand={getMapwithCommand} />
         ) : null}
-        {searchPage === 'summary' ? (
-          <SummaryInfo
-            setSearchPage={setSearchPage}
-            summaryRestau={summaryRestau}
-            getDetailRestau={getDetailRestau}
-            searchResults={searchResults}
-            markingAllRestau={markingAllRestau}
-          />
+        {pageStatus === 'summary' ? (
+          <SummaryInfo getMapwithCommand={getMapwithCommand} />
         ) : null}
-        {searchPage === 'detail' ? (
-          <DetailInfo
-            setSearchPage={setSearchPage}
-            detailRestau={detailRestau}
-          />
-        ) : null}
+        {pageStatus === 'detail' ? <DetailInfo /> : null}
       </BottomSheetBody>
     </BottomSheet>
   );
 }
 MobileBottomSheet.propTypes = {
-  setMapSearchKeyword: PropTypes.func.isRequired,
-  keyword: PropTypes.string.isRequired,
-  setKeyword: PropTypes.func.isRequired,
-  getSearchRestau: PropTypes.func.isRequired,
-  searchResults: PropTypes.arrayOf(
-    PropTypes.shape({
-      category: PropTypes.number.isRequired,
-      id: PropTypes.number.isRequired,
-      is_like: PropTypes.bool.isRequired,
-      res_info: PropTypes.shape(),
-      score: PropTypes.number.isRequired,
-    }),
-  ).isRequired,
-  getSummaryRestau: PropTypes.func.isRequired,
-  summaryRestau: PropTypes.shape().isRequired,
-  searchPage: PropTypes.string.isRequired,
-  setSearchPage: PropTypes.func.isRequired,
-  getDetailRestau: PropTypes.func.isRequired,
-  detailRestau: PropTypes.shape().isRequired,
-  markingAllRestau: PropTypes.func.isRequired,
+  getMapwithCommand: PropTypes.func.isRequired,
 };
 
 export default MobileBottomSheet;

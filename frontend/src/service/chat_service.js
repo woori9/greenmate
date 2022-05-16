@@ -47,17 +47,17 @@ const addRoomToUser = async (userId, chatRoomId, type) => {
 };
 
 const activateChatRoom = async (userId, chatRoomId) => {
-  const userRef = doc(db, 'users', userId);
-  await updateDoc(userRef, {
-    activatedChatRooms: arrayUnion(chatRoomId),
+  const roomRef = doc(db, 'rooms', chatRoomId);
+  await updateDoc(roomRef, {
+    activatedUsers: arrayUnion(userId),
   });
 };
 
 const deactivateChatRoom = async (userId, chatRoomId) => {
   console.log('deactivate ', userId, ' s', chatRoomId);
-  const userRef = doc(db, 'users', userId);
-  await updateDoc(userRef, {
-    activatedChatRooms: arrayRemove(chatRoomId),
+  const roomRef = doc(db, 'rooms', chatRoomId);
+  await updateDoc(roomRef, {
+    activatedUsers: arrayRemove(userId),
   });
 };
 
@@ -93,16 +93,14 @@ const sendMessage = async (roomId, content, user) => {
 };
 
 const increaseUnreadMessage = async (chatRoomId, memberId) => {
-  const userRef = doc(db, 'users', memberId);
-  const snapShot = await getDoc(userRef);
-  const { activatedChatRooms } = snapShot.data();
-
-  // activatedChatRooms 가 한번도 조작되지 않았다면 undefined
-  if (!activatedChatRooms || !activatedChatRooms.length) return;
+  console.log('increaseUnreadMessage', chatRoomId, memberId);
+  const chatRoomRef = doc(db, 'rooms', chatRoomId);
+  const snapShot = await getDoc(chatRoomRef);
+  const { activatedUsers } = snapShot.data();
 
   const userRoomRef = doc(db, 'users', memberId, 'rooms', chatRoomId);
 
-  if (!activatedChatRooms.includes(chatRoomId)) {
+  if (!activatedUsers.includes(memberId)) {
     await setDoc(
       userRoomRef,
       {
@@ -146,16 +144,23 @@ const findPrivateChatRoom = async (pairId, userId) => {
 const createPrivateRoom = async (pair, user) => {
   try {
     const newRoomRef = doc(collection(db, 'rooms'));
+    const membersInfo = {};
+    membersInfo[`nickname${pair.id}`] = pair.nickname;
+    membersInfo[`nickname${user.id}`] = user.nickname;
+    membersInfo[`vegeType${pair.id}`] = pair.vegeType;
+    membersInfo[`vegeType${user.id}`] = user.vegeType;
 
     const newRoom = {
       id: newRoomRef.id,
       type: 1, // type 2: moim, 1: private,
       members: [pair.id, user.id],
+      membersInfo,
+      activatedUsers: [],
     };
 
+    addRoomToUser(user.id, newRoomRef.id, 1);
+    addRoomToUser(pair.id, newRoomRef.id, 1);
     await setDoc(newRoomRef, newRoom); // 방 생성
-    await addRoomToUser(user.id, newRoomRef.id, 1);
-    await addRoomToUser(pair.id, newRoomRef.id, 1);
     const querySnapshot = await getDoc(doc(db, 'rooms', newRoomRef.id));
     return querySnapshot.data();
   } catch (e) {
@@ -176,18 +181,29 @@ const getMessages = (selectedChat, callback) => {
   return unsubscribe;
 };
 
-const getMoimChatRoom = async moimId => {
-  const moimRef = doc(db, 'moims', moimId);
-  const docSnap = await getDoc(moimRef);
-  if (!docSnap.exists()) {
-    console.log('해당 모임이 존재하지 않습니다.');
-    return null;
-  }
+const getChatRoomList = (userId, callback) => {
+  const roomsRef = collection(db, 'rooms');
+  const q = query(
+    roomsRef,
+    where('members', 'array-contains', userId),
+    where('type', '==', 1),
+    orderBy('recentMessage.sentAt', 'desc'),
+  );
 
-  const { roomId } = docSnap.data();
-  const roomRef = doc(db, 'rooms', roomId);
-  const roomDocSnap = await getDoc(roomRef);
-  return roomDocSnap.data();
+  const unsubscribe = onSnapshot(q, callback);
+
+  return unsubscribe;
+};
+
+const getCountUnreadMessages = (userId, callback) => {
+  const q = query(
+    collection(db, 'users', userId, 'rooms'),
+    where('type', '==', 1),
+  );
+
+  const unsubscribe = onSnapshot(q, callback);
+
+  return unsubscribe;
 };
 
 const getJoinDate = async (userId, chatRoomId) => {
@@ -200,16 +216,8 @@ const getJoinDate = async (userId, chatRoomId) => {
   }
 };
 
-const getMembersInfo = async members => {
-  const usersRef = collection(db, 'users');
-  const q = query(usersRef, where('id', 'in', members));
-  const querySnapshot = await getDocs(q);
-  const membersInfo = querySnapshot.docs.map(snapshot => snapshot.data());
-  return membersInfo;
-};
-
-const joinMoimChat = async (moimId, userId) => {
-  console.log('JOIN MOIM CHAT', moimId, userId);
+const joinMoimChat = async (moimId, member) => {
+  const { userId, nickname, vegeType } = member;
   try {
     const moimRef = doc(db, 'moims', moimId);
     const docSnap = await getDoc(moimRef);
@@ -222,9 +230,14 @@ const joinMoimChat = async (moimId, userId) => {
     const roomRef = doc(db, 'rooms', roomId);
 
     updateDoc(roomRef, {
-      members: arrayUnion(userId),
+      members: arrayUnion(`${userId}`),
     });
-    addRoomToUser(userId, roomId, 2);
+
+    const updateObj = {};
+    updateObj[`membersInfo.nickname${userId}`] = nickname;
+    updateObj[`membersInfo.vegeType${userId}`] = vegeType;
+    updateDoc(roomRef, updateObj);
+    addRoomToUser(`${userId}`, roomId, 2);
   } catch (e) {
     throw new Error(e);
   }
@@ -232,7 +245,7 @@ const joinMoimChat = async (moimId, userId) => {
 
 const createMoimChat = (moimId, userInfo) => {
   // veteType이 undefined면 에러
-  const user = formatUserInfo(userInfo);
+  const { id, nickname, vegeType } = formatUserInfo(userInfo);
   try {
     // new chat room id
     const newRoomRef = doc(collection(db, 'rooms'));
@@ -242,29 +255,24 @@ const createMoimChat = (moimId, userInfo) => {
       roomId: newRoomRef.id,
     });
 
+    const membersInfo = {};
+    membersInfo[`nickname${id}`] = nickname;
+    membersInfo[`vegeType${id}`] = vegeType;
+
     const newRoom = {
       id: newRoomRef.id,
-      members: [user.id],
+      members: [id],
       type: 2, // type 1: private 2: moim
+      membersInfo,
+      activatedUsers: [],
     };
 
     setDoc(newRoomRef, newRoom);
-    addRoomToUser(user.id, newRoomRef.id, 2);
+    addRoomToUser(id, newRoomRef.id, 2);
     return newRoomRef.id;
   } catch (e) {
     throw new Error(e);
   }
-};
-
-const saveNotification = async (userId, payload) => {
-  const userRef = doc(db, 'users', userId);
-  const notificationRef = collection(userRef, 'notifications');
-  const notification = {
-    notification: payload,
-    createdAt: new Date(),
-  };
-
-  await addDoc(notificationRef, notification);
 };
 
 const deleteRoomFromUser = async (roomId, userId) => {
@@ -283,9 +291,18 @@ const excludeFromChatRoom = async (moimId, userId) => {
 
     const { roomId } = docSnap.data();
     const roomRef = doc(db, 'rooms', roomId);
+    const roomdocSnap = await getDoc(roomRef);
+    const { membersInfo } = roomdocSnap.data();
+
+    delete membersInfo[`nickname${userId}`];
+    delete membersInfo[`vegeType${userId}`];
 
     updateDoc(roomRef, {
       members: arrayRemove(userId),
+    });
+
+    updateDoc(roomRef, {
+      membersInfo,
     });
 
     deleteRoomFromUser(roomId, userId);
@@ -294,23 +311,32 @@ const excludeFromChatRoom = async (moimId, userId) => {
   }
 };
 
-const queryChatRoomInfo = async moimId => {
-  const moimChatRoom = await getMoimChatRoom(`${moimId}`);
-
-  if (!moimChatRoom) {
-    alert('해당 모임이 존재하지 않습니다.');
+const getMoimChatRoom = async moimId => {
+  const moimRef = doc(db, 'moims', moimId);
+  const docSnap = await getDoc(moimRef);
+  if (!docSnap.exists()) {
     return null;
   }
 
-  const joinDate = await getJoinDate('1', moimChatRoom.id); // userId, roomId
-  const membersInfo = await getMembersInfo(moimChatRoom.members);
-  const chatRoom = {
-    ...moimChatRoom,
-    joinDate,
-    membersInfo,
-  };
+  const { roomId } = docSnap.data();
+  const roomRef = doc(db, 'rooms', roomId);
+  const roomDocSnap = await getDoc(roomRef);
+  return roomDocSnap.data();
+};
 
-  return chatRoom;
+const getNotifications = async userId => {
+  const notificationRef = collection(
+    db,
+    'notification',
+    userId,
+    'notifications',
+  );
+  const querySnapshot = await getDocs(notificationRef);
+
+  const notifications = querySnapshot.docs.map(notificationDoc => {
+    return notificationDoc.data();
+  });
+  return notifications;
 };
 
 export {
@@ -325,8 +351,10 @@ export {
   createMoimChat,
   increaseUnreadMessage,
   resetUnreadMessage,
-  saveNotification,
   joinMoimChat,
   excludeFromChatRoom,
-  queryChatRoomInfo,
+  getJoinDate,
+  getNotifications,
+  getChatRoomList,
+  getCountUnreadMessages,
 };

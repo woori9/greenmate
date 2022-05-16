@@ -3,9 +3,38 @@ import Slider from 'react-slick';
 import styled from 'styled-components';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import carouselImage1 from '../../assets/carousel-img1.png';
+import carouselImage2 from '../../assets/carousel-img2.png';
+import carouselImage3 from '../../assets/carousel-img3.png';
+import carouselImage4 from '../../assets/carousel-img4.png';
 
 const Container = styled.div`
   width: 100%;
+
+  // 슬라이드별 배경
+  .slick-slide:nth-child(2) {
+    .item {
+      background-color: #ffc774;
+    }
+  }
+
+  .slick-slide:nth-child(3) {
+    .item {
+      background-color: #ffea9f;
+    }
+  }
+
+  .slick-slide:nth-child(4) {
+    .item {
+      background-color: #ffbf9b;
+    }
+  }
+
+  .slick-slide:nth-child(5) {
+    .item {
+      background-color: #ffd493;
+    }
+  }
 
   // Slider custom css
   .slider-dots {
@@ -63,39 +92,73 @@ const Container = styled.div`
 
 const SliderItem = styled.div`
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: center;
   width: 100%;
   height: 9rem;
   border-radius: 20px;
-  background-color: #ffc774;
 
-  &.item-two {
-    background-color: #ffc4a3;
+  .text-container {
+    display: flex;
+    flex-direction: column;
+
+    p {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-left: 1rem;
+    }
   }
 
-  &.item-three {
-    background-color: #ffaa7a;
-  }
-
-  &.item-four {
-    background-color: #ffd493;
-  }
-
-  p {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-left: 0.5rem;
+  img {
+    width: auto;
+    height: 85%;
+    margin-right: 0.5rem;
   }
 
   @media screen and (min-width: 1025px) {
     height: 17rem;
 
-    p {
+    .text-container p {
       font-size: 2rem;
+    }
+
+    img {
+      height: 90%;
+      margin-right: 2rem;
     }
   }
 `;
+
+const sliderItems = [
+  <>
+    <div className="text-container">
+      <p>그린메이트에서</p>
+      <p>채식을 함께할 친구를 찾아보세요!</p>
+    </div>
+    <img src={carouselImage1} alt="" />
+  </>,
+  <>
+    <div className="text-container">
+      <p>나의 채식메이트</p>
+      <p>그린메이트에 있어요.</p>
+    </div>
+    <img src={carouselImage2} alt="" />
+  </>,
+  <>
+    <div className="text-container">
+      <p>지속 가능한 채식,</p>
+      <p>그린메이트와 함께</p>
+    </div>
+    <img src={carouselImage3} alt="" />
+  </>,
+  <>
+    <div className="text-container">
+      <p>채식은</p>
+      <p>함께할수록 좋으니까</p>
+    </div>
+    <img src={carouselImage4} alt="" />
+  </>,
+];
 
 function HomeCarousel() {
   const settings = {
@@ -111,30 +174,11 @@ function HomeCarousel() {
   return (
     <Container>
       <Slider {...settings} dotsClass="slider-dots">
-        <div>
-          <SliderItem>
-            <p>그린메이트에서</p>
-            <p>채식을 함께할 친구를 찾아보세요!</p>
-          </SliderItem>
-        </div>
-        <div>
-          <SliderItem className="item-two">
-            <p>지속 가능한 채식,</p>
-            <p>그린메이트와 함께</p>
-          </SliderItem>
-        </div>
-        <div>
-          <SliderItem className="item-three">
-            <p>그린메이트에서</p>
-            <p>채식을 함께할 친구를 찾아보세요!</p>
-          </SliderItem>
-        </div>
-        <div>
-          <SliderItem className="item-four">
-            <p>그린메이트에서</p>
-            <p>채식을 함께할 친구를 찾아보세요!</p>
-          </SliderItem>
-        </div>
+        {sliderItems.map(item => (
+          <div key={item}>
+            <SliderItem className="item">{item}</SliderItem>
+          </div>
+        ))}
       </Slider>
     </Container>
   );

@@ -87,7 +87,7 @@ function ImgCarousel({ props }) {
           return (
             <div key={img.img_path}>
               <SliderItem>
-                <img height="194" src={img.img_path} alt="사진" />
+                <img height="300" src={img.img_path} alt="사진" />
               </SliderItem>
             </div>
           );

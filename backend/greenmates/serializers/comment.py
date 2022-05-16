@@ -3,16 +3,18 @@ from ..models import Comment
 from accounts.serializers import UserSerializer
 
 
+# vege_type 추가
 class CommentSerializer(serializers.ModelSerializer):
     is_like = serializers.SerializerMethodField()
     like_cnt = serializers.IntegerField(source='like_users.count', read_only=True)
     nickname = serializers.CharField(source='author.nickname', read_only=True)
+    vege_type = serializers.IntegerField(source='author.vege_type', read_only=True)
     # like_users = UserSerializer(many=True)
 
     class Meta:
         model = Comment
         fields = (
-            'id', 'is_like', 'like_cnt', 'author', 'nickname', 
+            'id', 'is_like', 'like_cnt', 'author', 'nickname', 'vege_type', 
             'content', 'parent', 'created_at', 'updated_at',
         )
     

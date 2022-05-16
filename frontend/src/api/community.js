@@ -27,3 +27,19 @@ export async function postLike(feedId) {
   );
   return response.data;
 }
+
+// 피드 번역 보기
+export async function getFeedTrans(feedId) {
+  const response = await apiInstance.get(
+    `/greenmates/community/feed/${feedId}/trans/`,
+  );
+  return response.data;
+}
+
+// 댓글 번역 보기
+export async function getCommentTrans(commentId) {
+  const response = await apiInstance.get(
+    `/greenmates/community/comment/${commentId}/trans/`,
+  );
+  return response.data;
+}

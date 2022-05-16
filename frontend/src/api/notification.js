@@ -20,4 +20,22 @@ const deleteToken = async tokenId => {
   }
 };
 
-export { sendToken, deleteToken };
+const sendNotification = async (targetId, chatType) => {
+  if (chatType === 1) {
+    try {
+      await api.post(`/notifications/personal-chat/${targetId}/`); // pairId
+    } catch (err) {
+      throw new Error(err);
+    }
+  }
+
+  if (chatType === 2) {
+    try {
+      await api.post(`/notifications/moim-chat/${targetId}/`); // moimId
+    } catch (err) {
+      throw new Error(err);
+    }
+  }
+};
+
+export { sendToken, deleteToken, sendNotification };
