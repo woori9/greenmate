@@ -4,7 +4,7 @@ import { useAtom } from 'jotai';
 import GoBackBar from '../components/common/GoBackBar';
 import ResponsiveNavbar from '../components/common/navbar/ResponsiveNavbar';
 import NotificationList from '../components/notification/NotificationList';
-import notificationAtom from '../atoms/notification';
+import { notificationAtom } from '../atoms/notification';
 
 const StyledNotificationPage = styled.div`
   position: relative;
