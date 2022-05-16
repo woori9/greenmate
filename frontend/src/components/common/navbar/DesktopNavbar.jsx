@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import HomeIcon from '@mui/icons-material/Home';
@@ -7,8 +8,11 @@ import EcoIcon from '@mui/icons-material/EnergySavingsLeaf';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 import PersonIcon from '@mui/icons-material/Person';
 import { useAtom } from 'jotai';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import { Badge } from '@mui/material';
 import { userInfoAtom } from '../../../atoms/accounts';
 import logo from '../../../assets/logo.png';
+import useNotificationList from '../../../hooks/useNotificationList';
 
 const defaultColor = '#a9a9a9';
 const selectedColor = '#fcb448';
@@ -19,7 +23,7 @@ const NavTop = styled.div`
   left: 0;
   width: 100%;
   height: 60px;
-  z-index: 1;
+  z-index: 2000;
   background-color: #ffffff;
   display: flex;
   justify-content: space-between;
@@ -42,12 +46,13 @@ const AlertMenus = styled.ul`
   li {
     padding-right: 30px;
   }
+  padding-top: 1rem;
 `;
 const NavSide = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 1;
+  z-index: 2000;
   height: 100%;
   width: 130px;
   background-color: #f1f1f1;
@@ -93,7 +98,23 @@ function DesktopNavbar() {
       path: '/mymoim',
       icon: <EcoIcon sx={{ fontSize: 35 }} />,
     },
+    {
+      name: '채팅',
+      path: '/chat',
+      icon: <ChatBubbleOutlineIcon sx={{ fontSize: 35 }} />,
+    },
   ];
+  const { notifications } = useNotificationList();
+  const [badgeStyle, setBadgeStyle] = useState('');
+
+  useEffect(() => {
+    if (notifications.length) {
+      setBadgeStyle('dot');
+    } else {
+      setBadgeStyle('');
+    }
+  }, [notifications.length]);
+
   return (
     <>
       <NavSide>
@@ -113,9 +134,14 @@ function DesktopNavbar() {
         </div>
         <AlertMenus>
           <li>
-            <NotificationsNoneOutlinedIcon
-              sx={{ color: 'black', fontSize: 30 }}
-            />
+            <Link to="/notification">
+              <Badge overlap="circular" color="error" variant={badgeStyle}>
+                <NotificationsNoneOutlinedIcon
+                  color="action"
+                  sx={{ color: 'black', fontSize: 30 }}
+                />
+              </Badge>
+            </Link>
           </li>
           <li>
             <Link to={`/mypage/${userInfo.id}`} style={{ color: 'black' }}>
