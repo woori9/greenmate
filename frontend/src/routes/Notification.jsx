@@ -1,10 +1,9 @@
 import styled from 'styled-components';
-import { useEffect } from 'react';
-import { useAtom } from 'jotai';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import GoBackBar from '../components/common/GoBackBar';
 import ResponsiveNavbar from '../components/common/navbar/ResponsiveNavbar';
 import NotificationList from '../components/notification/NotificationList';
-import { notificationAtom } from '../atoms/notification';
+import useNotificationList from '../hooks/useNotificationList';
 
 const StyledNotificationPage = styled.div`
   position: relative;
@@ -20,17 +19,13 @@ const StyledNotificationPage = styled.div`
 `;
 
 function Notification() {
-  const [notifications] = useAtom(notificationAtom);
-
-  useEffect(() => {
-    console.log('get notifications');
-  }, []);
-
+  const { notifications } = useNotificationList();
   return (
     <>
       <ResponsiveNavbar />
       <GoBackBar title="알림" />
       <StyledNotificationPage>
+        <CheckCircleIcon />
         <NotificationList notifications={notifications} />
       </StyledNotificationPage>
     </>
