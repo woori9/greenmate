@@ -5,9 +5,9 @@ import PlaceIcon from '@mui/icons-material/Place';
 import WysiwygIcon from '@mui/icons-material/Wysiwyg';
 import EcoIcon from '@mui/icons-material/EnergySavingsLeaf';
 import PersonIcon from '@mui/icons-material/Person';
-import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 import { useAtom } from 'jotai';
 import { userInfoAtom } from '../../../atoms/accounts';
+import NotificationIcon from '../../notification/NotificationIcon';
 
 const defaultColor = '#a9a9a9';
 const selectedColor = '#fcb448';
@@ -89,7 +89,7 @@ function MobileNavbar() {
     <>
       <NavTop>
         <p>그린메이트</p>
-        <NotificationsNoneOutlinedIcon sx={{ color: 'black', fontSize: 30 }} />
+        <NotificationIcon />
       </NavTop>
       <NavBottom>
         <ul>

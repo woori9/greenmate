@@ -1,18 +1,15 @@
-import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import HomeIcon from '@mui/icons-material/Home';
 import PlaceIcon from '@mui/icons-material/Place';
 import WysiwygIcon from '@mui/icons-material/Wysiwyg';
 import EcoIcon from '@mui/icons-material/EnergySavingsLeaf';
-import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 import PersonIcon from '@mui/icons-material/Person';
 import { useAtom } from 'jotai';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
-import { Badge } from '@mui/material';
 import { userInfoAtom } from '../../../atoms/accounts';
 import logo from '../../../assets/logo.png';
-import useNotificationList from '../../../hooks/useNotificationList';
+import NotificationIcon from '../../notification/NotificationIcon';
 
 const defaultColor = '#a9a9a9';
 const selectedColor = '#fcb448';
@@ -104,17 +101,6 @@ function DesktopNavbar() {
       icon: <ChatBubbleOutlineIcon sx={{ fontSize: 35 }} />,
     },
   ];
-  const { notifications } = useNotificationList();
-  const [badgeStyle, setBadgeStyle] = useState('');
-
-  useEffect(() => {
-    if (notifications.length) {
-      setBadgeStyle('dot');
-    } else {
-      setBadgeStyle('');
-    }
-  }, [notifications.length]);
-
   return (
     <>
       <NavSide>
@@ -135,12 +121,7 @@ function DesktopNavbar() {
         <AlertMenus>
           <li>
             <Link to="/notification">
-              <Badge overlap="circular" color="error" variant={badgeStyle}>
-                <NotificationsNoneOutlinedIcon
-                  color="action"
-                  sx={{ color: 'black', fontSize: 30 }}
-                />
-              </Badge>
+              <NotificationIcon />
             </Link>
           </li>
           <li>
