@@ -21,9 +21,11 @@ import { apiPostLikeRestau } from '../../api/map';
 const Container = styled.div`
   padding-bottom: 5rem;
 `;
-
 const CloseButton = styled.div`
   text-align: end;
+  .icon {
+    cursor: pointer;
+  }
 `;
 const Summary = styled.div`
   display: flex;
@@ -32,6 +34,7 @@ const Summary = styled.div`
 `;
 const BookMark = styled.div`
   align-self: center;
+  cursor: pointer;
   .bookmark {
     font-size: 30px;
     color: #fcb448;
@@ -130,18 +133,19 @@ function DetailInfo() {
   }
   return (
     <Container>
-      <CloseButton
-        onClick={() => {
-          if (width < 1024) {
-            setPageStatus('summary');
-          } else if (newSearchResult.length) {
-            setPageStatus('searchLst');
-          } else {
-            setPageStatus('searchBox');
-          }
-        }}
-      >
-        <CloseIcon />
+      <CloseButton>
+        <CloseIcon
+          className="icon"
+          onClick={() => {
+            if (width < 1024) {
+              setPageStatus('summary');
+            } else if (newSearchResult.length) {
+              setPageStatus('searchLst');
+            } else {
+              setPageStatus('searchBox');
+            }
+          }}
+        />
       </CloseButton>
       <Summary>
         <RestaurantInfoCard arrayResult={detailRestau} />

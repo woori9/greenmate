@@ -18,6 +18,7 @@ const Container = styled.div`
   }
 `;
 const RestauDiv = styled.div`
+  cursor: pointer;
   display: flex;
   justify-content: space-between;
   padding: 1rem;

@@ -46,20 +46,16 @@ function RestaurantSearchForm({
   const [isSearch, setIsSearch] = useState(false);
   const [searchResult, setSearchResult] = useState([]);
 
-  function handleKeyUp(e) {
+  async function handleKeyUp(e) {
     if (e.keyCode === 13 && searchKeyword.length > 0) {
       setIsSearch(true);
       setSearchKeyword(e.target.value);
-      apiGetSearchRestau(
-        { keyword: searchKeyword },
-        res => {
-          const formattedData = res.data.map(item => ({
-            ...snakeToCamel(item),
-          }));
-          setSearchResult(formattedData);
-        },
-        () => {},
-      );
+      const res = await apiGetSearchRestau({ keyword: searchKeyword });
+      const formattedData = res.map(item => {
+        const returnData = { ...snakeToCamel(item) };
+        return returnData;
+      });
+      setSearchResult(formattedData);
     }
   }
 

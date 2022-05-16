@@ -17,7 +17,9 @@ import {
 
 const CloseButton = styled.div`
   text-align: end;
-  cursor: pointer;
+  .icon {
+    cursor: pointer;
+  }
 `;
 const Summary = styled.div`
   display: flex;
@@ -27,6 +29,7 @@ const SummaryBox = styled.div``;
 const BookMark = styled.div`
   align-self: center;
   margin-right: 10px;
+  cursor: pointer;
   .bookmark {
     font-size: 30px;
     color: #fcb448;
@@ -51,6 +54,7 @@ function SummaryInfo({ getMapwithCommand }) {
     <>
       <CloseButton>
         <CloseIcon
+          className="icon"
           onClick={() => {
             if (newSearchResult.length) {
               setPageStatus('searchLst');
