@@ -203,6 +203,7 @@ function MoimDetail() {
     time: null,
   });
   const [translation, setTranslation] = useState('');
+  const [toggleTranslation, setToggleTranslation] = useState(false);
   const [needUpdate, setNeedUpdate] = useState(0);
   const [, setOpen] = useAtom(openSheetAtom);
   const userInfo = useUserInfo();
@@ -385,20 +386,36 @@ function MoimDetail() {
             </dd>
             <dd>{moimInfo.content}</dd>
           </div>
-          {userInfo.language !== 0 && (
+          {userInfo.language !== 0 && !toggleTranslation && (
             <button
               type="button"
               className="mini-btn translate-btn"
               onClick={() => {
-                getMoimContentTranslation(moimInfo.id, res => {
-                  setTranslation(res.data.content_trans);
-                });
+                if (translation.length === 0) {
+                  getMoimContentTranslation(moimInfo.id, res => {
+                    setTranslation(res.data.content_trans);
+                  });
+                }
+                setToggleTranslation(prev => !prev);
               }}
             >
               See translation
             </button>
           )}
-          <dd className="translation-txt">{translation}</dd>
+          {userInfo.language !== 0 && toggleTranslation && (
+            <button
+              type="button"
+              className="mini-btn translate-btn"
+              onClick={() => {
+                setToggleTranslation(prev => !prev);
+              }}
+            >
+              Collapse translation
+            </button>
+          )}
+          {toggleTranslation && (
+            <dd className="translation-txt">{translation}</dd>
+          )}
         </div>
       </DataList>
 
