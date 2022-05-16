@@ -50,8 +50,9 @@ const Detail = styled.div`
   }
   .address {
     line-height: 140%;
-    p {
+    .address-text {
       max-width: 70%;
+      white-space: pre-line;
     }
   }
 `;
@@ -68,6 +69,7 @@ const Menu = styled.div`
   padding: 1rem 0;
   .menu {
     padding: 1rem 0.5rem;
+    white-space: pre-line;
     .vege-type {
       padding-top: 5px;
       color: #a9a9a9;
@@ -151,7 +153,9 @@ function DetailInfo() {
       <Detail>
         <div className="address">
           <LocationOnIcon />
-          <p>{address}</p>
+          <div className="address-text">
+            <p>{address}</p>
+          </div>
           <Button onClick={() => copyAddress(address)}>복사하기</Button>
         </div>
         <div className="call">
@@ -167,10 +171,14 @@ function DetailInfo() {
       </Detail>
       <Menu>
         <h3 className="sub-title">메뉴</h3>
-        {splitMenus.map(menu => (
-          <div key={menu} className="menu">
-            <p>{menu.split('(')[0]}</p>
-            <p className="vege-type">{menu.split(/[(, )]/)[1]}</p>
+        {splitMenus.map((menu, idx) => (
+          <div key={menu && idx}>
+            {!menu.split('(')[0].includes('possible') ? (
+              <div className="menu">
+                <p>{menu.split('(')[0]}</p>
+                <p className="vege-type">{menu.split(/[( )]/)[1]}</p>
+              </div>
+            ) : null}
           </div>
         ))}
       </Menu>

@@ -8,8 +8,10 @@ import {
   pageStatusAtom,
   summaryRestauAtom,
   detailRestauAtom,
+  isOpendesktopSideBarAtom,
 } from '../atoms/map';
 import mapPinImg from '../assets/map-pin.png';
+import mapPinImg2 from '../assets/map-pin2.png';
 import ResponsiveSideSheet from '../components/map/SideSheet/ResponsiveSideSheet';
 import ResponsiveMapNavbar from '../components/common/navbar/ResponsiveMapNavbar';
 import {
@@ -74,6 +76,7 @@ function Map() {
   const [, setPageStatus] = useAtom(pageStatusAtom);
   const [, setSummaryRestau] = useAtom(summaryRestauAtom);
   const [, setDetailRestau] = useAtom(detailRestauAtom);
+  const [, setDesktopSideBar] = useAtom(isOpendesktopSideBarAtom);
   const { width } = useWindowDimensions();
   const isDesktop = width > 1024;
   const location = useLocation();
@@ -87,6 +90,12 @@ function Map() {
       level: 3, // 지도의 레벨(확대, 축소 정도)
     };
     const mapContainer = new kakao.maps.Map(container, options); // 지도 생성 및 객체 리턴
+
+    const imgSrc = mapPinImg;
+    const imgSize = new kakao.maps.Size(80, 80);
+    const imgOption = { offset: new kakao.maps.Point(27, 69) };
+    const imgSrc2 = mapPinImg2;
+    const overlayContent = `<img src=${imgSrc2} alt="img" style="width: 120px;" />`;
 
     if (command === 'setSummaryRestau') {
       const summaryRestau = await apiGetSummaryRestau({ restauId: inputValue }); // 식당 기본 정보 불러오기
@@ -106,12 +115,9 @@ function Map() {
       );
       mapContainer.panTo(moveLatLon);
       setPageStatus('detail');
+      setDesktopSideBar(true);
     }
-
     const restauLst = await apiGetAllRestau(); // DB 식당 전체 불러오기
-    const imgSrc = mapPinImg;
-    const imgSize = new kakao.maps.Size(80, 80);
-    const imgOption = { offset: new kakao.maps.Point(27, 69) };
     for (let i = 0; i < restauLst.length; i += 1) {
       const markerImg = new kakao.maps.MarkerImage(imgSrc, imgSize, imgOption);
       const latLng = new kakao.maps.LatLng(
@@ -124,7 +130,42 @@ function Map() {
         title: restauLst[i].title,
         image: markerImg,
       });
-      // 클릭이벤트
+      if (inputValue && inputValue === restauLst[i].id) {
+        // 오버레이 표시
+        const setOverlayContent = new kakao.maps.CustomOverlay({
+          position: latLng,
+          content: overlayContent,
+          xAnchor: 0.37,
+          yAnchor: 0.76,
+          zIndex: 3,
+        });
+        setOverlayContent.setMap(mapContainer);
+        marker.setVisible(false);
+        // 드래그 시작하면 오버레이 지우기
+        kakao.maps.event.addListener(mapContainer, 'dragstart', function () {
+          setOverlayContent.setVisible(false);
+          marker.setVisible(true);
+        });
+      }
+      // 마우스 이벤트 1: mouseover
+      kakao.maps.event.addListener(marker, 'mouseover', function () {
+        const setBigMarkerImg = new kakao.maps.MarkerImage(
+          imgSrc,
+          new kakao.maps.Size(100, 100),
+          new kakao.maps.Point(40, 100),
+        );
+        marker.setImage(setBigMarkerImg);
+      });
+      // 마우스 이벤트 2: mouseout
+      kakao.maps.event.addListener(marker, 'mouseout', function () {
+        const setDefaultMarkerImg = new kakao.maps.MarkerImage(
+          imgSrc,
+          new kakao.maps.Size(80, 80),
+          new kakao.maps.Point(27, 69),
+        );
+        marker.setImage(setDefaultMarkerImg);
+      });
+      // 마우스 이벤트 3: click
       kakao.maps.event.addListener(marker, 'click', async function () {
         setNewSearchResult([]);
         if (isDesktop) {
@@ -132,11 +173,29 @@ function Map() {
             restauId: restauLst[i].id,
           }); // 식당 상세 정보 불러오기
           setDetailRestau(deatilRestau);
+          setDesktopSideBar(true);
           const moveLatLon = new kakao.maps.LatLng(
             restauLst[i].latitude,
             restauLst[i].longitude,
           );
+          // 클릭시 이동
           mapContainer.panTo(moveLatLon);
+          // 오버레이 표시
+          const setOverlayContent = new kakao.maps.CustomOverlay({
+            position: moveLatLon,
+            content: overlayContent,
+            xAnchor: 0.37,
+            yAnchor: 0.76,
+            zIndex: 3,
+          });
+          setOverlayContent.setMap(mapContainer);
+          marker.setVisible(false);
+          // 드래그 시작하면 오버레이 지우기
+          kakao.maps.event.addListener(mapContainer, 'dragstart', function () {
+            setOverlayContent.setVisible(false);
+            marker.setVisible(true);
+          });
+          // detail 페이지 이동
           setPageStatus('detail');
         } else {
           const summaryRestau = await apiGetSummaryRestau({
@@ -148,6 +207,21 @@ function Map() {
             restauLst[i].longitude,
           );
           mapContainer.panTo(moveLatLon);
+          // 오버레이 표시
+          const setOverlayContent = new kakao.maps.CustomOverlay({
+            position: moveLatLon,
+            content: overlayContent,
+            xAnchor: 0.37,
+            yAnchor: 0.76,
+            zIndex: 3,
+          });
+          setOverlayContent.setMap(mapContainer);
+          marker.setVisible(false);
+          // 드래그 시작하면 오버레이 지우기
+          kakao.maps.event.addListener(mapContainer, 'dragstart', function () {
+            setOverlayContent.setVisible(false);
+            marker.setVisible(true);
+          });
           setPageStatus('summary');
         }
       });
@@ -169,14 +243,13 @@ function Map() {
       const searchRestauLst = await apiGetSearchRestau({ keyword: inputValue }); // 검색 결과 불러오기
       if (searchRestauLst.length) {
         setNewSearchResult(searchRestauLst);
-        console.log(searchRestauLst.length);
         const moveLatLon = new kakao.maps.LatLng(
           searchRestauLst[0].latitude,
           searchRestauLst[0].longitude,
         );
         mapContainer.panTo(moveLatLon);
-        setIsLoading(false);
         setPageStatus('searchLst');
+        setIsLoading(false);
       } else {
         const placesSearchCB = (data, status) => {
           if (status === kakao.maps.services.Status.OK) {
@@ -188,11 +261,11 @@ function Map() {
             }
             // 검색된 장소 위치를 기준으로 지도 범위를 재설정
             mapContainer.setBounds(bounds);
+            setIsLoading(false);
           }
         };
         const ps = new kakao.maps.services.Places();
         ps.keywordSearch(inputValue, placesSearchCB);
-        setIsLoading(false);
       }
     } else {
       setIsLoading(false);

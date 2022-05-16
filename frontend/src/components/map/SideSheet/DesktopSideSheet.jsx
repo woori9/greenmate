@@ -1,5 +1,4 @@
 import { useAtom } from 'jotai';
-import { useState } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { styled as muiStyled } from '@mui/material/styles';
@@ -8,7 +7,7 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import SearchBox from '../SearchBox';
 import SearchLst from '../SearchLst';
 import DetailInfo from '../DetailInfo';
-import { pageStatusAtom } from '../../../atoms/map';
+import { pageStatusAtom, isOpendesktopSideBarAtom } from '../../../atoms/map';
 
 const drawerWidth = 440;
 const openedMixin = theme => ({
@@ -62,6 +61,7 @@ const SideSheet = muiStyled(MuiDrawer, {
 }));
 const SheetContent = styled.div`
   display: flex;
+  width: 410px;
   filter: drop-shadow(0 -1px 4px rgba(0, 0, 0, 0.25));
   .button-box {
     height: calc(100vh - 60px);
@@ -90,7 +90,7 @@ const Button = styled.button`
   cursor: pointer;
 `;
 function DesktopSideSheet({ getMapwithCommand }) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useAtom(isOpendesktopSideBarAtom);
   const [pageStatus] = useAtom(pageStatusAtom);
 
   return (
