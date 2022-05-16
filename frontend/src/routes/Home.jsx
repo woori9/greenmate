@@ -11,19 +11,16 @@ import { getMoimList } from '../api/moim';
 import { snakeToCamel } from '../utils/formatKey';
 
 const Container = styled.div`
+  padding: 5rem 1rem 5rem 1rem;
+
   .inform-txt-container {
     width: 100%;
     text-align: center;
     margin: 3rem 0;
   }
 
-  @media screen and (max-width: 1024px) {
-    padding: 5rem 1rem 5rem 1rem;
-  }
-
   @media screen and (min-width: 1025px) {
-    margin: 60px 0 0 130px;
-    padding: 0 2rem;
+    padding: 60px 2rem 0 calc(130px + 2rem);
 
     .moim-card-container {
       display: flex;

@@ -1,6 +1,7 @@
 import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import Snackbar from '@mui/material/Snackbar';
 import KakaoRedirectHandler from './routes/KakaoRedirectHandler';
 import Intro from './routes/Intro';
 import Signup from './routes/Signup';
@@ -27,12 +28,50 @@ import ChatRoom from './components/chat/ChatRoom';
 import { checkToken, onMessageListener } from './service/notification_service';
 import useNotificationStatus from './hooks/useNotification';
 import { deleteToken } from './api/notification';
+import useUserInfo from './hooks/useUserInfo';
+import PrivateRoute from './routes/PrivateRoute';
+import Notification from './routes/Notification';
+
+const initialAlarmState = {
+  open: false,
+  message: '',
+};
+
+const mobileAlarmStyle = { vertical: 'top', horizontal: 'center' };
+const desktopAlamStyle = {
+  vertical: 'bottom',
+  horizontal: 'right',
+};
 
 function App() {
   const [tokenId, setTokenId] = useState(null);
   const notificationStatus = useNotificationStatus();
+  const userInfo = useUserInfo();
+  const [alarm, setAlarm] = useState({
+    ...initialAlarmState,
+    ...desktopAlamStyle,
+  });
+
+  const { open, message, vertical, horizontal } = alarm;
+
+  const handleOpenSnackbar = body => {
+    const { pathname } = window.location;
+    if (pathname.includes('chat') || pathname.includes('notification')) return;
+
+    const { innerWidth: width } = window;
+
+    const style = width < 1025 ? mobileAlarmStyle : desktopAlamStyle;
+
+    setAlarm({
+      open: true,
+      message: body,
+      ...style,
+    });
+  };
 
   useEffect(() => {
+    if (!userInfo) return () => {};
+
     let unsubscribe;
 
     if (notificationStatus === 'default') {
@@ -41,7 +80,7 @@ function App() {
 
     if (notificationStatus === 'granted') {
       checkToken(setTokenId);
-      unsubscribe = onMessageListener('1'); // userId
+      unsubscribe = onMessageListener(handleOpenSnackbar);
     }
 
     if (notificationStatus !== 'granted' && tokenId !== null) {
@@ -50,7 +89,7 @@ function App() {
     }
 
     return unsubscribe;
-  }, [notificationStatus]);
+  }, [notificationStatus, userInfo]);
 
   return (
     <BrowserRouter>
@@ -62,39 +101,54 @@ function App() {
           element={<KakaoRedirectHandler />}
         />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/" element={<Home />} />
-        <Route path="/community" element={<Community />} />
-        <Route path="/community/form" element={<CommunityForm />} />
-        <Route path="/map" element={<Map />} />
-        <Route path="/mymoim" element={<MyMoim />} />
-        <Route path="/moim/form" element={<MoimForm />} />
-        <Route path="/moim/:moimId" element={<MoimDetail />} />
-        <Route path="/moim/:moimId/member" element={<ManageMember />} />
-        <Route path="/moim/:moimId/evaluation" element={<EvaluateMoim />} />
-        <Route path="/mypage/:userPk" element={<MyPage />} />
-        <Route
-          path="/mypage/:userPk/liked-restaurants"
-          element={<MyPageLikedRestaurants />}
-        />
-        <Route
-          path="/mypage/:userPk/liked-feeds"
-          element={<MyPageLikedFeeds />}
-        />
-        <Route
-          path="/mypage/:userPk/liked-reviews"
-          element={<MyPageLikedReview />}
-        />
-        <Route
-          path="/mypage/:userPk/evaluation"
-          element={<MyPageEvaluation />}
-        />
-        <Route path="/mypage/:userPk/my-reviews" element={<MyPageReviews />} />
-        <Route path="/mypage/:userPk/my-feeds" element={<MyPageFeeds />} />
-        <Route path="/mypage/:userPk/setting" element={<MyPageSetting />} />
-        <Route path="/chat" element={<Chat />} />
-        <Route path="/chatRoom" element={<ChatRoom />} />
+        <Route element={<PrivateRoute isLoggedIn={!!userInfo} />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/community" element={<Community />} />
+          <Route path="/community/form" element={<CommunityForm />} />
+          <Route path="/map" element={<Map />} />
+          <Route path="/mymoim" element={<MyMoim />} />
+          <Route path="/moim/form" element={<MoimForm />} />
+          <Route path="/moim/:moimId" element={<MoimDetail />} />
+          <Route path="/moim/:moimId/member" element={<ManageMember />} />
+          <Route path="/moim/:moimId/evaluation" element={<EvaluateMoim />} />
+          <Route path="/mypage/:userPk" element={<MyPage />} />
+          <Route
+            path="/mypage/:userPk/liked-restaurants"
+            element={<MyPageLikedRestaurants />}
+          />
+          <Route
+            path="/mypage/:userPk/liked-feeds"
+            element={<MyPageLikedFeeds />}
+          />
+          <Route
+            path="/mypage/:userPk/liked-reviews"
+            element={<MyPageLikedReview />}
+          />
+          <Route
+            path="/mypage/:userPk/evaluation"
+            element={<MyPageEvaluation />}
+          />
+          <Route
+            path="/mypage/:userPk/my-reviews"
+            element={<MyPageReviews />}
+          />
+          <Route path="/mypage/:userPk/my-feeds" element={<MyPageFeeds />} />
+          <Route path="/mypage/:userPk/setting" element={<MyPageSetting />} />
+          <Route path="/chat" element={<Chat />} />
+          <Route path="/chatRoom" element={<ChatRoom />} />
+          <Route path="/notification" element={<Notification />} />
+        </Route>
       </Routes>
       <BottomSheetBase />
+      <Snackbar
+        anchorOrigin={{ vertical, horizontal }}
+        open={open}
+        autoHideDuration={5000}
+        onClose={() => {
+          setAlarm({ ...alarm, ...initialAlarmState });
+        }}
+        message={message}
+      />
     </BrowserRouter>
   );
 }

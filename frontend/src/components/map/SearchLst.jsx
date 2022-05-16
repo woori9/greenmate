@@ -1,9 +1,15 @@
+import { useAtom } from 'jotai';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import RestaurantInfoCard from './RestaurantInfoCard';
 import useWindowDimensions from '../../utils/windowDimension';
+import {
+  pageStatusAtom,
+  searchResultsAtom,
+  keywordAtom,
+} from '../../atoms/map';
 
 const SearchHeader = styled.div`
   display: flex;
@@ -37,15 +43,11 @@ const SummaryContainer = styled.div`
   border-bottom: 1px solid #f2f2f2;
 `;
 
-function SearchLst({
-  getSummaryRestau,
-  searchResults,
-  keyword,
-  setSearchPage,
-  markingAllRestau,
-}) {
+function SearchLst({ getMapwithCommand }) {
   const { width } = useWindowDimensions();
-  const ArrayResults = Object.values(searchResults);
+  const [keyword] = useAtom(keywordAtom);
+  const [, setPageStatus] = useAtom(pageStatusAtom);
+  const [searchResults] = useAtom(searchResultsAtom);
 
   return (
     <>
@@ -59,21 +61,20 @@ function SearchLst({
         </div>
         <CloseIcon
           onClick={() => {
-            setSearchPage('searchBox');
-            markingAllRestau();
+            setPageStatus('searchBox');
           }}
         />
       </SearchHeader>
       <Summary>
-        {ArrayResults.length ? (
+        {searchResults.length ? (
           <>
-            {ArrayResults.map(arrayResult => (
+            {searchResults.map(arrayResult => (
               <SummaryContainer
                 key={arrayResult.id}
                 onClick={() =>
                   width > 1024
-                    ? setSearchPage('detail')
-                    : getSummaryRestau(arrayResult.id)
+                    ? getMapwithCommand('setDetailRestau', arrayResult.id)
+                    : getMapwithCommand('setSummaryRestau', arrayResult.id)
                 }
               >
                 <RestaurantInfoCard arrayResult={arrayResult} />
@@ -90,19 +91,7 @@ function SearchLst({
   );
 }
 SearchLst.propTypes = {
-  setSearchPage: PropTypes.func.isRequired,
-  keyword: PropTypes.string.isRequired,
-  searchResults: PropTypes.arrayOf(
-    PropTypes.shape({
-      category: PropTypes.number.isRequired,
-      id: PropTypes.number.isRequired,
-      is_like: PropTypes.bool.isRequired,
-      res_info: PropTypes.shape(),
-      score: PropTypes.number.isRequired,
-    }),
-  ).isRequired,
-  getSummaryRestau: PropTypes.func.isRequired,
-  markingAllRestau: PropTypes.func.isRequired,
+  getMapwithCommand: PropTypes.func.isRequired,
 };
 
 export default SearchLst;

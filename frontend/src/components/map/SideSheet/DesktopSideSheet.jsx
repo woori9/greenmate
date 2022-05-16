@@ -1,3 +1,4 @@
+import { useAtom } from 'jotai';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
@@ -7,6 +8,7 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import SearchBox from '../SearchBox';
 import SearchLst from '../SearchLst';
 import DetailInfo from '../DetailInfo';
+import { pageStatusAtom } from '../../../atoms/map';
 
 const drawerWidth = 440;
 const openedMixin = theme => ({
@@ -53,9 +55,12 @@ const SideSheet = muiStyled(MuiDrawer, {
   }),
 }));
 const SheetContent = styled.div`
-  height: calc(100% - 60px);
   display: flex;
   filter: drop-shadow(0 -1px 4px rgba(0, 0, 0, 0.25));
+  .button-box {
+    height: calc(100vh - 60px);
+    display: flex;
+  }
 `;
 const Body = styled.div`
   background-color: white;
@@ -63,9 +68,9 @@ const Body = styled.div`
   padding: 1rem;
 `;
 const Button = styled.button`
-  width: 30px;
-  height: 10%;
   align-self: center;
+  width: 30px;
+  height: 7rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -76,46 +81,40 @@ const Button = styled.button`
   .arrow-icon {
     transform: ${props => (props.isleft === 'true' ? null : 'rotate(180deg)')};
   }
-  :hover {
-    cursor: pointer;
-  }
+  cursor: pointer;
 `;
-function DesktopSideSheet({ setMapSearchKeyword, keyword, setKeyword }) {
+function DesktopSideSheet({ getMapwithCommand }) {
   const [open, setOpen] = useState(true);
-  const [searchPage, setSearchPage] = useState('searchBox');
+  const [pageStatus] = useAtom(pageStatusAtom);
 
   return (
     <SideSheet variant="permanent" open={open}>
       <SheetContent>
         <Body>
-          {searchPage === 'searchBox' ? (
-            <SearchBox
-              setMapSearchKeyword={setMapSearchKeyword}
-              setSearchPage={setSearchPage}
-              setKeyword={setKeyword}
-            />
+          {pageStatus === 'searchBox' ? (
+            <SearchBox getMapwithCommand={getMapwithCommand} />
           ) : null}
-          {searchPage === 'searchLst' ? (
-            <SearchLst keyword={keyword} setSearchPage={setSearchPage} />
+          {pageStatus === 'searchLst' ? (
+            <SearchLst getMapwithCommand={getMapwithCommand} />
           ) : null}
-          {searchPage === 'detail' ? (
-            <DetailInfo setSearchPage={setSearchPage} />
+          {pageStatus === 'detail' ? (
+            <DetailInfo getMapwithCommand={getMapwithCommand} />
           ) : null}
         </Body>
-        <Button
-          type="button"
-          onClick={() => setOpen(!open)}
-          isleft={open.toString()}
-        >
-          <ArrowBackIosNewIcon className="arrow-icon" />
-        </Button>
+        <div className="button-box">
+          <Button
+            type="button"
+            onClick={() => setOpen(!open)}
+            isleft={open.toString()}
+          >
+            <ArrowBackIosNewIcon className="arrow-icon" />
+          </Button>
+        </div>
       </SheetContent>
     </SideSheet>
   );
 }
 DesktopSideSheet.propTypes = {
-  setMapSearchKeyword: PropTypes.func.isRequired,
-  keyword: PropTypes.string.isRequired,
-  setKeyword: PropTypes.func.isRequired,
+  getMapwithCommand: PropTypes.func.isRequired,
 };
 export default DesktopSideSheet;

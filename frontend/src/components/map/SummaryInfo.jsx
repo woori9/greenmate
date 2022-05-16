@@ -1,3 +1,4 @@
+import { useAtom } from 'jotai';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
@@ -7,6 +8,11 @@ import BookmarkBorderOutlinedIcon from '@mui/icons-material/BookmarkBorderOutlin
 import RestaurantInfoCard from './RestaurantInfoCard';
 import ButtonLetsEat from './ButtonLetsEat';
 import { apiPostLikeRestau } from '../../api/map';
+import {
+  summaryRestauAtom,
+  pageStatusAtom,
+  searchResultsAtom,
+} from '../../atoms/map';
 
 const CloseButton = styled.div`
   text-align: end;
@@ -26,39 +32,39 @@ const BookMark = styled.div`
   }
 `;
 
-function SummaryInfo({
-  searchResults,
-  setSearchPage,
-  summaryRestau,
-  getDetailRestau,
-  markingAllRestau,
-}) {
+function SummaryInfo({ getMapwithCommand }) {
+  const [, setPageStatus] = useAtom(pageStatusAtom);
+  const [newSearchResult] = useAtom(searchResultsAtom);
+  const [summaryRestau, setSummaryRestau] = useAtom(summaryRestauAtom);
   const [newBookMark, setNewBookMark] = useState(summaryRestau.is_like);
+
   function postLikeRestau() {
-    apiPostLikeRestau({ restauId: summaryRestau.id }, () =>
-      setNewBookMark(!newBookMark),
-    );
+    apiPostLikeRestau({ restauId: summaryRestau.id }, () => {
+      setNewBookMark(!newBookMark);
+      setSummaryRestau({ ...summaryRestau, is_like: !newBookMark });
+    });
   }
   return (
     <>
       <CloseButton>
         <CloseIcon
           onClick={() => {
-            if (searchResults.length) {
-              setSearchPage('searchLst');
+            if (newSearchResult.length) {
+              setPageStatus('searchLst');
             } else {
-              setSearchPage('searchBox');
-              markingAllRestau();
+              setPageStatus('searchBox');
             }
           }}
         />
       </CloseButton>
       <Summary>
-        <SummaryBox onClick={() => getDetailRestau(summaryRestau.id)}>
+        <SummaryBox
+          onClick={() => getMapwithCommand('setDetailRestau', summaryRestau.id)}
+        >
           <RestaurantInfoCard arrayResult={summaryRestau} />
         </SummaryBox>
         <BookMark onClick={() => postLikeRestau()}>
-          {newBookMark ? (
+          {summaryRestau.is_like ? (
             <BookmarkIcon className="bookmark" />
           ) : (
             <BookmarkBorderOutlinedIcon className="bookmark" />
@@ -70,19 +76,7 @@ function SummaryInfo({
   );
 }
 SummaryInfo.propTypes = {
-  setSearchPage: PropTypes.func.isRequired,
-  summaryRestau: PropTypes.shape().isRequired,
-  getDetailRestau: PropTypes.func.isRequired,
-  searchResults: PropTypes.arrayOf(
-    PropTypes.shape({
-      category: PropTypes.number.isRequired,
-      id: PropTypes.number.isRequired,
-      is_like: PropTypes.bool.isRequired,
-      res_info: PropTypes.shape(),
-      score: PropTypes.number.isRequired,
-    }),
-  ).isRequired,
-  markingAllRestau: PropTypes.func.isRequired,
+  getMapwithCommand: PropTypes.func.isRequired,
 };
 
 export default SummaryInfo;

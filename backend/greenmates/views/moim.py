@@ -11,8 +11,10 @@ from ..serializers.moim import (
     MoimAllSerializer,
     MoimTransSerializer,
     MoimPostPutSerializer,
+    MoimFinishedSerializer,
 )
-
+from notifications.views import send_message
+from notifications.models import FirebaseToken
 from rest_framework.status import (
     HTTP_201_CREATED,
     HTTP_400_BAD_REQUEST,
@@ -110,6 +112,10 @@ def get_update_moim_detail(request, moim_id):
         serializer = MoimPostPutSerializer(moim, data=request.data, partial=True)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
+            tokens = FirebaseToken.objects.filter(user__mate__moim_id=moim_id).values_list('registration_token', flat=True).exclude(user=user)
+            body = f'[{moim.title[:6]}…] 모임 시간이 변경되었습니다.'
+            if tokens:
+                send_message(list(tokens), body)
             return Response(serializer.data)
 
     user = get_request_user(request)
@@ -192,7 +198,7 @@ def get_finished_moim(request):
     
     three_months = datetime.datetime.now() - relativedelta(months=3)
     moims_list = Moim.objects.filter(time__gte=three_months, mate__user=user.id, mate__mate_status=4).order_by('-time')
-    serializer = MoimAllSerializer(moims_list, context={'user': user}, many=True) 
+    serializer = MoimFinishedSerializer(moims_list, context={'user': user}, many=True) 
     return Response(serializer.data)
 
 @api_view(['GET'])
