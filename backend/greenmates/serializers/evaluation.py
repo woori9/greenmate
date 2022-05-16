@@ -1,7 +1,10 @@
 from rest_framework import serializers
 from ..models import UserReview, UserEvaluation
-
+  
 class UserReviewPostSerializer(serializers.ModelSerializer):
+    evaluation = serializers.ListField(
+        child = serializers.IntegerField(min_value=0, max_value=3)
+    )
 
     def __init__(self, *args, **kwargs):
         many = kwargs.pop('many', True)
@@ -9,15 +12,14 @@ class UserReviewPostSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = UserReview
-        fields = '__all__'
+        fields = ('mate', 'score', 'evaluation')
         read_only_fields = ('me',)
 
     def create(self, validated_data):
+        evaluations = validated_data.pop('evaluation')
         validated_data['me'] = self.context['user']
-        mate_id = validated_data['mate'].id
-        evaluation_list = self.context['evaluations'][mate_id]
         user_review = UserReview.objects.create(**validated_data)
-        for evaluation in evaluation_list:
+        for evaluation in evaluations:
             UserEvaluation.objects.create(
                 user_review = user_review,
                 evaluation=evaluation
