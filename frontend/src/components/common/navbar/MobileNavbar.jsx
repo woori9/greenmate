@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import HomeIcon from '@mui/icons-material/Home';
 import PlaceIcon from '@mui/icons-material/Place';
@@ -8,6 +8,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 import { useAtom } from 'jotai';
 import { userInfoAtom } from '../../../atoms/accounts';
+import logo from '../../../assets/logo.png';
 
 const defaultColor = '#a9a9a9';
 const selectedColor = '#fcb448';
@@ -57,11 +58,25 @@ const NavTop = styled.div`
     font-size: 28px;
     color: #a9a9a9;
   }
+  .logo-btn {
+    display: inline-block;
+    width: auto;
+    height: 100%;
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    img {
+      height: 70%;
+    }
+  }
 `;
 
 function MobileNavbar() {
   const [userInfo] = useAtom(userInfoAtom);
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+
   const links = [
     {
       name: '홈',
@@ -93,7 +108,13 @@ function MobileNavbar() {
   return (
     <>
       <NavTop>
-        <p>그린메이트</p>
+        <button
+          type="button"
+          className="logo-btn"
+          onClick={() => navigate('/')}
+        >
+          <img src={logo} alt="logo-img" />
+        </button>
         <NotificationsNoneOutlinedIcon sx={{ color: 'black', fontSize: 30 }} />
       </NavTop>
       <NavBottom>
