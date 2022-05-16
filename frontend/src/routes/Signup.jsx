@@ -265,9 +265,9 @@ function Signup() {
         )}
         <p>
           <span>{newSentence} </span>
-          채식 지향을
+          채식지향자도
         </p>
-        <p>응원합니다</p>
+        <p>그린메이트</p>
       </TextContainer>
       <SignupContainer>
         <NicknameContainer>
