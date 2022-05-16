@@ -40,7 +40,9 @@ const StyledNotificationPage = styled.div`
 function Notification() {
   const { notifications, setNotifications, deleteNotification } =
     useNotificationList();
-  const [iconColor, setIconColor] = useState(false);
+  const [iconColor, setIconColor] = useState(
+    notifications.length ? orange : gray,
+  );
 
   useEffect(() => {
     if (notifications.length > 0) {
