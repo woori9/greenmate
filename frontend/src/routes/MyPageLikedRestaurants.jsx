@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import ResponsiveNavbar from '../components/common/navbar/ResponsiveNavbar';
 import ResponsiveProfile from '../components/mypage/profile/ResponsiveProfile';
@@ -61,6 +62,7 @@ const NoContent = styled.div`
 
 function MyPageLikedRestaurants() {
   const { width } = useWindowDimensions();
+  const navigate = useNavigate();
   const [likedRestau, setLikedRestau] = useState([]);
   useEffect(() => {
     getLikedRestau(
@@ -86,7 +88,16 @@ function MyPageLikedRestaurants() {
         {likedRestau.length ? (
           <>
             {likedRestau.map(restau => (
-              <RestauDiv key={restau.restaurant}>
+              <RestauDiv
+                key={restau.restaurant}
+                onClick={() =>
+                  navigate('/map', {
+                    state: {
+                      selectedRestauId: restau.restaurant,
+                    },
+                  })
+                }
+              >
                 <div className="info-container">
                   <Img src={restau.img_url} alt="restau-img" />
                   <p className="name">{restau.name}</p>
