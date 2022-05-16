@@ -22,4 +22,11 @@ const atomWithSessionStorage = (key, initialValue) => {
 };
 const notificationAtom = atomWithSessionStorage('notifications', []);
 
-export default notificationAtom;
+const deleteNotificationAtom = atom(null, (get, set, id) =>
+  set(
+    notificationAtom,
+    get(notificationAtom).filter(notification => notification.id !== id),
+  ),
+);
+
+export { notificationAtom, deleteNotificationAtom };
