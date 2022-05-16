@@ -20,11 +20,25 @@ const Container = styled.div`
   }
 
   @media screen and (min-width: 1025px) {
-    padding: 60px 2rem 0 calc(130px + 2rem);
+    padding: 60px 3rem 0 calc(130px + 3rem);
 
     .moim-card-container {
-      display: flex;
-      flex-flow: row wrap;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-gap: 10px;
+      grid-auto-rows: minmax(100px, auto);
+    }
+  }
+
+  @media screen and (min-width: 1440px) {
+    .moim-card-container {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media screen and (min-width: 1800px) {
+    .moim-card-container {
+      grid-template-columns: repeat(4, 1fr);
     }
   }
 `;

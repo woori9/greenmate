@@ -16,6 +16,7 @@ import useWindowDimensions from '../../utils/windowDimension';
 
 const Card = styled.div`
   margin-top: 1rem;
+  transition: all 0.2s ease-in-out;
 
   ${props =>
     props.hasBorder
@@ -26,10 +27,6 @@ const Card = styled.div`
           border: 1px solid #a9a9a9;
           border-radius: 15px;
           margin: 0.5rem;
-
-          &:first-child {
-            margin-left: 0;
-          }
         `
       : css`
           &:not(:last-child) {
@@ -44,6 +41,10 @@ const Card = styled.div`
     border: 2px solid #92c769;
     border-radius: 50px;
     margin-left: 0.5rem;
+  }
+
+  &:hover {
+    transform: scale(1.03);
   }
 `;
 
