@@ -31,6 +31,7 @@ import { deleteToken } from './api/notification';
 import useUserInfo from './hooks/useUserInfo';
 import PrivateRoute from './routes/PrivateRoute';
 import Notification from './routes/Notification';
+import useNotificationList from './hooks/useNotificationList';
 
 const initialAlarmState = {
   open: false,
@@ -53,6 +54,7 @@ function App() {
   });
 
   const { open, message, vertical, horizontal } = alarm;
+  const { setNotifications } = useNotificationList();
 
   const handleOpenSnackbar = body => {
     const { pathname } = window.location;
@@ -80,7 +82,7 @@ function App() {
 
     if (notificationStatus === 'granted') {
       checkToken(setTokenId);
-      unsubscribe = onMessageListener(handleOpenSnackbar);
+      unsubscribe = onMessageListener(handleOpenSnackbar, setNotifications);
     }
 
     if (notificationStatus !== 'granted' && tokenId !== null) {

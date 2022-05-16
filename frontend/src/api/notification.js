@@ -42,4 +42,13 @@ const sendNotification = async (targetId, chatType, chatroomId) => {
   }
 };
 
-export { sendToken, deleteToken, sendNotification };
+const getNotifications = async setNotifications => {
+  try {
+    const { data } = await api.get('/notifications/alirm/');
+    setNotifications(data);
+  } catch (err) {
+    throw new Error(err);
+  }
+};
+
+export { sendToken, deleteToken, sendNotification, getNotifications };

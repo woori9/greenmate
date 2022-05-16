@@ -1,6 +1,6 @@
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import app from './firebase';
-import { sendToken } from '../api/notification';
+import { sendToken, getNotifications } from '../api/notification';
 
 const messaging = getMessaging(app);
 
@@ -22,18 +22,12 @@ export const checkToken = async setTokenId => {
   }
 };
 
-export const onMessageListener = handleOpenSnackbar => {
+export const onMessageListener = (handleOpenSnackbar, setNotifications) => {
   return onMessage(messaging, payload => {
     const { data } = payload;
     console.log('Foreground Message', data);
     const { body } = data;
-
-    const sampleNotification = {
-      id: '3',
-      title: body,
-      sentBy: '1',
-      createdAt: new Date().toLocaleDateString(),
-    };
-    handleOpenSnackbar(sampleNotification.title);
+    getNotifications(setNotifications);
+    handleOpenSnackbar(body);
   });
 };
