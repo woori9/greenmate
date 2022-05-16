@@ -25,7 +25,7 @@ const StyledChatRoom = styled.div`
   padding-top: ${props => (props.needDesktopNavbar ? '110px' : '52px')};
   padding-top: ${props => props.isFromChatPage && '0px'};
   padding-left: ${props => props.needDesktopNavbar && '150px'};
-  height: 100vh;
+  min-height: 100vh;
   padding-bottom: 4.5rem;
   background-color: #f5f5f5;
   position: relative;
