@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
-const StyledMessage = styled.div`
+const StyledBox = styled.div`
   display: flex;
   justify-content: ${props => (props.isMyMessage ? 'flex-end' : 'flex-start')};
   font-size: 1em;
@@ -11,7 +11,7 @@ const StyledMessage = styled.div`
   .messageBox {
     background: #f3f3f3;
     border-radius: 20px;
-    padding: 5px 20px;
+    padding: 10px 20px;
     display: inline-block;
     max-width: 80%;
     background: ${props => (props.isMyMessage ? '#ffd08a' : 'white')};
@@ -20,31 +20,43 @@ const StyledMessage = styled.div`
   .content {
     display: flex;
     align-items: center;
-    letter-spacing: 0.3px;
-  }
-
-  .sentBy {
-    display: flex;
-    align-items: center;
-    font-family: Helvetica;
-    letter-spacing: 0.3px;
-  }
-
-  .pl-10 {
-    padding-left: ${props => props.isMyMessage && '10px'};
-  }
-
-  .pr-10 {
-    padding-right: ${props => props.isMyMessage && '10px'};
+    white-space: break-spaces;
+    word-break: break-all;
   }
 `;
 
-function Message({ message, isMyMessage }) {
+const StyledMessage = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  .profile {
+    display: flex;
+    justify-content: ${props =>
+      props.isMyMessage ? 'flex-end' : 'flex-start'};
+    font-size: 1em;
+    padding: 0 5%;
+    margin-top: 3px;
+
+    img {
+      width: 80px;
+    }
+  }
+`;
+
+function Message({ message, isMyMessage, showProfile }) {
   return (
     <StyledMessage isMyMessage={isMyMessage}>
-      <div className="messageBox">
-        <p className="content">{message.content}</p>
-      </div>
+      {showProfile && (
+        <div className="profile">
+          <img src={`${process.env.PUBLIC_URL}/logo192.png`} alt="profile" />
+          <p>프로필</p>
+        </div>
+      )}
+      <StyledBox isMyMessage={isMyMessage}>
+        <div className="messageBox">
+          <p className="content">{message.content}</p>
+        </div>
+      </StyledBox>
     </StyledMessage>
   );
 }
@@ -63,6 +75,7 @@ Message.propTypes = {
     }),
   }).isRequired,
   isMyMessage: PropTypes.bool.isRequired,
+  showProfile: PropTypes.bool.isRequired,
 };
 
 export default Message;

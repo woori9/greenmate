@@ -22,10 +22,7 @@ const Container = styled.div`
   padding: 5rem 1rem 5rem 1rem;
 
   @media screen and (min-width: 1025px) {
-    margin: 60px 17rem 0 calc(130px + 17rem);
-    padding: 3rem;
-    border: 1px solid #a9a9a9;
-    border-radius: 5px;
+    padding: 60px 2rem 0 calc(130px + 2rem);
   }
 `;
 
@@ -64,6 +61,13 @@ const Form = styled.form`
   .mini-btn {
     width: 4.5rem;
     margin-left: auto;
+  }
+
+  @media screen and (min-width: 1025px) {
+    margin: 0 17rem 3rem 17rem;
+    padding: 3rem;
+    border: 1px solid #a9a9a9;
+    border-radius: 5px;
   }
 `;
 
@@ -109,8 +113,8 @@ function MoimForm() {
       alert('입력하지 않은 정보가 있습니다.');
       return;
     }
-    if (count < 2 || count > 1000) {
-      alert('인원은 최소 2명, 최대 1000명까지 가능합니다.');
+    if (count < 2 || count > 20) {
+      alert('인원은 최소 2명, 최대 20명까지 가능합니다.');
       return;
     }
 
@@ -118,11 +122,10 @@ function MoimForm() {
     datetimeLocaleKo.setHours(datetimeLocaleKo.getHours() + 9);
 
     if (isForUpdate) {
-      // TODO: 수정 불가능한 시간 에러 처리
       updateMoim(
         moimId,
         { time: datetimeLocaleKo },
-        res => console.log(res),
+        () => navigate(-1),
         err => console.log(err),
       );
     } else {
@@ -192,7 +195,7 @@ function MoimForm() {
           endAdornment={<InputAdornment position="end">명</InputAdornment>}
           inputProps={{
             min: 2,
-            max: 1000,
+            max: 20,
             'aria-label': 'count',
             type: 'number',
           }}

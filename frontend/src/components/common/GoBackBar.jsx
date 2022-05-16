@@ -26,6 +26,7 @@ const Bar = styled.div`
   @media screen and (min-width: 1025px) {
     top: 60px;
     left: 130px;
+    width: calc(100% - 130px);
   }
 `;
 
@@ -35,7 +36,7 @@ function GoBackBar({ title, children, handleOnClick }) {
   const onClickHander = handleOnClick || goBack;
 
   return (
-    <Bar>
+    <Bar className="go-back-bar">
       <ChevronLeftIcon
         sx={{ width: '35px', height: '35px' }}
         onClick={onClickHander}

@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { useAtom } from 'jotai';
-import { onDismissAtom } from '../../atoms/bottomSheet';
-import { declineGuest } from '../../api/moim';
-import { excludeFromChatRoom } from '../../service/chat_service';
+import { onDismissAtom } from '../../../atoms/bottomSheet';
+import { declineGuest } from '../../../api/moim';
+import { excludeFromChatRoom } from '../../../service/chat_service';
 
 const Container = styled.div`
   display: flex;
@@ -36,7 +36,7 @@ const Container = styled.div`
   }
 `;
 
-function ConfirmExitMember({ mateId, userId, moimId, setNeedUpdate }) {
+function MobileConfirmExitMember({ mateId, userId, moimId, setNeedUpdate }) {
   const [, onDismiss] = useAtom(onDismissAtom);
 
   return (
@@ -65,11 +65,11 @@ function ConfirmExitMember({ mateId, userId, moimId, setNeedUpdate }) {
   );
 }
 
-ConfirmExitMember.propTypes = {
+MobileConfirmExitMember.propTypes = {
   mateId: PropTypes.number.isRequired,
   userId: PropTypes.number.isRequired,
   moimId: PropTypes.string.isRequired,
   setNeedUpdate: PropTypes.func.isRequired,
 };
 
-export default ConfirmExitMember;
+export default MobileConfirmExitMember;

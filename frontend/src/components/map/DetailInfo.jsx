@@ -1,5 +1,5 @@
+import { useAtom } from 'jotai';
 import { useState } from 'react';
-import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import CloseIcon from '@mui/icons-material/Close';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -9,6 +9,12 @@ import BookmarkBorderOutlinedIcon from '@mui/icons-material/BookmarkBorderOutlin
 import RestaurantInfoCard from './RestaurantInfoCard';
 import ButtonLetsEat from './ButtonLetsEat';
 import useWindowDimensions from '../../utils/windowDimension';
+import {
+  summaryRestauAtom,
+  detailRestauAtom,
+  pageStatusAtom,
+  searchResultsAtom,
+} from '../../atoms/map';
 import { apiPostLikeRestau } from '../../api/map';
 
 const Container = styled.div`
@@ -25,7 +31,6 @@ const Summary = styled.div`
 `;
 const BookMark = styled.div`
   align-self: center;
-  padding-right: 10px;
   .bookmark {
     font-size: 30px;
     color: #fcb448;
@@ -97,14 +102,12 @@ function copyAddress(text) {
   document.body.removeChild(t);
 }
 
-function DetailInfo({ setSearchPage, detailRestau }) {
+function DetailInfo() {
   const { width } = useWindowDimensions();
-  const [newBookMark, setNewBookMark] = useState(detailRestau.is_like);
-  function postLikeRestau() {
-    apiPostLikeRestau({ restauId: detailRestau.id }, () =>
-      setNewBookMark(!newBookMark),
-    );
-  }
+  const [newSearchResult] = useAtom(searchResultsAtom);
+  const [summaryRestau, setSummaryRestau] = useAtom(summaryRestauAtom);
+  const [detailRestau, setDetailRestau] = useAtom(detailRestauAtom);
+  const [, setPageStatus] = useAtom(pageStatusAtom);
   const { call } = detailRestau;
   const restauInfo = detailRestau.res_info;
   const { address, menus } = restauInfo;
@@ -112,19 +115,33 @@ function DetailInfo({ setSearchPage, detailRestau }) {
   const reviews = detailRestau.review;
   const reviewCnt = reviews.length;
 
+  const [newBookMark, setNewBookMark] = useState(detailRestau.is_like);
+  function postLikeRestau() {
+    apiPostLikeRestau({ restauId: detailRestau.id }, () => {
+      setNewBookMark(!newBookMark);
+      setSummaryRestau({ ...summaryRestau, is_like: !newBookMark });
+      setDetailRestau({ ...detailRestau, is_like: !newBookMark });
+    });
+  }
   return (
     <Container>
       <CloseButton
-        onClick={() =>
-          width > 1024 ? setSearchPage('searchLst') : setSearchPage('summary')
-        }
+        onClick={() => {
+          if (width < 1024) {
+            setPageStatus('summary');
+          } else if (newSearchResult.length) {
+            setPageStatus('searchLst');
+          } else {
+            setPageStatus('searchBox');
+          }
+        }}
       >
         <CloseIcon />
       </CloseButton>
       <Summary>
         <RestaurantInfoCard arrayResult={detailRestau} />
         <BookMark onClick={() => postLikeRestau()}>
-          {newBookMark ? (
+          {detailRestau.is_like ? (
             <BookmarkIcon className="bookmark" />
           ) : (
             <BookmarkBorderOutlinedIcon className="bookmark" />
@@ -153,7 +170,7 @@ function DetailInfo({ setSearchPage, detailRestau }) {
         {splitMenus.map(menu => (
           <div key={menu} className="menu">
             <p>{menu.split('(')[0]}</p>
-            <p className="vege-type">{menu.split('(')[1].split(')')[0]}</p>
+            <p className="vege-type">{menu.split(/[(, )]/)[1]}</p>
           </div>
         ))}
       </Menu>
@@ -179,10 +196,5 @@ function DetailInfo({ setSearchPage, detailRestau }) {
     </Container>
   );
 }
-
-DetailInfo.propTypes = {
-  setSearchPage: PropTypes.func.isRequired,
-  detailRestau: PropTypes.shape().isRequired,
-};
 
 export default DetailInfo;

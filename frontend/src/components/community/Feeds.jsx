@@ -1,8 +1,21 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import styled from 'styled-components';
 import { getFeedList } from '../../api/community';
 import Feed from './Feed';
 
+const Container = styled.div`
+  padding: 5rem 1rem 5rem 1rem;
+
+  @media screen and (min-width: 1025px) {
+    margin: 60px 17rem -5rem calc(130px + 17rem);
+    padding: 3rem;
+  }
+
+  .none-feeds {
+    margin-top: 50px;
+  }
+`;
 function Feeds({ categoryValue, vegeTypeValue }) {
   const [feeds, setFeeds] = useState([]);
   // const [res, setRes] = useState([]);
@@ -25,14 +38,21 @@ function Feeds({ categoryValue, vegeTypeValue }) {
   if (categoryValue === 0 && vegeTypeValue === 0) {
     res = feeds;
   }
+
   return (
-    <div>
-      {res.map(feed => (
-        <div key={feed.id}>
-          <Feed feed={feed} />
+    <Container>
+      {res.length !== 0 ? (
+        <div>
+          {res.map(feed => (
+            <div key={feed.id}>
+              <Feed feed={feed} />
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
+      ) : (
+        <div className="none-feeds">게시글이 없습니다!</div>
+      )}
+    </Container>
   );
 }
 

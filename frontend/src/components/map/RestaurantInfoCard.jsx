@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import StarIcon from '@mui/icons-material/Star';
-import resImg from '../../assets/logo.png';
 
 const Container = styled.div`
   display: flex;
   padding: 1rem 0;
 `;
 const Img = styled.img`
+  min-width: 100px;
   width: 100px;
   height: 100px;
   border-radius: 20px;
@@ -83,11 +83,12 @@ function RestaurantInfoCard({ arrayResult }) {
     '베이커리',
   ];
   const { category, score } = arrayResult;
+  const restauImg = arrayResult.img_url;
   const { name, address } = arrayResult.res_info;
   const VegeTypes = arrayResult.res_info.vege_types.split(' ');
   return (
     <Container>
-      <Img src={resImg} alt="restaurant-img" />
+      <Img src={restauImg} alt="restaurant-img" />
       <Text>
         <VegeTypeLst>
           {VegeTypes.map((vegeType, idx) => (

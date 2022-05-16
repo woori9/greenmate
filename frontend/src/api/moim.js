@@ -29,22 +29,24 @@ export function getMoimDetail(moimId, res, err) {
   apiInstance.get(`/greenmates/mates/${moimId}/`).then(res).catch(err);
 }
 
-/* 모임 검색 */
-export function searchMoim(word, res, err) {
+/* 모임 상세 내용 번역 보기 */
+export function getMoimContentTranslation(moimId, res, err) {
   apiInstance
-    .get('/greenmates/mates/search/', {
-      params: {
-        word,
-      },
-    })
+    .get(`/greenmates/mates/translate/${moimId}/`)
     .then(res)
     .catch(err);
 }
 
-/* 모임 필터링 */
-export function filterMoim(period, day, res, err) {
+/* 모임 검색 및 필터 */
+export function searchMoim(word, period, day, res, err) {
   apiInstance
-    .get('/greenmates/mates/filter/', { params: { period, day } })
+    .get('/greenmates/mates/search/', {
+      params: {
+        word,
+        period,
+        day,
+      },
+    })
     .then(res)
     .catch(err);
 }

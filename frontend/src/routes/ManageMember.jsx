@@ -6,7 +6,8 @@ import { useAtom } from 'jotai';
 import DesktopNavbar from '../components/common/navbar/DesktopNavbar';
 import GoBackBar from '../components/common/GoBackBar';
 import UserInfo from '../components/moim/UserInfo';
-import ConfirmExitMember from '../components/moim/ConfirmExitMember';
+import DesktopConfirmExitMember from '../components/moim/confirmExit/DesktopConfirmExitMember';
+import MobileConfirmExitMember from '../components/moim/confirmExit/MobileConfirmExitMember';
 import { openSheetAtom } from '../atoms/bottomSheet';
 import { getMoimDetail, acceptGuest, declineGuest } from '../api/moim';
 import { snakeToCamel } from '../utils/formatKey';
@@ -14,18 +15,31 @@ import { joinMoimChat } from '../service/chat_service';
 import useWindowDimensions from '../utils/windowDimension';
 
 const Container = styled.div`
-  max-width: 500px;
-  margin: 0 auto;
+  max-width: 800px;
   padding: 5rem 1rem 5rem 1rem;
+  margin: 0 auto;
+
+  .go-back-bar {
+    left: 0;
+  }
 
   @media screen and (min-width: 1025px) {
-    margin: 112px 0 0 130px;
-    padding: 0 2rem;
+    padding: 112px 2rem 0 calc(130px + 2rem);
+
+    .go-back-bar {
+      background-color: #f2f2f2;
+      left: 130px;
+
+      p {
+        position: absolute;
+        left: 45%;
+      }
+    }
   }
 `;
 
 const MemberBox = styled.div`
-  margin-bottom: 2rem;
+  margin: 2rem 0;
 
   h2 {
     font-size: 1.25rem;
@@ -33,6 +47,12 @@ const MemberBox = styled.div`
 
     span {
       color: #f5a468;
+    }
+  }
+
+  @media screen and (min-width: 1025px) {
+    h2 {
+      margin-bottom: 1rem;
     }
   }
 `;
@@ -64,6 +84,28 @@ const Ul = styled.ul`
     display: flex;
     justify-content: space-between;
     align-items: center;
+  }
+
+  @media screen and (min-width: 1025px) {
+    .wait-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 1rem 0.5rem 0;
+
+      button:first-child {
+        margin-right: 1rem;
+      }
+    }
+
+    .join-item {
+      padding-right: 1rem;
+    }
+
+    .wait-item,
+    .join-item {
+      box-shadow: 0px 4px 5px 4px rgba(242, 242, 242, 1);
+    }
   }
 `;
 
@@ -129,7 +171,7 @@ function ManageMember() {
                     type="button"
                     onClick={() => {
                       accept(member.id);
-                      joinMoimChat(moimId, `${member.userId}`);
+                      joinMoimChat(moimId, member);
                     }}
                   >
                     수락
@@ -149,19 +191,29 @@ function ManageMember() {
                 <UserInfo userInfo={member} />
                 <LogoutIcon
                   onClick={() => {
-                    setOpen({
-                      open: true,
-                      component: (
-                        <ConfirmExitMember
-                          mateId={member.id}
-                          userId={member.userId}
-                          moimId={moimId}
-                          setNeedUpdate={setNeedUpdate}
-                        />
-                      ),
-                    });
+                    if (width > 1024) {
+                      document.querySelector('#dialog').showModal();
+                    } else {
+                      setOpen({
+                        open: true,
+                        component: (
+                          <MobileConfirmExitMember
+                            mateId={member.id}
+                            userId={member.userId}
+                            moimId={moimId}
+                            setNeedUpdate={setNeedUpdate}
+                          />
+                        ),
+                      });
+                    }
                   }}
                   sx={{ color: '#797979' }}
+                />
+                <DesktopConfirmExitMember
+                  mateId={member.id}
+                  userId={member.userId}
+                  moimId={moimId}
+                  setNeedUpdate={setNeedUpdate}
                 />
               </li>
             ))}
