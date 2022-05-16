@@ -88,7 +88,7 @@ function ChatRoom({ selectedChat, isFromChatPage }) {
       }
     }
 
-    sendNotification(notificationTargetId, type);
+    sendNotification(notificationTargetId, type, id);
   };
 
   useEffect(() => {

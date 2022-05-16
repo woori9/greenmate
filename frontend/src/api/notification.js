@@ -20,10 +20,12 @@ const deleteToken = async tokenId => {
   }
 };
 
-const sendNotification = async (targetId, chatType) => {
+const sendNotification = async (targetId, chatType, chatroomId) => {
   if (chatType === 1) {
     try {
-      await api.post(`/notifications/personal-chat/${targetId}/`); // pairId
+      await api.post(`/notifications/personal-chat/${targetId}/`, {
+        chatroom_id: chatroomId,
+      }); // pairId
     } catch (err) {
       throw new Error(err);
     }
@@ -31,7 +33,9 @@ const sendNotification = async (targetId, chatType) => {
 
   if (chatType === 2) {
     try {
-      await api.post(`/notifications/moim-chat/${targetId}/`); // moimId
+      await api.post(`/notifications/moim-chat/${targetId}/`, {
+        chatroom_id: chatroomId,
+      }); // moimId
     } catch (err) {
       throw new Error(err);
     }
