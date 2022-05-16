@@ -36,7 +36,7 @@ html, body {
   position: relative;
   height: auto;
   min-height: 100%;
-  /* padding-bottom: 160px; */
+  padding-bottom: 160px;
 }
 
 @media screen and (min-width: 1025px) {
