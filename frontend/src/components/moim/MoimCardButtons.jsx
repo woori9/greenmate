@@ -6,7 +6,8 @@ import { categoryAtom } from '../../atoms/moim';
 import { cancleApplyMoim, exitMoim } from '../../api/moim';
 import {
   excludeFromChatRoom,
-  queryMoimChatRoomInfo,
+  getMoimChatRoom,
+  getJoinDate,
 } from '../../service/chat_service';
 import useUserInfo from '../../hooks/useUserInfo';
 
@@ -38,6 +39,7 @@ const Button = styled.button`
 function MoimCardButtons({ moimInfo, setNeedUpdate }) {
   const [selectedCategory] = useAtom(categoryAtom);
   const navigate = useNavigate();
+  const userInfo = useUserInfo();
 
   const buttonDict = {
     0: (
@@ -68,7 +70,7 @@ function MoimCardButtons({ moimInfo, setNeedUpdate }) {
               err => console.log(err),
             );
 
-            excludeFromChatRoom(`${moimInfo.id}`, `${useUserInfo.id}`);
+            excludeFromChatRoom(`${moimInfo.id}`, `${userInfo.id}`);
           }}
         >
           참여 취소
@@ -76,14 +78,20 @@ function MoimCardButtons({ moimInfo, setNeedUpdate }) {
         <Button
           type="button"
           onClick={async () => {
-            const chatRoomInfo = await queryMoimChatRoomInfo(
-              `${moimInfo.id}`,
-              `${useUserInfo.id}`,
-            );
-            chatRoomInfo.chatTitle = moimInfo.title;
-            chatRoomInfo.notificationTargetId = `${moimInfo.id}`;
+            const chatRoom = await getMoimChatRoom(`${moimInfo.id}`);
+
+            if (!chatRoom) {
+              alert('해당 모임이 존재하지 않습니다.');
+              return;
+            }
+
+            const joinDate = await getJoinDate(`${userInfo.id}`, chatRoom.id); // userId, roomId
+
+            chatRoom.joinDate = joinDate;
+            chatRoom.chatTitle = moimInfo.title;
+            chatRoom.notificationTargetId = `${moimInfo.id}`;
             navigate('/chatRoom', {
-              state: chatRoomInfo,
+              state: chatRoom,
             });
           }}
         >
@@ -138,14 +146,20 @@ function MoimCardButtons({ moimInfo, setNeedUpdate }) {
         <Button
           type="button"
           onClick={async () => {
-            const chatRoomInfo = await queryMoimChatRoomInfo(
-              `${moimInfo.id}`,
-              `${useUserInfo.id}`,
-            );
-            chatRoomInfo.chatTitle = moimInfo.title;
-            chatRoomInfo.notificationTargetId = `${moimInfo.id}`;
+            const chatRoom = await getMoimChatRoom(`${moimInfo.id}`);
+
+            if (!chatRoom) {
+              alert('해당 모임이 존재하지 않습니다.');
+              return;
+            }
+
+            const joinDate = await getJoinDate(`${userInfo.id}`, chatRoom.id); // userId, roomId
+
+            chatRoom.joinDate = joinDate;
+            chatRoom.chatTitle = moimInfo.title;
+            chatRoom.notificationTargetId = `${moimInfo.id}`;
             navigate('/chatRoom', {
-              state: chatRoomInfo,
+              state: chatRoom,
             });
           }}
         >

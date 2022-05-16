@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { useState, useEffect, useRef } from 'react';
@@ -16,26 +17,35 @@ import GoBackBar from '../common/GoBackBar';
 import useUserInfo from '../../hooks/useUserInfo';
 import formatUserInfo from '../../utils/formatUserInfo';
 import { sendNotification } from '../../api/notification';
+import useWindowDimensions from '../../utils/windowDimension';
+import DesktopNavbar from '../common/navbar/DesktopNavbar';
 
 const StyledChatRoom = styled.div`
   width: 100%;
-  padding-top: ${props => !props.isFromChatPage && '52px'};
-  height: 90vh;
+  padding-top: ${props => (props.needDesktopNavbar ? '110px' : '52px')};
+  padding-top: ${props => props.isFromChatPage && '0px'};
+  padding-left: ${props => props.needDesktopNavbar && '150px'};
+  height: 100vh;
+  padding-bottom: 4.5rem;
   background-color: #f5f5f5;
-  overflow: auto;
+  position: relative;
 
   .input-container {
+    width: ${props =>
+      props.needDesktopNavbar ? 'calc(100% - 130px)' : '100%'};
+    width: ${props => props.isFromChatPage && 'calc((100% - 130px)*0.6)'};
     display: flex;
     justify-content: center;
     position: fixed;
-    bottom: 0;
-    width: 100%;
+    bottom: 0px;
     right: 0;
-    background-color: azure;
-
+    padding: 0rem 0.5rem;
+    @media screen and (max-width: 1024px) {
+      width: 100%;
+    }
     input {
-      width: 90%;
-      height: 2.5rem;
+      width: 100%;
+      height: 3rem;
       border: 1px solid #a9a9a9;
       border-radius: 25px;
     }
@@ -49,8 +59,19 @@ function ChatRoom({ selectedChat, isFromChatPage }) {
   const messageRef = useRef();
   const location = useLocation();
   const currentChat = isFromChatPage ? selectedChat : location.state;
-  const chatTitle = currentChat ? currentChat.chatTitle : '';
-  // 나중에 실시간으로 member listen ?
+  const needDesktopNavbar = isFromChatPage
+    ? false
+    : useWindowDimensions().width > 1024;
+
+  useEffect(() => {
+    if (!currentChat) return () => {};
+    const listener = e => {
+      deactivateChatRoom(user.id, currentChat.id);
+      e.returnValue = '';
+    };
+    window.addEventListener('beforeunload', listener);
+    return () => window.removeEventListener('beforeunload', listener);
+  }, [currentChat]);
 
   const handleSend = async () => {
     const content = messageRef.current.value;
@@ -93,8 +114,15 @@ function ChatRoom({ selectedChat, isFromChatPage }) {
   }, [currentChat]);
 
   return (
-    <StyledChatRoom className="room" isFromChatPage={isFromChatPage}>
-      {!isFromChatPage && <GoBackBar title={isFromChatPage ? '' : chatTitle} />}
+    <StyledChatRoom
+      className="room"
+      isFromChatPage={isFromChatPage}
+      needDesktopNavbar={needDesktopNavbar}
+    >
+      {needDesktopNavbar && <DesktopNavbar />}
+      {!isFromChatPage && (
+        <GoBackBar title={currentChat ? currentChat.chatTitle : ''} />
+      )}
       {currentChat ? (
         <>
           <MessageList messages={messages} userId={user.id} />
@@ -117,20 +145,14 @@ ChatRoom.propTypes = {
   selectedChat: PropTypes.shape({
     id: PropTypes.string,
     members: PropTypes.arrayOf(PropTypes.string),
-    membersInfo: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.string,
-        nickname: PropTypes.string,
-        vegeType: PropTypes.number,
-      }),
-    ),
+    membersInfo: PropTypes.shape(),
     type: PropTypes.number.isRequired,
     chatTitle: PropTypes.string.isRequired,
     joinDate: PropTypes.shape({
       nanoseconds: PropTypes.number,
       seconds: PropTypes.number,
     }),
-    notificationTargetId: PropTypes.string,
+    notificationTargetId: PropTypes.string.isRequired,
   }),
   isFromChatPage: PropTypes.bool,
 };

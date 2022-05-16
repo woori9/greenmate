@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { formatChatDateTime } from '../../utils/formattedDate';
 
 const StyledChatItem = styled.li`
+  background-color: ${props => props.isSelected && 'azure'};
   display: grid;
   grid-template-columns: 1.5fr 5fr 2fr;
   width: 100%;
@@ -70,18 +71,27 @@ const StyledChatItem = styled.li`
   .font-12 {
     font-size: 12px;
   }
+
+  .text-ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 `;
 
-function ChatItem({ chat, onChatClick, user, countUnreadMessage }) {
-  const { membersInfo, recentMessage } = chat;
+function ChatItem({ chat, onChatClick, user, countUnreadMessage, isSelected }) {
+  const { recentMessage, membersInfo, members } = chat;
   const time = formatChatDateTime(recentMessage.sentAt);
-  const pair = membersInfo.find(member => member.id !== user);
+  const pairId = members.find(member => member !== user);
+
   return (
-    <StyledChatItem onClick={() => onChatClick(chat)}>
+    <StyledChatItem isSelected={isSelected} onClick={() => onChatClick(chat)}>
       <img src={`${process.env.PUBLIC_URL}/logo192.png`} alt="sample" />
-      <p className="nickname horizon-align">{pair.nickname}</p>
+      <p className="nickname horizon-align">
+        {membersInfo[`nickname${pairId}`]}
+      </p>
       <p className="color-gray text-right font-12 horizon-align">{time}</p>
-      <p className="color-gray">{recentMessage.content}</p>
+      <p className="color-gray text-ellipsis">{recentMessage.content}</p>
       {countUnreadMessage > 0 && (
         <div className="m-5">
           <div className="temp">
@@ -99,21 +109,15 @@ ChatItem.propTypes = {
   chat: PropTypes.shape({
     id: PropTypes.string,
     members: PropTypes.arrayOf(PropTypes.string),
-    membersInfo: PropTypes.arrayOf(
-      PropTypes.shape({
+    membersInfo: PropTypes.shape(),
+    recentMessage: PropTypes.shape({
+      content: PropTypes.string,
+      readBy: PropTypes.arrayOf(PropTypes.string),
+      sentBy: PropTypes.shape({
         id: PropTypes.string,
-        joinDate: PropTypes.shape({
-          nanoseconds: PropTypes.number,
-          seconds: PropTypes.number,
-        }),
         nickname: PropTypes.string,
         vegeType: PropTypes.number,
       }),
-    ),
-    recentMessage: PropTypes.shape({
-      content: PropTypes.string,
-      sentBy: PropTypes.string,
-      readBy: PropTypes.arrayOf(PropTypes.string),
       sentAt: PropTypes.shape({
         nanoseconds: PropTypes.number,
         seconds: PropTypes.number,
@@ -124,6 +128,7 @@ ChatItem.propTypes = {
   onChatClick: PropTypes.func.isRequired,
   user: PropTypes.string.isRequired,
   countUnreadMessage: PropTypes.number.isRequired,
+  isSelected: PropTypes.bool.isRequired,
 };
 
 export default ChatItem;

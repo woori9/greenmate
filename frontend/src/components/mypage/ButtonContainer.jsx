@@ -2,8 +2,13 @@ import PropTypes from 'prop-types';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { apiPostFollow } from '../../api/accounts';
-import { queryPrivateChatRoomInfo } from '../../service/chat_service';
+import {
+  findPrivateChatRoom,
+  createPrivateRoom,
+  getJoinDate,
+} from '../../service/chat_service';
 import useUserInfo from '../../hooks/useUserInfo';
+import formatUserInfo from '../../utils/formatUserInfo';
 
 const Container = styled.div`
   border-bottom: 1px solid #f2f2f2;
@@ -45,14 +50,22 @@ function ButtonContainer({ getProfileInfo, profileInfo }) {
   async function onClickMessage() {
     if (profileInfo.id === userInfo.id) return;
 
-    const privateChatRoom = await queryPrivateChatRoomInfo(
+    let chatRoom = await findPrivateChatRoom(
       `${profileInfo.id}`,
       `${userInfo.id}`,
     );
-    privateChatRoom.chatTitle = profileInfo.nickname;
-    privateChatRoom.notificationTargetId = `${profileInfo.id}`;
+
+    if (!chatRoom) {
+      const pair = formatUserInfo(profileInfo);
+      const user = formatUserInfo(userInfo);
+      chatRoom = await createPrivateRoom(pair, user);
+    }
+    const joinDate = await getJoinDate(`${userInfo.id}`, chatRoom.id);
+    chatRoom.joinDate = joinDate;
+    chatRoom.chatTitle = profileInfo.nickname;
+    chatRoom.notificationTargetId = `${profileInfo.id}`;
     navigate('/chatRoom', {
-      state: privateChatRoom,
+      state: chatRoom,
     });
   }
 
