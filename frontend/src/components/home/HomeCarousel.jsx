@@ -7,6 +7,7 @@ import carouselImage1 from '../../assets/carousel-img1.png';
 import carouselImage2 from '../../assets/carousel-img2.png';
 import carouselImage3 from '../../assets/carousel-img3.png';
 import carouselImage4 from '../../assets/carousel-img4.png';
+import useUserInfo from '../../hooks/useUserInfo';
 
 const Container = styled.div`
   width: 100%;
@@ -95,17 +96,18 @@ const SliderItem = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  height: 9rem;
+  height: 10rem;
   border-radius: 20px;
 
   .text-container {
     display: flex;
     flex-direction: column;
+    margin-left: 1rem;
+    word-break: keep-all;
 
     p {
       font-size: 1.1rem;
       font-weight: 600;
-      margin-left: 1rem;
     }
   }
 
@@ -118,8 +120,12 @@ const SliderItem = styled.div`
   @media screen and (min-width: 1025px) {
     height: 17rem;
 
-    .text-container p {
-      font-size: 2rem;
+    .text-container {
+      margin-left: 2rem;
+
+      p {
+        font-size: 2.5rem;
+      }
     }
 
     img {
@@ -130,37 +136,52 @@ const SliderItem = styled.div`
 `;
 
 const sliderItems = [
-  <>
-    <div className="text-container">
-      <p>그린메이트에서</p>
-      <p>채식을 함께할 친구를 찾아보세요!</p>
-    </div>
-    <img src={carouselImage1} alt="" />
-  </>,
-  <>
-    <div className="text-container">
-      <p>나의 채식메이트</p>
-      <p>그린메이트에 있어요.</p>
-    </div>
-    <img src={carouselImage2} alt="" />
-  </>,
-  <>
-    <div className="text-container">
-      <p>지속 가능한 채식,</p>
-      <p>그린메이트와 함께</p>
-    </div>
-    <img src={carouselImage3} alt="" />
-  </>,
-  <>
-    <div className="text-container">
-      <p>채식은</p>
-      <p>함께할수록 좋으니까</p>
-    </div>
-    <img src={carouselImage4} alt="" />
-  </>,
+  <div className="text-container">
+    <p>그린메이트에서</p>
+    <p>채식을 함께할 친구를 찾아보세요!</p>
+  </div>,
+  <div className="text-container">
+    <p>나의 채식메이트</p>
+    <p>그린메이트에 있어요.</p>
+  </div>,
+  <div className="text-container">
+    <p>지속 가능한 채식,</p>
+    <p>그린메이트와 함께</p>
+  </div>,
+  <div className="text-container">
+    <p>채식은</p>
+    <p>함께할수록 좋으니까</p>
+  </div>,
+];
+
+const sliderItemsEng = [
+  <div className="text-container">
+    <p>Find a friend to share a vegetarian diet with</p>
+    <p>at Greenmate!</p>
+  </div>,
+  <div className="text-container">
+    <p>My vegan mates?</p>
+    <p>They&apos;re at Greenmate</p>
+  </div>,
+  <div className="text-container">
+    <p>Sustainable vegetarianism,</p>
+    <p>with Greenmate</p>
+  </div>,
+  <div className="text-container">
+    <p>It&apos;s better to eat vegetables</p>
+    <p>together!</p>
+  </div>,
+];
+
+const sliderImages = [
+  <img src={carouselImage1} alt="춤추는 사람들" />,
+  <img src={carouselImage2} alt="손을 잡고 있는 사람들" />,
+  <img src={carouselImage3} alt="음료를 마시며 쉬고 있는 사람" />,
+  <img src={carouselImage4} alt="음료를 마시며 대화하는 사람들" />,
 ];
 
 function HomeCarousel() {
+  const userInfo = useUserInfo();
   const settings = {
     dots: true,
     infinite: true,
@@ -174,11 +195,16 @@ function HomeCarousel() {
   return (
     <Container>
       <Slider {...settings} dotsClass="slider-dots">
-        {sliderItems.map(item => (
-          <div key={item}>
-            <SliderItem className="item">{item}</SliderItem>
-          </div>
-        ))}
+        {(userInfo.language === 0 ? sliderItems : sliderItemsEng).map(
+          (item, index) => (
+            <div key={item}>
+              <SliderItem className="item">
+                {item}
+                {sliderImages[index]}
+              </SliderItem>
+            </div>
+          ),
+        )}
       </Slider>
     </Container>
   );

@@ -15,7 +15,6 @@ import UserInfo from '../components/moim/UserInfo';
 import ProfileImage from '../components/common/ProfileImage';
 import ConfirmDeleteMoim from '../components/moim/ConfirmDeleteMoim';
 import { openSheetAtom } from '../atoms/bottomSheet';
-import { userInfoAtom } from '../atoms/accounts';
 import { formattedDatetime } from '../utils/formattedDate';
 import { diff2hour } from '../utils/timestamp';
 import {
@@ -27,7 +26,6 @@ import {
 } from '../api/moim';
 import { snakeToCamel } from '../utils/formatKey';
 import useWindowDimensions from '../utils/windowDimension';
-
 import useUserInfo from '../hooks/useUserInfo';
 
 const Container = styled.div`
@@ -205,7 +203,7 @@ function MoimDetail() {
   const [translation, setTranslation] = useState('');
   const [needUpdate, setNeedUpdate] = useState(0);
   const [, setOpen] = useAtom(openSheetAtom);
-  const [userInfo] = useAtom(userInfoAtom);
+  const userInfo = useUserInfo();
   const { moimId } = useParams();
   const location = useLocation();
   const { moim } = location.state;
@@ -353,7 +351,7 @@ function MoimDetail() {
                   })
                 }
               >
-                지도 보기
+                {userInfo.language !== 0 ? 'View map' : '지도 보기'}
               </button>
             </dd>
             <dd>{moimInfo.restaurant.address}</dd>
@@ -376,7 +374,7 @@ function MoimDetail() {
             </dd>
             <dd>{moimInfo.content}</dd>
           </div>
-          {useUserInfo.language !== 0 && (
+          {userInfo.language !== 0 && (
             <button
               type="button"
               className="mini-btn translate-btn"
@@ -386,7 +384,7 @@ function MoimDetail() {
                 });
               }}
             >
-              번역 보기
+              See translation
             </button>
           )}
           <dd className="translation-txt">{translation}</dd>
