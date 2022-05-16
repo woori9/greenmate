@@ -51,9 +51,17 @@ const getNotifications = async setNotifications => {
   }
 };
 
-const deleteNotification = async notificationId => {
+const deleteNotification = notificationId => {
   try {
-    await api.delete(`/notifications/alirm/${notificationId}/`);
+    api.delete(`/notifications/alirm/${notificationId}/`);
+  } catch (err) {
+    throw new Error(err);
+  }
+};
+
+const deleteAllNotification = () => {
+  try {
+    api.delete('/notifications/alirm');
   } catch (err) {
     throw new Error(err);
   }
@@ -65,4 +73,5 @@ export {
   sendNotification,
   getNotifications,
   deleteNotification,
+  deleteAllNotification,
 };

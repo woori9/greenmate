@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import NotificationItem from './NotificationItem';
 
 const StyledNotificationList = styled.div`
-  background-color: azure;
   padding-top: calc(52px + 10px);
   width: 100%;
 
