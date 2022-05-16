@@ -91,20 +91,20 @@ function Map() {
     if (command === 'setSummaryRestau') {
       const summaryRestau = await apiGetSummaryRestau({ restauId: inputValue }); // 식당 기본 정보 불러오기
       setSummaryRestau(summaryRestau);
-      // const moveLatLon = new kakao.maps.LatLng(
-      //   summaryRestau.latitude,
-      //   summaryRestau.longitude,
-      // );
-      // mapContainer.panTo(moveLatLon);
+      const moveLatLon = new kakao.maps.LatLng(
+        summaryRestau.latitude,
+        summaryRestau.longitude,
+      );
+      mapContainer.panTo(moveLatLon);
       setPageStatus('summary');
     } else if (command === 'setDetailRestau') {
       const deatilRestau = await apiGetDetailRestau({ restauId: inputValue }); // 식당 상세 정보 불러오기
       setDetailRestau(deatilRestau);
-      // const moveLatLon = new kakao.maps.LatLng(
-      //   deatilRestau.latitude,
-      //   deatilRestau.longitude,
-      // );
-      // mapContainer.panTo(moveLatLon);
+      const moveLatLon = new kakao.maps.LatLng(
+        deatilRestau.latitude,
+        deatilRestau.longitude,
+      );
+      mapContainer.panTo(moveLatLon);
       setPageStatus('detail');
     }
 
@@ -170,11 +170,11 @@ function Map() {
       if (searchRestauLst.length) {
         setNewSearchResult(searchRestauLst);
         console.log(searchRestauLst.length);
-        // const moveLatLon = new kakao.maps.LatLng(
-        //   searchRestauLst[0].latitude,
-        //   searchRestauLst[0].longitude,
-        // );
-        // mapContainer.panTo(moveLatLon);
+        const moveLatLon = new kakao.maps.LatLng(
+          searchRestauLst[0].latitude,
+          searchRestauLst[0].longitude,
+        );
+        mapContainer.panTo(moveLatLon);
         setIsLoading(false);
         setPageStatus('searchLst');
       } else {

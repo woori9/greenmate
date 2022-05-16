@@ -17,6 +17,9 @@ const openedMixin = theme => ({
   left: '130px',
   backgroundColor: 'transparent',
   border: 'none',
+  '&::-webkit-scrollbar': {
+    display: 'none',
+  },
   transition: theme.transitions.create('left', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.enteringScreen,
@@ -29,6 +32,9 @@ const closedMixin = theme => ({
   top: '60px',
   border: 'none',
   left: '130px',
+  '&::-webkit-scrollbar': {
+    display: 'none',
+  },
   [theme.breakpoints.up('sm')]: {
     left: '-280px',
   },
