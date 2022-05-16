@@ -28,9 +28,7 @@ function formatChatDateTime(datetime) {
   }
 
   pastDateTime.format();
-  return `${pastDateTime.today.get('month') + 1}월 ${pastDateTime.today.get(
-    'date',
-  )}일`;
+  return `${pastDateTime.get('month') + 1}월 ${pastDateTime.get('date')}일`;
 }
 
 export { formattedDatetime, formatChatDateTime };
