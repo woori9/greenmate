@@ -3,10 +3,9 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import ResponsiveNavbar from '../components/common/navbar/ResponsiveNavbar';
+// import ResponsiveNavbar from '../components/common/navbar/ResponsiveNavbar';
 import FloatingActionBtn from '../components/common/FloatingActionBtn';
 import Feeds from '../components/community/Feeds';
-import GoBackBar from '../components/common/GoBackBar';
 
 function Community() {
   const [category, setCategory] = useState(0);
@@ -21,7 +20,6 @@ function Community() {
   return (
     <>
       <div>
-        <GoBackBar />
         <FormControl
           variant="standard"
           sx={{ mt: 5, ml: 3, mr: 3, minWidth: 120 }}
@@ -61,7 +59,7 @@ function Community() {
         </FormControl>
       </div>
       <Feeds categoryValue={category} vegeTypeValue={vegeType} />
-      <ResponsiveNavbar />
+      {/* <ResponsiveNavbar /> */}
       <FloatingActionBtn isForMoim={false} />
     </>
   );
