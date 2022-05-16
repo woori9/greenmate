@@ -9,15 +9,17 @@ import useWindowDimensions from '../utils/windowDimension';
 
 const Container = styled.div`
   border: 1px solid red;
-  margin: ${props =>
-    props.isDesktop ? '0 2rem 0 34rem' : '62px 1rem 5rem 1rem'};
+  margin: 62px 1rem 5rem 1rem;
+  @media screen and (min-width: 1025px) {
+    margin: 0 2rem 0 34rem;
+  }
 `;
 
 function MyPageEvaluation() {
   const { width } = useWindowDimensions();
   const isDesktop = width > 1024;
-  const evaluTable = [
-    {
+  const evaluTable = {
+    0: {
       0: {
         title: '이분과 다시는 식사하고 싶지 않아요',
       },
@@ -31,7 +33,7 @@ function MyPageEvaluation() {
         title: '응답이 느려요',
       },
     },
-    {
+    1: {
       0: {
         title: '시간 약속을 잘 지켜요',
       },
@@ -45,7 +47,7 @@ function MyPageEvaluation() {
         title: '응답이 빨라요',
       },
     },
-    {
+    2: {
       0: {
         title: '시간 약속을 잘 지켜요',
       },
@@ -59,16 +61,16 @@ function MyPageEvaluation() {
         title: '응답이 빨라요',
       },
     },
-  ];
-  const [evaluation, setEvaluation] = useState([]);
+  };
+  const [evaluationLst, setEvaluationLst] = useState({});
   const { userPk } = useParams();
-  console.log(evaluation);
-  console.log(evaluTable);
+  console.log('바꾸기', evaluationLst);
+  // console.log(evaluTable);
   useEffect(() => {
     getEvaluationLst(
       { userId: userPk },
       res => {
-        setEvaluation(res.data);
+        setEvaluationLst(res.data);
       },
       err => {
         console.log(err);
@@ -87,7 +89,18 @@ function MyPageEvaluation() {
       )}
       <Container isDesktop={isDesktop}>
         <ul>
-          <p>d</p>
+          {Object.entries(evaluTable).map(evaluationEle => {
+            const k = evaluationEle[1];
+            return (
+              <div key={evaluationEle[0]}>
+                <p>{evaluationEle[0]}</p>
+                {Object.entries(k).map(l => {
+                  return <p key={l[0]}>{l[1].title}</p>;
+                })}
+              </div>
+              // <p }>idx</p>
+            );
+          })}
         </ul>
       </Container>
     </>
