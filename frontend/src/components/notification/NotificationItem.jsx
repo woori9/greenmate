@@ -8,6 +8,7 @@ import {
   getMoimChatRoom,
 } from '../../service/chat_service';
 import useUserInfo from '../../hooks/useUserInfo';
+import { deleteNotification } from '../../api/notification';
 
 const StyledNotificationItem = styled.div`
   display: flex;
@@ -34,11 +35,14 @@ const StyledNotificationItem = styled.div`
   }
 `;
 
-function NotificationItem({ notification }) {
+function NotificationItem({ notification, handleDelete }) {
   const userInfo = useUserInfo();
   const navigate = useNavigate();
 
   const handleNotification = async target => {
+    deleteNotification(target.id);
+    handleDelete(target.id);
+
     if (target.category === 0) {
       const chatRoom = await findPrivateChatRoom(
         `${target.sent_by}`,
@@ -84,6 +88,7 @@ function NotificationItem({ notification }) {
 
 NotificationItem.propTypes = {
   notification: PropTypes.shape().isRequired,
+  handleDelete: PropTypes.func.isRequired,
 };
 
 export default NotificationItem;

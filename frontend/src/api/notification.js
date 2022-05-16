@@ -51,4 +51,18 @@ const getNotifications = async setNotifications => {
   }
 };
 
-export { sendToken, deleteToken, sendNotification, getNotifications };
+const deleteNotification = async notificationId => {
+  try {
+    await api.delete(`/notifications/alirm/${notificationId}/`);
+  } catch (err) {
+    throw new Error(err);
+  }
+};
+
+export {
+  sendToken,
+  deleteToken,
+  sendNotification,
+  getNotifications,
+  deleteNotification,
+};

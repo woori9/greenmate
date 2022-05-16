@@ -12,11 +12,15 @@ const StyledNotificationList = styled.div`
   }
 `;
 
-function NotificationList({ notifications }) {
+function NotificationList({ notifications, handleDelete }) {
   return (
     <StyledNotificationList>
       {notifications.map(notification => (
-        <NotificationItem key={notification.id} notification={notification} />
+        <NotificationItem
+          key={notification.id}
+          notification={notification}
+          handleDelete={handleDelete}
+        />
       ))}
     </StyledNotificationList>
   );
@@ -24,6 +28,7 @@ function NotificationList({ notifications }) {
 
 NotificationList.propTypes = {
   notifications: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  handleDelete: PropTypes.func.isRequired,
 };
 
 export default NotificationList;

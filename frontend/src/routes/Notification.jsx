@@ -19,14 +19,18 @@ const StyledNotificationPage = styled.div`
 `;
 
 function Notification() {
-  const { notifications } = useNotificationList();
+  const { notifications, deleteNotification } = useNotificationList();
+
   return (
     <>
       <ResponsiveNavbar />
       <GoBackBar title="알림" />
       <StyledNotificationPage>
         <CheckCircleIcon />
-        <NotificationList notifications={notifications} />
+        <NotificationList
+          notifications={notifications}
+          handleDelete={deleteNotification}
+        />
       </StyledNotificationPage>
     </>
   );
