@@ -64,7 +64,7 @@ function NotificationItem({ notification, handleDelete }) {
     if (target.category === 1) {
       const chatRoom = await getMoimChatRoom(`${target.sent_by}`);
       const joinDate = await getJoinDate(`${userInfo.id}`, chatRoom.id);
-      const chatTitle = '모임 타이틀';
+      const chatTitle = target.title;
       const notificationTargetId = `${target.sent_by}`;
       navigate('/chatRoom', {
         state: {
@@ -74,6 +74,10 @@ function NotificationItem({ notification, handleDelete }) {
           chatTitle,
         },
       });
+    }
+
+    if (target.category === 2) {
+      navigate('/mymoim');
     }
   };
 
