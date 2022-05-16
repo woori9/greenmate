@@ -1,7 +1,9 @@
+/* eslint-disable no-nested-ternary */
 import styled, { css } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
 import PropTypes from 'prop-types';
+import useUserInfo from '../../hooks/useUserInfo';
 
 const FloatButton = styled.button`
   display: flex;
@@ -33,6 +35,7 @@ const FloatButton = styled.button`
 
 function FloatingActionBtn({ isForMoim }) {
   const navigate = useNavigate();
+  const userInfo = useUserInfo();
 
   function navigateTo() {
     if (isForMoim) {
@@ -49,7 +52,13 @@ function FloatingActionBtn({ isForMoim }) {
       onClick={() => navigateTo()}
     >
       <AddIcon />
-      {isForMoim ? '모임 열기' : '작성하기'}
+      {userInfo.language === 0
+        ? isForMoim
+          ? '모임 열기'
+          : '작성하기'
+        : isForMoim
+        ? 'Open meeting'
+        : 'Write'}
     </FloatButton>
   );
 }

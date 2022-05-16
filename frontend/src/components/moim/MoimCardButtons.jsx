@@ -169,7 +169,137 @@ function MoimCardButtons({ moimInfo, setNeedUpdate }) {
     ),
   };
 
-  return buttonDict[selectedCategory];
+  const buttonDictEng = {
+    0: (
+      <ButtonDiv>
+        <Button type="button">Contact the host</Button>
+        <Button
+          type="button"
+          onClick={() =>
+            cancleApplyMoim(
+              moimInfo.userMateId,
+              () => setNeedUpdate(prev => prev + 1),
+              err => console.log(err),
+            )
+          }
+        >
+          Cancel wait
+        </Button>
+      </ButtonDiv>
+    ),
+    1: (
+      <ButtonDiv>
+        <Button
+          type="button"
+          onClick={() => {
+            exitMoim(
+              moimInfo.userMateId,
+              () => setNeedUpdate(prev => prev + 1),
+              err => console.log(err),
+            );
+
+            excludeFromChatRoom(`${moimInfo.id}`, `${userInfo.id}`);
+          }}
+        >
+          Cancel participation
+        </Button>
+        <Button
+          type="button"
+          onClick={async () => {
+            const chatRoom = await getMoimChatRoom(`${moimInfo.id}`);
+
+            if (!chatRoom) {
+              alert('This meeting does not exist.');
+              return;
+            }
+
+            const joinDate = await getJoinDate(`${userInfo.id}`, chatRoom.id); // userId, roomId
+
+            chatRoom.joinDate = joinDate;
+            chatRoom.chatTitle = moimInfo.title;
+            chatRoom.notificationTargetId = `${moimInfo.id}`;
+            navigate('/chatRoom', {
+              state: chatRoom,
+            });
+          }}
+        >
+          Enter the chat room
+        </Button>
+      </ButtonDiv>
+    ),
+    4: (
+      <ButtonDiv>
+        <Button type="button">Create a restaurant review</Button>
+        <Button
+          type="button"
+          onClick={() =>
+            navigate(`/moim/${moimInfo.id}/evaluation`, {
+              state: {
+                moimInfo: {
+                  title: moimInfo.title,
+                  time: moimInfo.time,
+                  restaurantName: moimInfo.restaurant.name,
+                },
+                mateList: moimInfo.mates,
+              },
+            })
+          }
+          disabled={moimInfo.isEvaluated}
+        >
+          Evaluate a meeting
+        </Button>
+      </ButtonDiv>
+    ),
+    5: (
+      <ButtonDiv>
+        <Button
+          type="button"
+          onClick={() => {
+            const waitList = [];
+            const joinList = [];
+            moimInfo.mates.forEach((mate, idx) => {
+              if (mate.mateStatus === 0) {
+                waitList.push(mate);
+              } else if (mate.mateStatus === 1 && idx !== 0) {
+                joinList.push(mate);
+              }
+            });
+            navigate(`/moim/${moimInfo.id}/member`, {
+              state: { waitList, joinList },
+            });
+          }}
+        >
+          Manage members
+        </Button>
+        <Button
+          type="button"
+          onClick={async () => {
+            const chatRoom = await getMoimChatRoom(`${moimInfo.id}`);
+
+            if (!chatRoom) {
+              alert('This meeting does not exist.');
+              return;
+            }
+
+            const joinDate = await getJoinDate(`${userInfo.id}`, chatRoom.id); // userId, roomId
+
+            chatRoom.joinDate = joinDate;
+            chatRoom.chatTitle = moimInfo.title;
+            chatRoom.notificationTargetId = `${moimInfo.id}`;
+            navigate('/chatRoom', {
+              state: chatRoom,
+            });
+          }}
+        >
+          Enter the chat room
+        </Button>
+      </ButtonDiv>
+    ),
+  };
+
+  return (userInfo.language === 0 ? buttonDict : buttonDictEng)[
+    selectedCategory
+  ];
 }
 
 MoimCardButtons.propTypes = {
