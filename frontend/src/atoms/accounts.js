@@ -22,5 +22,6 @@ const atomWithSessionStorage = (key, initialValue) => {
   return derivedAtom;
 };
 export const userInfoAtom = atomWithSessionStorage('userInfo', null);
-// use
-export const moimListAtom = atom([]);
+
+// test
+export const test = atom([]);

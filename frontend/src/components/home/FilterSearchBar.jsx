@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -25,6 +26,9 @@ const Container = styled.div`
 `;
 
 function FilterSearchBar({ searchKeyword, setSearchKeyword }) {
+  const location = useLocation();
+  let inputRestau;
+
   const [period, setPeriod] = useState(0);
   const [day, setDay] = useState(0);
   const [, setMoimList] = useAtom(moimListAtom);
@@ -40,6 +44,25 @@ function FilterSearchBar({ searchKeyword, setSearchKeyword }) {
           time: new Date(item.time),
         }));
         setMoimList(formattedData);
+      },
+      err => console.log(err),
+    );
+  }
+
+  function apiSearchPk(restauName) {
+    searchMoim(
+      restauName,
+      null,
+      null,
+      res => {
+        const formattedData = res.data.map(item => ({
+          ...snakeToCamel(item),
+          time: new Date(item.time),
+        }));
+        const returnData = formattedData.filter(
+          x => x.restaurant.id === inputRestau.inputRestauPk,
+        );
+        setMoimList(returnData);
       },
       err => console.log(err),
     );
@@ -64,6 +87,13 @@ function FilterSearchBar({ searchKeyword, setSearchKeyword }) {
       apiSearch();
     }
   }
+  useEffect(() => {
+    if (location.state) {
+      const { inputRestauName, inputRestauPk } = location.state;
+      inputRestau = { inputRestauName, inputRestauPk };
+      apiSearchPk(inputRestau.inputRestauName);
+    }
+  }, []);
 
   return (
     <Container>

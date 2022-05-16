@@ -1,5 +1,6 @@
 import { useAtom } from 'jotai';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import CloseIcon from '@mui/icons-material/Close';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -94,6 +95,7 @@ const Review = styled.div`
     padding: 1rem 0.5rem;
   }
 `;
+const BoxLetsEat = styled.div``;
 
 function copyAddress(text) {
   const t = document.createElement('textarea');
@@ -106,6 +108,7 @@ function copyAddress(text) {
 
 function DetailInfo() {
   const { width } = useWindowDimensions();
+  const navigate = useNavigate();
   const [newSearchResult] = useAtom(searchResultsAtom);
   const [summaryRestau, setSummaryRestau] = useAtom(summaryRestauAtom);
   const [detailRestau, setDetailRestau] = useAtom(detailRestauAtom);
@@ -200,7 +203,18 @@ function DetailInfo() {
           )}
         </div>
       </Review>
-      <ButtonLetsEat />
+      <BoxLetsEat
+        onClick={() =>
+          navigate('/', {
+            state: {
+              inputRestauName: restauInfo.name,
+              inputRestauPk: detailRestau.id,
+            },
+          })
+        }
+      >
+        <ButtonLetsEat />
+      </BoxLetsEat>
     </Container>
   );
 }
