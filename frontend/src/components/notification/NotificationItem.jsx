@@ -39,14 +39,14 @@ function NotificationItem({ notification }) {
   const navigate = useNavigate();
 
   const handleNotification = async target => {
-    if (target.type === 1) {
+    if (target.category === 0) {
       const chatRoom = await findPrivateChatRoom(
-        target.sentBy,
+        `${target.sent_by}`,
         `${userInfo.id}`,
       );
       const joinDate = await getJoinDate(`${userInfo.id}`, chatRoom.id);
-      const notificationTargetId = target.sentBy;
-      const chatTitle = chatRoom.membersInfo[`nickname${target.sentBy}`];
+      const notificationTargetId = `${target.sent_by}`;
+      const chatTitle = chatRoom.membersInfo[`nickname${target.sent_by}`];
       navigate('/chatRoom', {
         state: {
           ...chatRoom,
@@ -57,11 +57,11 @@ function NotificationItem({ notification }) {
       });
     }
 
-    if (target.type === 2) {
-      const chatRoom = await getMoimChatRoom(target.sentBy);
+    if (target.category === 1) {
+      const chatRoom = await getMoimChatRoom(`${target.sent_by}`);
       const joinDate = await getJoinDate(`${userInfo.id}`, chatRoom.id);
       const chatTitle = '모임 타이틀';
-      const notificationTargetId = target.sentBy;
+      const notificationTargetId = `${target.sent_by}`;
       navigate('/chatRoom', {
         state: {
           ...chatRoom,
@@ -76,7 +76,7 @@ function NotificationItem({ notification }) {
   return (
     <StyledNotificationItem onClick={() => handleNotification(notification)}>
       <img src={vegan} alt="greenmate" />
-      <p className="title">{notification.title}</p>
+      <p className="title">{notification.body}</p>
       <p className="date">{notification.createdAt}</p>
     </StyledNotificationItem>
   );
