@@ -5,17 +5,16 @@ import ResponsiveProfile from '../components/mypage/profile/ResponsiveProfile';
 import GoBackBar from '../components/common/GoBackBar';
 import { getLikedRestau } from '../api/mypage';
 import useWindowDimensions from '../utils/windowDimension';
-import logo from '../assets/logo.png';
 
 const Container = styled.div`
-  margin: ${props =>
-    props.isDesktop ? '0 2rem 0 34rem' : '78px 1rem 5rem 1rem'};
-  border: ${props => (props.isDesktop ? '1px solid #f2f2f2' : null)};
   border-radius: 10px;
-  height: ${props =>
-    props.isDesktop
-      ? 'calc(100vh - 60px - 2rem)'
-      : 'calc(100vh - 104px - 4rem)'};
+  margin: 78px 1rem 5rem 1rem;
+  height: calc(100vh - 104px - 4rem);
+  @media screen and (min-width: 1025px) {
+    margin: 0 2rem 0 34rem;
+    border: 1px solid #f2f2f2;
+    height: calc(100vh - 60px - 2rem);
+  }
 `;
 const RestauDiv = styled.div`
   display: flex;
@@ -47,8 +46,10 @@ const RestauDiv = styled.div`
   }
 `;
 const Img = styled.img`
+  min-width: 100px;
   width: 100px;
   height: 100px;
+  border-radius: 20px;
   object-fit: cover;
 `;
 const NoContent = styled.div`
@@ -60,7 +61,6 @@ const NoContent = styled.div`
 
 function MyPageLikedRestaurants() {
   const { width } = useWindowDimensions();
-  const isDesktop = width > 1024;
   const [likedRestau, setLikedRestau] = useState([]);
   useEffect(() => {
     getLikedRestau(
@@ -82,28 +82,19 @@ function MyPageLikedRestaurants() {
       ) : (
         <GoBackBar title="좋아요한 식당" />
       )}
-      <Container isDesktop={isDesktop}>
-        {/* <RestauDiv>
-          <div className="info-container">
-            <Img src={logo} alt="restau-img" />
-            <p className="name">제목</p>
-          </div>
-          <div className="type-container">
-            <p>내용</p>
-          </div>
-        </RestauDiv> */}
+      <Container>
         {likedRestau.length ? (
           <>
             {likedRestau.map(restau => (
-              <RestauDiv>
+              <RestauDiv key={restau.restaurant}>
                 <div className="info-container">
-                  <Img src={logo} alt="restau-img" />
+                  <Img src={restau.img_url} alt="restau-img" />
                   <p className="name">{restau.name}</p>
                 </div>
                 <div className="type-container">
-                  {restau.vege_types.map(type => (
-                    <p>{type}</p>
-                  ))}
+                  {restau.vege_types.split(' ').map((type, idx) => {
+                    return <p key={idx && type}>{type}</p>;
+                  })}
                 </div>
               </RestauDiv>
             ))}
