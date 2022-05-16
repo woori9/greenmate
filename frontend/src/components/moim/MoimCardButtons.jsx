@@ -26,6 +26,11 @@ const Button = styled.button`
   border-radius: 5px;
   cursor: pointer;
 
+  &:hover {
+    background: #ffd18c;
+    border: none;
+  }
+
   &:disabled {
     color: #a9a9a9;
     cursor: inherit;

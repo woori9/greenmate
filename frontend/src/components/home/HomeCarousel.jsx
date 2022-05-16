@@ -21,7 +21,7 @@ const Container = styled.div`
 
   .slick-slide:nth-child(3) {
     .item {
-      background-color: #ffea9f;
+      background-color: #caeab1;
     }
   }
 
@@ -33,7 +33,7 @@ const Container = styled.div`
 
   .slick-slide:nth-child(5) {
     .item {
-      background-color: #ffd493;
+      background-color: #ffea9f;
     }
   }
 
@@ -185,11 +185,12 @@ function HomeCarousel() {
   const settings = {
     dots: true,
     infinite: true,
-    speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
     draggable: true,
     arrows: false,
+    autoplay: true,
+    autoplaySpeed: 2500,
   };
 
   return (

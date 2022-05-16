@@ -81,22 +81,22 @@ function Home() {
         setSearchKeyword={setSearchKeyword}
       />
       <Hr />
-      <div className="moim-card-container">
-        {moimList.length > 0 ? (
-          moimList.map(moimInfo => (
+      {moimList.length > 0 ? (
+        <div className="moim-card-container">
+          {moimList.map(moimInfo => (
             <MoimCard
               key={moimInfo.id}
               moimInfo={moimInfo}
               showStatus={false}
             />
-          ))
-        ) : (
-          <div className="inform-txt-container">
-            <p>지금 모집 중인 모임이 없습니다.</p>
-            <p>모임을 만들어보세요!</p>
-          </div>
-        )}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="inform-txt-container">
+          <p>지금 모집 중인 모임이 없습니다.</p>
+          <p>모임을 만들어보세요!</p>
+        </div>
+      )}
     </Container>
   );
 }

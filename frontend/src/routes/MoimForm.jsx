@@ -57,7 +57,9 @@ const Form = styled.form`
     border-radius: 5px;
     padding: 0.5rem 0;
     margin-top: 1rem;
+    cursor: pointer;
   }
+
   .mini-btn {
     width: 4.5rem;
     margin-left: auto;

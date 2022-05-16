@@ -46,6 +46,7 @@ const Card = styled.div`
 
   &:hover {
     transform: scale(1.03);
+    cursor: pointer;
   }
 `;
 
