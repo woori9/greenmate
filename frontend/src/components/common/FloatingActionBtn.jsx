@@ -15,6 +15,7 @@ const FloatButton = styled.button`
   border: 2px solid #fcb448;
   border-radius: 20px;
   padding: 0.5rem;
+  z-index: 3;
   cursor: pointer;
 
   ${props =>

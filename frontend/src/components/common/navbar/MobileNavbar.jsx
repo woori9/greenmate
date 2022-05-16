@@ -19,6 +19,8 @@ const NavBottom = styled.div`
   height: 62px;
   background-color: #ffffff;
   filter: drop-shadow(0 -1px 4px rgba(0, 0, 0, 0.25));
+  z-index: 2;
+
   ul {
     height: 100%;
     display: flex;
@@ -28,16 +30,19 @@ const NavBottom = styled.div`
     padding-inline-start: 0px;
   }
 `;
+
 const StyledLink = styled(Link)`
   display: flex;
   flex-direction: column;
   align-items: center;
   text-decoration: none;
   color: ${props => (props.selected ? selectedColor : defaultColor)};
+
   p {
     font-size: 10px;
   }
 `;
+
 const NavTop = styled.div`
   position: fixed;
   top: 0;
