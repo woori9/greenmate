@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import Avatar from '@mui/material/Avatar';
@@ -8,7 +8,7 @@ import CardActions from '@mui/material/CardActions';
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import { red, green } from '@mui/material/colors';
+import { red } from '@mui/material/colors';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import InsertCommentIcon from '@mui/icons-material/InsertComment';
@@ -20,14 +20,102 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Input from '@mui/material/Input';
-import Comment from './Comment';
+import styled from 'styled-components';
+import Stack from '@mui/material/Stack';
+import DialogTitle from '@mui/material/DialogTitle';
+import Dialog from '@mui/material/Dialog';
+import Button from '@mui/material/Button';
 import FeedImageCarousel from './FeedIamgeCarousel';
-import { postLike } from '../../api/community';
+import { postLike, getFeedTrans, getCommentList } from '../../api/community';
+import vegan from '../../assets/vegan-icon.png';
+import lacto from '../../assets/lacto-icon.png';
+import ovo from '../../assets/ovo-icon.png';
+import lactoOvo from '../../assets/lacto-ovo-icon.png';
+import pesco from '../../assets/pesco-icon.png';
+import polo from '../../assets/polo-icon.png';
+
+const Trans = styled.div`
+  cursor: pointer;
+  font-size: 5px;
+  color: lightgrey;
+`;
+
+function SimpleDialog(props) {
+  const { onClose, open, comments } = props;
+
+  const handleClose = () => {
+    onClose();
+  };
+
+  return (
+    <Dialog onClose={handleClose} open={open}>
+      <DialogTitle sx={{ m: 'auto' }}>댓글</DialogTitle>
+      {comments.length === 0 ? (
+        <span>댓글이 없습니다.</span>
+      ) : (
+        <div>
+          {comments.map(comment => (
+            <div key={comment.id}>
+              <Avatar>{comment.nickname}</Avatar>
+              <p>{comment.nickname}</p>
+              <p>
+                {`${comment.created_at.substr(0, 4)}년` +
+                  ' ' +
+                  `${comment.created_at.substr(5, 2)}월` +
+                  ' ' +
+                  `${comment.created_at.substr(8, 2)}일`}
+              </p>
+              <p>{comment.content}</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </Dialog>
+  );
+}
+
+SimpleDialog.propTypes = {
+  onClose: PropTypes.func,
+  open: PropTypes.bool,
+  comments: PropTypes.arrayOf(
+    PropTypes.shape({
+      author: PropTypes.number,
+      content: PropTypes.string,
+      created_at: PropTypes.string,
+      id: PropTypes.number,
+      is_like: PropTypes.bool,
+      like_cnt: PropTypes.number,
+      nickname: PropTypes.string,
+      parent: PropTypes.number,
+      updated_at: PropTypes.string,
+    }),
+  ),
+}.isRequired;
 
 function Feed({ feed }) {
   const [expanded, setExpanded] = useState(false);
   const [isLike, setIsLike] = useState(feed.is_like);
   const [isSetting, setIsSetting] = useState(false);
+  const [isTrans, setIsTrans] = useState(false);
+  const [feedTrans, setFeedTrans] = useState('');
+  const [comments, setComments] = useState([]);
+  const [open, setOpen] = useState(false);
+  const vegeType = {
+    1: vegan,
+    2: lacto,
+    3: ovo,
+    4: lactoOvo,
+    5: pesco,
+    6: polo,
+  };
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
@@ -35,17 +123,27 @@ function Feed({ feed }) {
     postLike(feedId);
     setIsLike(!isLike);
   };
+  useEffect(() => {
+    const FeedTrans = async () => {
+      const resData = await getFeedTrans(feed.id);
+      setFeedTrans(resData);
+    };
+    FeedTrans();
+    const getComments = async () => {
+      const resData = await getCommentList(feed.id);
+      setComments(resData);
+    };
+    getComments();
+  }, []);
+  console.log(comments);
   const handleSetiing = () => {
     setIsSetting(!isSetting);
   };
   return (
-    <Card sx={{ mb: 5, maxWidth: 1024 }}>
+    <Card sx={{ mb: 7, maxWidth: 500 }}>
       <CardHeader
-        // TODO: user의 vegeType에 따라서 이미지 바꿔주기
         avatar={
-          <Avatar sx={{ bgcolor: green[200] }} aria-label="recipe">
-            Icon
-          </Avatar>
+          <Avatar src={vegeType[feed.vege_type]} alt={feed.author.nickname} />
         }
         // TODO: 수정/삭제 기능 넣기
         action={
@@ -106,17 +204,39 @@ function Feed({ feed }) {
         </IconButton>
       </CardActions>
       <CardContent>
-        <Typography variant="body2" color="text.secondary">
-          {feed.content}
-        </Typography>
-      </CardContent>
-      <Collapse in={expanded}>
-        <Comment feedId={feed.id} />
+        {isTrans ? (
+          <Typography variant="body2" color="text.secondary">
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <span>{feedTrans.content_trans}</span>
+              <Trans onClick={() => setIsTrans(!isTrans)}>원문보기</Trans>
+            </Stack>
+          </Typography>
+        ) : (
+          <Typography variant="body2" color="text.secondary">
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <span>{feed.content}</span>
+              <Trans onClick={() => setIsTrans(!isTrans)}>번역보기</Trans>
+            </Stack>
+          </Typography>
+        )}
+        <Button variant="text" onClick={handleClickOpen}>
+          더보기
+        </Button>
         <Input />
-      </Collapse>
+      </CardContent>
+      <SimpleDialog open={open} onClose={handleClose} comments={comments} />
     </Card>
   );
 }
+
 Feed.propTypes = {
   feed: PropTypes.shape({
     author: PropTypes.shape({
