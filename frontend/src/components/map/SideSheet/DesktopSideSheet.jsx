@@ -61,7 +61,6 @@ const SideSheet = muiStyled(MuiDrawer, {
 }));
 const SheetContent = styled.div`
   display: flex;
-  width: 410px;
   filter: drop-shadow(0 -1px 4px rgba(0, 0, 0, 0.25));
   .button-box {
     height: calc(100vh - 60px);
