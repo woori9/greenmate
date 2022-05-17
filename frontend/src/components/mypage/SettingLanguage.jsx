@@ -25,7 +25,7 @@ function SettingLanguage() {
     },
     {
       id: 1,
-      title: '영어',
+      title: 'English',
     },
   ];
   function putLanguage(putNewLang) {

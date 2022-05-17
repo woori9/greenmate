@@ -8,6 +8,7 @@ import HomeCarousel from '../components/home/HomeCarousel';
 import FilterSearchBar from '../components/home/FilterSearchBar';
 import { categoryAtom, moimListAtom } from '../atoms/moim';
 import { getMoimList } from '../api/moim';
+import { userInfoAtom } from '../atoms/accounts';
 import { snakeToCamel } from '../utils/formatKey';
 
 const Container = styled.div`
@@ -56,6 +57,7 @@ function Home() {
   const [searchKeyword, setSearchKeyword] = useState('');
   const [, setSelectedCategory] = useAtom(categoryAtom);
   const [moimList, setMoimList] = useAtom(moimListAtom);
+  const [userInfo] = useAtom(userInfoAtom);
 
   useEffect(() => {
     setSelectedCategory(6);
@@ -93,8 +95,17 @@ function Home() {
         </div>
       ) : (
         <div className="inform-txt-container">
-          <p>지금 모집 중인 모임이 없습니다.</p>
-          <p>모임을 만들어보세요!</p>
+          {userInfo.language === 0 ? (
+            <>
+              <p>지금 모집 중인 모임이 없습니다</p>
+              <p>모임을 만들어보세요!</p>
+            </>
+          ) : (
+            <>
+              <p>There are no meeting yet</p>
+              <p>Click Open meeting!</p>
+            </>
+          )}
         </div>
       )}
     </Container>
