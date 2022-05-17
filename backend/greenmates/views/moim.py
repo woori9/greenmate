@@ -13,7 +13,7 @@ from ..serializers.moim import (
     MoimPostPutSerializer,
     MoimFinishedSerializer,
 )
-from notifications.views import send_message
+from notifications.views import send_message, create_multiple_alirm
 from notifications.models import FirebaseToken
 from rest_framework.status import (
     HTTP_201_CREATED,
@@ -115,7 +115,9 @@ def get_update_moim_detail(request, moim_id):
             tokens = FirebaseToken.objects.filter(user__mate__moim_id=moim_id).values_list('registration_token', flat=True).exclude(user=user)
             body = f'[{moim.title[:6]}…] 모임 시간이 변경되었습니다.'
             if tokens:
-                send_message(list(tokens), body)
+                if send_message(list(tokens), body):
+                    guests_list = moim.mate_set.values_list('user_id', flat=True).exclude(user_id=user.pk)
+                    create_multiple_alirm(guests_list, 2, '모임 시간 수정', body, user.pk)
             return Response(serializer.data)
 
     user = get_request_user(request)
