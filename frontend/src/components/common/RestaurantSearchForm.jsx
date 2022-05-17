@@ -47,17 +47,18 @@ function RestaurantSearchForm({
   const [searchResult, setSearchResult] = useState([]);
 
   async function handleKeyUp(e) {
+    e.preventDefault();
     if (e.keyCode === 13 && searchKeyword.length > 0) {
       setIsSearch(true);
       setSearchKeyword(e.target.value);
-      const res = apiGetSearchRestau({ keyword: searchKeyword });
-      const formattedData = res.map(item => ({
-        ...snakeToCamel(item),
-      }));
-      setSearchResult(formattedData);
+      apiGetSearchRestau({ keyword: searchKeyword }).then(res => {
+        const formattedData = res.map(item => ({
+          ...snakeToCamel(item),
+        }));
+        setSearchResult(formattedData);
+      });
     }
   }
-
   return (
     <SearchContainer>
       <label htmlFor="restaurant" className="input-label">

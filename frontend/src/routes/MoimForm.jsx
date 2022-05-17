@@ -18,6 +18,8 @@ import { createMoimChat } from '../service/chat_service';
 import useUserInfo from '../hooks/useUserInfo';
 import useWindowDimensions from '../utils/windowDimension';
 
+const { check } = require('korcen');
+
 const Container = styled.div`
   padding: 5rem 1rem 5rem 1rem;
 
@@ -117,6 +119,11 @@ function MoimForm() {
     }
     if (count < 2 || count > 20) {
       alert('인원은 최소 2명, 최대 20명까지 가능합니다.');
+      return;
+    }
+
+    if (check(title) || check(content)) {
+      alert('욕설은 입력할 수 없습니다.');
       return;
     }
 
