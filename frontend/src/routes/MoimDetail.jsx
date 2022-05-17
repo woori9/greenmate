@@ -64,6 +64,17 @@ const MainBox = styled.div`
   border-radius: 10px;
   margin: 1.5rem 0;
 
+  .profile-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 1rem;
+    background: none;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+  }
+
   .profile-img {
     position: absolute;
     top: -1.5rem;
@@ -331,8 +342,14 @@ function MoimDetail() {
       <OrangeBack />
       <MainBox>
         <h1>{moimInfo.title}</h1>
-        <ProfileImage vegeType={moimInfo.author.vegeType} isBig={false} />
-        <p>{moimInfo.author.nickname}</p>
+        <button
+          type="button"
+          className="profile-btn"
+          onClick={() => navigate(`/mypage/${moimInfo.author.id}`)}
+        >
+          <ProfileImage vegeType={moimInfo.author.vegeType} isBig={false} />
+          <p>{moimInfo.author.nickname}</p>
+        </button>
       </MainBox>
       <DataList>
         <div className="info-data">
