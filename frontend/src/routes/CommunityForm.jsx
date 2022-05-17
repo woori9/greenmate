@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { useLocation, useNavigate } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
@@ -12,9 +13,9 @@ import AdjustIcon from '@mui/icons-material/Adjust';
 import PropTypes from 'prop-types';
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
-import { createFeed } from '../api/community';
+import { createFeed, updateFeed } from '../api/community';
 import RestaurantSearchForm from '../components/common/RestaurantSearchForm';
-import Rating from '../components/community/rating';
+import RatingForm from '../components/community/RatingForm';
 import useWindowDimensions from '../utils/windowDimension';
 import DesktopNavbar from '../components/common/navbar/DesktopNavbar';
 import GoBackBar from '../components/common/GoBackBar';
@@ -25,6 +26,8 @@ import ovo from '../assets/ovo-icon.png';
 import lactoOvo from '../assets/lacto-ovo-icon.png';
 import pesco from '../assets/pesco-icon.png';
 import polo from '../assets/polo-icon.png';
+
+const { check } = require('korcen');
 
 const Container = styled.div`
   padding: 5rem 1rem 5rem 1rem;
@@ -49,19 +52,6 @@ const Form = styled.form`
     margin-bottom: 1rem;
   }
 
-  .submit-btn {
-    position: fixed;
-    left: 1rem;
-    bottom: 5rem;
-    width: 90%;
-    color: #fff;
-    font-weight: 600;
-    background-color: #fcb448;
-    border: none;
-    border-radius: 5px;
-    padding: 0.5rem 0;
-  }
-
   .review_margin {
     margin-top: 20px;
   }
@@ -80,13 +70,28 @@ const Form = styled.form`
     padding: 0.5rem 0;
     cursor: pointer;
   }
+
   .imgInput {
     display: none;
   }
+
+  .submit-btn {
+    width: 100%;
+    color: #fff;
+    font-weight: 600;
+    background-color: #fcb448;
+    border: none;
+    border-radius: 5px;
+    padding: 0.5rem 0;
+    margin-top: 1rem;
+    cursor: pointer;
+  }
+
   .mini-btn {
     width: 4.5rem;
     margin-left: auto;
   }
+
   .mouse-hover:hover {
     background-color: #fcb448;
   }
@@ -132,6 +137,38 @@ function CommunityForm() {
   const [isCategoryClick, setIsCategoryClick] = useState(0);
   const [isVegeTypeClick, setIsVegeTypeClick] = useState(0);
   const [open, setOpen] = useState(false);
+  const [isForUpdate, setIsForUpdate] = useState(false);
+  const [originalFeedId, setOriginalFeedId] = useState();
+  const [rating, setRating] = useState();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (location.state) {
+      const {
+        feedId,
+        originalCategory,
+        originalContent,
+        originalVegeType,
+        originalImgs,
+      } = location.state;
+
+      setIsForUpdate(true);
+      setOriginalFeedId(feedId);
+      setCategory(originalCategory);
+      setContent(originalContent);
+      setVegeType(originalVegeType);
+      setImgs(originalImgs);
+      if (originalCategory === 2) {
+        const { restaurantId, restaurantName, restaurantRating } =
+          location.state;
+        setSelectedRestaurantId(restaurantId);
+        setSearchKeyword(restaurantName);
+        setRating(restaurantRating);
+        console.log(rating);
+      }
+    }
+  }, []);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -141,7 +178,8 @@ function CommunityForm() {
     setOpen(false);
   };
 
-  function handleSubmit() {
+  function handleSubmit(e) {
+    e.preventDefault();
     if (category === 0 || !content || !imgs) {
       if (isCategoryClick === 2) {
         if (!selectedRestaurantId) {
@@ -152,6 +190,12 @@ function CommunityForm() {
       alert('입력하지 않은 정보가 있습니다.');
       return;
     }
+
+    if (check(content)) {
+      alert('욕설은 입력할 수 없습니다.');
+      return;
+    }
+
     const formData = new FormData();
     formData.append('category', category);
     formData.append('content', content);
@@ -161,13 +205,18 @@ function CommunityForm() {
       formData.append('img_path', imgs[i]);
     }
     formData.append('enctype', 'multipart/form-data');
-    createFeed(formData);
+    if (isForUpdate) {
+      updateFeed(originalFeedId, formData);
+    } else {
+      createFeed(formData);
+    }
+    navigate(-1);
   }
 
   return (
     <Container>
       {width > 1024 ? <DesktopNavbar /> : <GoBackBar title="메이트 구하기" />}
-      <Form>
+      <Form target="_blank">
         {width > 1024 && <h1 className="form-title">메이트 구하기</h1>}
         <label htmlFor="category">카테고리</label>
         <Stack direction="row" spacing={3}>
@@ -460,13 +509,14 @@ function CommunityForm() {
         {isCategoryClick === 2 ? (
           <div className="review_margin">
             <RestaurantSearchForm
+              isForUpdate={isForUpdate}
               searchKeyword={searchKeyword}
               setSearchKeyword={setSearchKeyword}
               setSelectedRestaurantId={setSelectedRestaurantId}
             />
             <div className="review_margin">
               <label htmlFor="rating">평점</label>
-              <Rating />
+              <RatingForm rating={rating} setRating={setRating} />
             </div>
           </div>
         ) : (
@@ -484,7 +534,7 @@ function CommunityForm() {
           name="file"
           onChange={event => setImgs(event.target.files)}
         />
-        {imgs ? <p>{imgs.length}개의 사진 업로드</p> : <div />}
+        {imgs && <p>{imgs.length}개의 사진 업로드</p>}
         <label htmlFor="content">내용</label>
         <TextField
           id="content"
@@ -501,7 +551,7 @@ function CommunityForm() {
         <button
           type="button"
           className={`submit-btn ${width > 1024 && 'mini-btn'}`}
-          onClick={() => handleSubmit()}
+          onClick={e => handleSubmit(e)}
         >
           작성
         </button>
