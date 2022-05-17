@@ -74,7 +74,8 @@ def signout(request):
 
     if host or guest:
         return Response(data='진행 중인 모임이 있습니다.', status=HTTP_412_PRECONDITION_FAILED)
-        
+    
+    user.delete()
     return Response(data=f'{user.pk}번 사용자가 정상적으로 삭제되었습니다.', status=HTTP_204_NO_CONTENT)
 
     

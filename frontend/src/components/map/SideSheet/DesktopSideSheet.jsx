@@ -1,5 +1,4 @@
 import { useAtom } from 'jotai';
-import { useState } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { styled as muiStyled } from '@mui/material/styles';
@@ -8,7 +7,7 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import SearchBox from '../SearchBox';
 import SearchLst from '../SearchLst';
 import DetailInfo from '../DetailInfo';
-import { pageStatusAtom } from '../../../atoms/map';
+import { pageStatusAtom, isOpendesktopSideBarAtom } from '../../../atoms/map';
 
 const drawerWidth = 440;
 const openedMixin = theme => ({
@@ -17,6 +16,9 @@ const openedMixin = theme => ({
   left: '130px',
   backgroundColor: 'transparent',
   border: 'none',
+  '&::-webkit-scrollbar': {
+    display: 'none',
+  },
   transition: theme.transitions.create('left', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.enteringScreen,
@@ -29,6 +31,9 @@ const closedMixin = theme => ({
   top: '60px',
   border: 'none',
   left: '130px',
+  '&::-webkit-scrollbar': {
+    display: 'none',
+  },
   [theme.breakpoints.up('sm')]: {
     left: '-280px',
   },
@@ -84,7 +89,7 @@ const Button = styled.button`
   cursor: pointer;
 `;
 function DesktopSideSheet({ getMapwithCommand }) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useAtom(isOpendesktopSideBarAtom);
   const [pageStatus] = useAtom(pageStatusAtom);
 
   return (
