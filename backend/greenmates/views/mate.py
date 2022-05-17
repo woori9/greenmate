@@ -1,11 +1,11 @@
 from django.shortcuts import get_list_or_404, get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from ..models import Moim, Mate, UserReview
-from ..serializers.moim import MoimDetailSerializer, MoimSerializer
+from ..models import Moim, Mate
+from ..serializers.moim import MoimSerializer
 from ..serializers.mate import MatePutPostSerializer
 from ..serializers.evaluation import UserReviewPostSerializer
-from notifications.views import send_message
+from notifications.views import send_message, create_single_alirm
 from notifications.models import FirebaseToken
 from rest_framework.status import (
     HTTP_201_CREATED,
@@ -23,9 +23,10 @@ from accounts.views.token import get_request_user
 User = get_user_model()
 # user = User.objects.get(pk=3)
 
-def make_massage(user, body):
-    token = FirebaseToken.objects.filter(user=user).values_list('registration_token', flat=True)
+def make_massage(me, you, title, body):
+    token = FirebaseToken.objects.filter(user=you).values_list('registration_token', flat=True)
     if token:
+        create_single_alirm(you.pk, 2, title, body, me.pk)
         send_message(list(token), body)
 
 @api_view(['POST'])
@@ -51,7 +52,7 @@ def apply_mate(request, moim_id):
     if serializer.is_valid(raise_exception=True):
         serializer.save()
         body = f'[{moim.title[:6]}…] {user.nickname}님이 모임 참여 신청했습니다.'
-        make_massage(moim.author, body)
+        make_massage(user, moim.author, '대기 신청', body)
         return Response(
             data=f'{moim_id}번 모임에 대기 신청되었습니다.',
             status=HTTP_201_CREATED
@@ -81,7 +82,7 @@ def cancle_mate(request, mate_id):
         )
     moim = mate.moim
     body = f'[{moim.title[:6]}…] {user.nickname}님이 모임 신청을 취소했습니다.'
-    make_massage(moim.author, body)
+    make_massage(user, moim.author, '대기 취소', body)
     mate.delete()
     return Response(
         data='대기 신청이 정상적으로 취소되었습니다.',
@@ -118,7 +119,7 @@ def accept_mate(request, mate_id):
         moim.status = 1
         moim.save()
     body = f'[{moim.title[:6]}…] 모임 참여가 수락되었습니다.'
-    make_massage(mate.user, body)
+    make_massage(user, mate.user, '참여 수락', body)
     return Response(
         data='게스트 참여를 수락했습니다.',
         status=HTTP_201_CREATED
@@ -158,7 +159,7 @@ def decline_mate(request, mate_id):
     mate.mate_status = 2
     mate.save()
     body = f'[{moim.title[:6]}…] 모임 참여가 거절되었습니다.'
-    make_massage(mate.user, body)
+    make_massage(user, mate.user, '참여 거절', body)
     return Response(
         data='게스트 참여를 거절했습니다.',
         status=HTTP_201_CREATED
@@ -206,7 +207,7 @@ def out_mate(request, mate_id):
             moim.status = 0
             moim.save()
         body = f'[{moim.title[:6]}…] {user.nickname}님이 모임을 나갔습니다.'
-        make_massage(moim.author, body)
+        make_massage(user, moim.author, '모임 나감', body)
         return Response(
             data='모임을 나갔습니다.',
             status=HTTP_204_NO_CONTENT
@@ -248,11 +249,10 @@ def evaluate_mate(request):
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
 
     evaluations_list = request.data
-    evaluations_dict = {x['mate']:x['evaluation'] for x in evaluations_list}
     serializer = UserReviewPostSerializer(
         data=evaluations_list, 
         many=True, 
-        context={'user':user, 'evaluations': evaluations_dict}
+        context={'user':user}
         )
     if serializer.is_valid(raise_exception=True):
         serializer.save()

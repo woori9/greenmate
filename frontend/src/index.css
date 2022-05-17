@@ -28,12 +28,24 @@ code {
   monospace;
 }
 
+html, body {
+  height: 100%;
+}
+
+#root {
+  position: relative;
+  height: auto;
+  min-height: 100%;
+  padding-bottom: 160px;
+}
+
 @media screen and (min-width: 1025px) {
   body {
     min-height: 100vh;
     min-width: 100vw;
   }
 }
+
 @media screen and (max-width: 1024px) {
   body {
     min-height: 100vh;

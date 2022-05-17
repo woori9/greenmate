@@ -8,6 +8,7 @@ import HomeCarousel from '../components/home/HomeCarousel';
 import FilterSearchBar from '../components/home/FilterSearchBar';
 import { categoryAtom, moimListAtom } from '../atoms/moim';
 import { getMoimList } from '../api/moim';
+import { userInfoAtom } from '../atoms/accounts';
 import { snakeToCamel } from '../utils/formatKey';
 
 const Container = styled.div`
@@ -20,11 +21,25 @@ const Container = styled.div`
   }
 
   @media screen and (min-width: 1025px) {
-    padding: 60px 2rem 0 calc(130px + 2rem);
+    padding: 60px 3rem 0 calc(130px + 3rem);
 
     .moim-card-container {
-      display: flex;
-      flex-flow: row wrap;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-gap: 10px;
+      grid-auto-rows: minmax(100px, auto);
+    }
+  }
+
+  @media screen and (min-width: 1440px) {
+    .moim-card-container {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media screen and (min-width: 1800px) {
+    .moim-card-container {
+      grid-template-columns: repeat(4, 1fr);
     }
   }
 `;
@@ -42,6 +57,7 @@ function Home() {
   const [searchKeyword, setSearchKeyword] = useState('');
   const [, setSelectedCategory] = useAtom(categoryAtom);
   const [moimList, setMoimList] = useAtom(moimListAtom);
+  const [userInfo] = useAtom(userInfoAtom);
 
   useEffect(() => {
     setSelectedCategory(6);
@@ -67,22 +83,31 @@ function Home() {
         setSearchKeyword={setSearchKeyword}
       />
       <Hr />
-      <div className="moim-card-container">
-        {moimList.length > 0 ? (
-          moimList.map(moimInfo => (
+      {moimList.length > 0 ? (
+        <div className="moim-card-container">
+          {moimList.map(moimInfo => (
             <MoimCard
               key={moimInfo.id}
               moimInfo={moimInfo}
               showStatus={false}
             />
-          ))
-        ) : (
-          <div className="inform-txt-container">
-            <p>지금 모집 중인 모임이 없습니다.</p>
-            <p>모임을 만들어보세요!</p>
-          </div>
-        )}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="inform-txt-container">
+          {userInfo.language === 0 ? (
+            <>
+              <p>지금 모집 중인 모임이 없습니다</p>
+              <p>모임을 만들어보세요!</p>
+            </>
+          ) : (
+            <>
+              <p>There are no meeting yet</p>
+              <p>Click Open meeting!</p>
+            </>
+          )}
+        </div>
+      )}
     </Container>
   );
 }

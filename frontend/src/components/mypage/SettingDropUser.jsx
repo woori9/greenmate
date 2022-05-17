@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom';
+// import { useAtom } from 'jotai';
 import styled from 'styled-components';
 import { apiDeleteUser } from '../../api/accounts';
+// import { userInfoAtom } from '../../atoms/accounts';
 
 const Container = styled.div`
   padding: auto;
@@ -37,6 +39,7 @@ const Button = styled.div`
 
 function SettingDropUser() {
   const navigate = useNavigate();
+  // const [userInfo] = useAtom(userInfoAtom);
   return (
     <Container>
       <p className="title">회원 탈퇴</p>
@@ -52,7 +55,10 @@ function SettingDropUser() {
         type="button"
         onClick={() =>
           apiDeleteUser(
-            () => navigate('/intro'),
+            () => {
+              sessionStorage.clear();
+              navigate('/intro');
+            },
             () => alert('진행 중인 모임이 있어 회원탈퇴가 불가합니다'),
           )
         }

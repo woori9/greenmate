@@ -36,6 +36,7 @@ const Dialog = styled.dialog`
       width: 50%;
       height: 2.8rem;
       border: none;
+      cursor: pointer;
 
       &:first-child {
         background-color: #f9795d;

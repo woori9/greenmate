@@ -12,6 +12,8 @@ import lactoOvoUcon from '../assets/lacto-ovo-icon.png';
 import pescoIcon from '../assets/pesco-icon.png';
 import poloIcon from '../assets/polo-icon.png';
 import flexiIcon from '../assets/flexi-icon.png';
+import { getNotifications } from '../api/notification';
+import useNotificationList from '../hooks/useNotificationList';
 
 const Container = styled.div`
   height: 100vh;
@@ -66,6 +68,7 @@ function KakaoRedirectHandler() {
   const navigate = useNavigate();
   const code = new URL(window.location.href).searchParams.get('code');
   const [, setUserInfo] = useAtom(userInfoAtom);
+  const { setNotifications } = useNotificationList();
 
   useEffect(() => {
     getToken(
@@ -80,7 +83,10 @@ function KakaoRedirectHandler() {
         apiLogin({ access_token: accessToken }, res => {
           sessionStorage.setItem('Authorization', res.data.access_token);
           setUserInfo(res.data);
+
           apiInstance.defaults.headers.common.Authorization = `Bearer ${res.data.access_token}`;
+          getNotifications(setNotifications);
+          // 알림 가져오는 요청
           if (res.data.vege_type === null) {
             navigate('/signup');
           } else {

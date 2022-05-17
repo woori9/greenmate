@@ -1,14 +1,14 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import HomeIcon from '@mui/icons-material/Home';
 import PlaceIcon from '@mui/icons-material/Place';
 import WysiwygIcon from '@mui/icons-material/Wysiwyg';
 import EcoIcon from '@mui/icons-material/EnergySavingsLeaf';
-import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 import PersonIcon from '@mui/icons-material/Person';
 import { useAtom } from 'jotai';
 import { userInfoAtom } from '../../../atoms/accounts';
 import logo from '../../../assets/logo.png';
+import NotificationIcon from '../../notification/NotificationIcon';
 
 const defaultColor = '#a9a9a9';
 const selectedColor = '#fcb448';
@@ -24,12 +24,15 @@ const NavTop = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  .logo-box {
+
+  .logo-btn {
+    display: inline-block;
+    width: auto;
     height: 100%;
-    width: 130px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+
     img {
       height: 70%;
     }
@@ -72,6 +75,8 @@ const StyledLink = styled(Link)`
 function DesktopNavbar() {
   const [userInfo] = useAtom(userInfoAtom);
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+
   const links = [
     {
       name: '홈',
@@ -108,14 +113,16 @@ function DesktopNavbar() {
         </ul>
       </NavSide>
       <NavTop>
-        <div className="logo-box">
+        <button
+          type="button"
+          className="logo-btn"
+          onClick={() => navigate('/')}
+        >
           <img src={logo} alt="logo-img" />
-        </div>
+        </button>
         <AlertMenus>
           <li>
-            <NotificationsNoneOutlinedIcon
-              sx={{ color: 'black', fontSize: 30 }}
-            />
+            <NotificationIcon />
           </li>
           <li>
             <Link to={`/mypage/${userInfo.id}`} style={{ color: 'black' }}>

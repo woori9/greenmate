@@ -93,7 +93,7 @@ def get_create_feedlist(request):
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
 
     if request.method == 'GET':
-        feed_list = get_list_or_404(Feed)
+        feed_list = Feed.objects.all().order_by('-pk')
         serializer = FeedSerializer(feed_list, context={'user': user}, many=True)
         return Response(serializer.data)
     
