@@ -233,3 +233,19 @@ def search_moim(request):
     moim_list = Moim.objects.filter(q).distinct().order_by('time')
     serializer = MoimSimpleSerializer(moim_list, context={'user': user}, many=True)
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+def search_restaurant_moim(request, res_id):
+    '''
+    GET: {res_id} 식당과 관련된 모임 조회
+    '''
+    user = get_request_user(request)
+    if not user:
+        return Response(status=HTTP_401_UNAUTHORIZED)
+    elif user == 'EXPIRED_TOKEN':
+        return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
+    
+    moim_list = Moim.objects.filter(restaurant_id=res_id, status=0).order_by('time')
+    serializer = MoimSimpleSerializer(moim_list, context={'user': user}, many=True)
+    return Response(serializer.data)
