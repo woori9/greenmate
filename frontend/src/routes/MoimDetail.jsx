@@ -153,6 +153,8 @@ const H2 = styled.h2`
 const ButtonDiv = styled.div`
   position: fixed;
   border-top: 1px solid #a9a9a9;
+  background-color: #fff;
+  z-index: 1;
 
   button {
     width: 18rem;
@@ -179,6 +181,7 @@ const ButtonDiv = styled.div`
     border-top: none;
     bottom: 2rem;
     right: 1rem;
+    background: none;
 
     button {
       width: 10rem;

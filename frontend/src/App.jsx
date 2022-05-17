@@ -121,15 +121,15 @@ function App() {
         <Route element={<PrivateRoute isLoggedIn={!!userInfo} />}>
           <Route path="/map" element={<Map />} />
           <Route path="/chatRoom" element={<ChatRoom />} />
+          <Route path="/moim/:moimId" element={<MoimDetail />} />
+          <Route path="/moim/:moimId/member" element={<ManageMember />} />
+          <Route path="/moim/:moimId/evaluation" element={<EvaluateMoim />} />
           <Route element={<Footer />}>
             <Route path="/" element={<Home />} />
             <Route path="/community" element={<Community />} />
             <Route path="/community/form" element={<CommunityForm />} />
             <Route path="/mymoim" element={<MyMoim />} />
             <Route path="/moim/form" element={<MoimForm />} />
-            <Route path="/moim/:moimId" element={<MoimDetail />} />
-            <Route path="/moim/:moimId/member" element={<ManageMember />} />
-            <Route path="/moim/:moimId/evaluation" element={<EvaluateMoim />} />
             <Route path="/mypage/:userPk" element={<MyPage />} />
             <Route
               path="/mypage/:userPk/liked-restaurants"
