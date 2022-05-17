@@ -17,6 +17,8 @@ export async function updateFeed(feedId, data) {
   const response = await apiInstance.post(
     `/greenmates/community/feed/${feedId}`,
     data,
+  );
+  return response.data;
 }
 
 // 피드 삭제
