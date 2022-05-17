@@ -5,7 +5,6 @@ import Avatar from '@mui/material/Avatar';
 import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
-import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { red } from '@mui/material/colors';
@@ -14,7 +13,6 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import InsertCommentIcon from '@mui/icons-material/InsertComment';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PropTypes from 'prop-types';
-import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -26,18 +24,33 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
 import Button from '@mui/material/Button';
 import FeedImageCarousel from './FeedIamgeCarousel';
-import { postLike, getFeedTrans, getCommentList } from '../../api/community';
+import {
+  postLike,
+  getFeedTrans,
+  getCommentList,
+  deleteFeed,
+} from '../../api/community';
 import vegan from '../../assets/vegan-icon.png';
 import lacto from '../../assets/lacto-icon.png';
 import ovo from '../../assets/ovo-icon.png';
 import lactoOvo from '../../assets/lacto-ovo-icon.png';
 import pesco from '../../assets/pesco-icon.png';
 import polo from '../../assets/polo-icon.png';
+import useUserInfo from '../../hooks/useUserInfo';
 
 const Trans = styled.div`
   cursor: pointer;
   font-size: 5px;
   color: lightgrey;
+`;
+const Setting = styled.div`
+  position: absolute;
+  left: 500px;
+  z-index: 1;
+  width: 10%;
+  background-color: #fff;
+  border-radius: 10px;
+  filter: drop-shadow(0 -1px 4px rgba(0, 0, 0, 0.25));
 `;
 
 function SimpleDialog(props) {
@@ -108,6 +121,7 @@ function Feed({ feed }) {
     5: pesco,
     6: polo,
   };
+  const userInfo = useUserInfo();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -135,7 +149,6 @@ function Feed({ feed }) {
     };
     getComments();
   }, []);
-  console.log(comments);
   const handleSetiing = () => {
     setIsSetting(!isSetting);
   };
@@ -145,11 +158,14 @@ function Feed({ feed }) {
         avatar={
           <Avatar src={vegeType[feed.vege_type]} alt={feed.author.nickname} />
         }
-        // TODO: 수정/삭제 기능 넣기
         action={
-          <IconButton>
-            <MoreVertIcon onClick={handleSetiing} />
-          </IconButton>
+          feed.author.id === userInfo.id ? (
+            <IconButton>
+              <MoreVertIcon onClick={handleSetiing} />
+            </IconButton>
+          ) : (
+            <div />
+          )
         }
         title={feed.author.nickname}
         subheader={
@@ -160,30 +176,30 @@ function Feed({ feed }) {
           `${feed.created_at.substr(8, 2)}일`
         }
       />
-      <Collapse in={isSetting}>
-        <Box
-          sx={{
-            width: '100%',
-            maxWidth: 360,
-            bgcolor: 'background.paper',
-          }}
-        >
-          <nav aria-label="secondary mailbox folders">
-            <List>
-              <ListItem disablePadding>
-                <ListItemButton>
-                  <ListItemText primary="Trash" />
-                </ListItemButton>
-              </ListItem>
-              <ListItem disablePadding>
-                <ListItemButton component="a" href="#simple-list">
-                  <ListItemText primary="Spam" />
-                </ListItemButton>
-              </ListItem>
-            </List>
-          </nav>
-        </Box>
-      </Collapse>
+      {isSetting ? (
+        <Setting>
+          <List>
+            <ListItem disablePadding>
+              <ListItemButton>
+                <ListItemText primary="수정" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton>
+                <ListItemText
+                  primary="삭제"
+                  onClick={() => {
+                    deleteFeed(feed.id);
+                  }}
+                />
+              </ListItemButton>
+            </ListItem>
+          </List>
+        </Setting>
+      ) : (
+        <div />
+      )}
+
       <CardMedia>
         <FeedImageCarousel props={feed.img_paths} />
       </CardMedia>
