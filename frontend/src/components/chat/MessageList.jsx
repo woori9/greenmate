@@ -7,7 +7,7 @@ const StyledMessageList = styled.ul`
   list-style: none;
   padding: 0;
   margin: 0;
-  padding-bottom: 4rem;
+  padding-bottom: 5rem;
 `;
 
 function MessageList({ messages, userId }) {
