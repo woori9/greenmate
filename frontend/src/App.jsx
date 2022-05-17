@@ -77,7 +77,21 @@ function App() {
     let unsubscribe;
 
     if (notificationStatus === 'default') {
-      Notification.requestPermission();
+      try {
+        window.Notification.requestPermission();
+      } catch (error) {
+        if (error instanceof TypeError) {
+          console.log('safari');
+          window.Notification.requestPermission(permission => {
+            if (permission !== 'granted') {
+              // eslint-disable-next-line no-alert
+              alert('알림을 받으시려면 설정에서 알림 권한을 허용해주세요.');
+            }
+          });
+        } else {
+          console.error(error);
+        }
+      }
     }
 
     if (notificationStatus === 'granted') {
