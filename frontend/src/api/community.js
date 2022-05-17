@@ -17,6 +17,12 @@ export async function updateFeed(feedId, data) {
   const response = await apiInstance.post(
     `/greenmates/community/feed/${feedId}`,
     data,
+}
+
+// 피드 삭제
+export async function deleteFeed(feedId) {
+  const response = await apiInstance.delete(
+    `/greenmates/community/feed/${feedId}`,
   );
   return response.data;
 }
@@ -28,6 +34,8 @@ export async function getCommentList(feedId) {
   );
   return response.data;
 }
+
+// 댓글 삭제
 
 // 좋아요 등록
 export async function postLike(feedId) {

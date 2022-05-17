@@ -31,13 +31,12 @@ function formatChatDateTime(datetime) {
 
   pastDateTime.format();
   if (userInfo.language === 0) {
-    return `${pastDateTime.today.get('month') + 1}월 ${pastDateTime.today.get(
-      'date',
-    )}일`;
+    return `${pastDateTime.get('month') + 1}월 ${pastDateTime.get('date')}일`;
   }
-  return `${pastDateTime.today.get('date')}/${
-    pastDateTime.today.get('month') + 1
-  }/${pastDateTime.today.get('year')}`;
+
+  return `${pastDateTime.get('date')}/${
+    pastDateTime.get('month') + 1
+  }/${pastDateTime.get('year')}`;
 }
 
 export { formattedDatetime, formatChatDateTime };

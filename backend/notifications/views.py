@@ -95,13 +95,14 @@ def send_moim_chat_alirm(request, moim_id):
     if not tokens:
         return Response(data='메시지 보낼 사람이 없습니다.', status=HTTP_204_NO_CONTENT)
     
-    # Send Message & Create Alirm
+    # Create Alirm & Send Message
     moim_title = moim.title
     body = f'[{moim_title[:6]}…] {user.nickname}님이 메시지를 보냈습니다.'
 
+    users = FirebaseToken.objects.filter(user__mate__moim_id=moim_id).values_list('user', flat=True).exclude(user=user).distinct()
+    create_multiple_alirm(list(users), 1, moim_title, body, user.pk)
+    
     if send_message(list(tokens), body):
-        users = FirebaseToken.objects.filter(user__mate__moim_id=moim_id).values_list('user', flat=True).exclude(user=user).distinct()
-        create_multiple_alirm(list(users), 1, moim_title, body, user.pk)
         return Response(status=HTTP_200_OK)
     return Response(status=HTTP_403_FORBIDDEN)
 
@@ -135,10 +136,10 @@ def send_personal_chat_alirm(request, user_id):
     if str(you.pk) in activated_users:
         return Response(data='활성화 상태의 사용자 입니다.', status=HTTP_204_NO_CONTENT)
 
-    # Send Message & Create Alirm
+    # Create Alirm & Send Message
     body = f'{me.nickname}님이 메시지를 보냈습니다.'
+    create_single_alirm(you.pk, 0, me.nickname, body, me.pk)
     if send_message(list(tokens), body):
-        create_single_alirm(you.pk, 0, me.nickname, body, me.pk)
         return Response(status=HTTP_200_OK)
 
     return Response(status=HTTP_403_FORBIDDEN)
