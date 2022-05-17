@@ -7,9 +7,9 @@ now = datetime.datetime.now()
 
 def make_messages(tokens, body):
     if tokens:
-        if send_message(list(tokens), body):
-            users_list = tokens.values_list('user', flat=True).distinct()
-            create_multiple_alirm(users_list, 2, '모임 자동 취소', body, users_list[0])
+        users_list = tokens.values_list('user', flat=True).distinct()
+        create_multiple_alirm(users_list, 2, '모임 자동 취소', body, users_list[0])
+        send_message(list(tokens), body)
 
 def update_status():
     '''
