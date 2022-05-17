@@ -13,9 +13,9 @@ import DesktopNavbar from '../components/common/navbar/DesktopNavbar';
 import GoBackBar from '../components/common/GoBackBar';
 import UserInfo from '../components/moim/UserInfo';
 import ProfileImage from '../components/common/ProfileImage';
-import ConfirmDeleteMoim from '../components/moim/ConfirmDeleteMoim';
+import DesktopConfirmDeleteMoim from '../components/moim/confirmDelete/DesktopConfirmDeleteMoim';
+import MobileConfirmDeleteMoim from '../components/moim/confirmDelete/MobileConfirmDeleteMoim';
 import { openSheetAtom } from '../atoms/bottomSheet';
-import { userInfoAtom } from '../atoms/accounts';
 import { formattedDatetime } from '../utils/formattedDate';
 import { diff2hour } from '../utils/timestamp';
 import {
@@ -27,7 +27,6 @@ import {
 } from '../api/moim';
 import { snakeToCamel } from '../utils/formatKey';
 import useWindowDimensions from '../utils/windowDimension';
-
 import useUserInfo from '../hooks/useUserInfo';
 
 const Container = styled.div`
@@ -95,6 +94,7 @@ const DeleteBtn = styled.button`
   height: 30px;
   border: none;
   background: none;
+  cursor: pointer;
 `;
 
 const DataList = styled.dl`
@@ -203,9 +203,10 @@ function MoimDetail() {
     time: null,
   });
   const [translation, setTranslation] = useState('');
+  const [toggleTranslation, setToggleTranslation] = useState(false);
   const [needUpdate, setNeedUpdate] = useState(0);
   const [, setOpen] = useAtom(openSheetAtom);
-  const [userInfo] = useAtom(userInfoAtom);
+  const userInfo = useUserInfo();
   const { moimId } = useParams();
   const location = useLocation();
   const { moim } = location.state;
@@ -296,23 +297,32 @@ function MoimDetail() {
         {userInfo.id === moimInfo.author.id &&
           diff2hour(moimInfo.time, new Date()) &&
           moimInfo.nowCnt === 1 && (
-            <DeleteBtn
-              type="button"
-              onClick={() => {
-                setOpen({
-                  open: true,
-                  component: (
-                    <ConfirmDeleteMoim mateId={moimInfo.mates[0].id} />
-                  ),
-                });
-              }}
-            >
-              <DeleteIcon
-                sx={{
-                  color: '#a9a9a9',
+            <>
+              <DeleteBtn
+                type="button"
+                onClick={() => {
+                  if (width > 1024) {
+                    document.querySelector('#dialog').showModal();
+                  } else {
+                    setOpen({
+                      open: true,
+                      component: (
+                        <MobileConfirmDeleteMoim
+                          mateId={moimInfo.mates[0].id}
+                        />
+                      ),
+                    });
+                  }
                 }}
-              />
-            </DeleteBtn>
+              >
+                <DeleteIcon
+                  sx={{
+                    color: '#a9a9a9',
+                  }}
+                />
+              </DeleteBtn>
+              <DesktopConfirmDeleteMoim mateId={moimInfo.mates[0].id} />
+            </>
           )}
       </GoBackBar>
       <OrangeBack />
@@ -353,7 +363,7 @@ function MoimDetail() {
                   })
                 }
               >
-                지도 보기
+                {userInfo.language !== 0 ? 'View map' : '지도 보기'}
               </button>
             </dd>
             <dd>{moimInfo.restaurant.address}</dd>
@@ -376,20 +386,36 @@ function MoimDetail() {
             </dd>
             <dd>{moimInfo.content}</dd>
           </div>
-          {useUserInfo.language !== 0 && (
+          {userInfo.language !== 0 && !toggleTranslation && (
             <button
               type="button"
               className="mini-btn translate-btn"
               onClick={() => {
-                getMoimContentTranslation(moimInfo.id, res => {
-                  setTranslation(res.data.content_trans);
-                });
+                if (translation.length === 0) {
+                  getMoimContentTranslation(moimInfo.id, res => {
+                    setTranslation(res.data.content_trans);
+                  });
+                }
+                setToggleTranslation(prev => !prev);
               }}
             >
-              번역 보기
+              See translation
             </button>
           )}
-          <dd className="translation-txt">{translation}</dd>
+          {userInfo.language !== 0 && toggleTranslation && (
+            <button
+              type="button"
+              className="mini-btn translate-btn"
+              onClick={() => {
+                setToggleTranslation(prev => !prev);
+              }}
+            >
+              Collapse translation
+            </button>
+          )}
+          {toggleTranslation && (
+            <dd className="translation-txt">{translation}</dd>
+          )}
         </div>
       </DataList>
 

@@ -13,9 +13,11 @@ import { categoryAtom } from '../../atoms/moim';
 import { getMoimDetail } from '../../api/moim';
 import { snakeToCamel } from '../../utils/formatKey';
 import useWindowDimensions from '../../utils/windowDimension';
+import useUserInfo from '../../hooks/useUserInfo';
 
 const Card = styled.div`
   margin-top: 1rem;
+  transition: all 0.2s ease-in-out;
 
   ${props =>
     props.hasBorder
@@ -26,10 +28,6 @@ const Card = styled.div`
           border: 1px solid #a9a9a9;
           border-radius: 15px;
           margin: 0.5rem;
-
-          &:first-child {
-            margin-left: 0;
-          }
         `
       : css`
           &:not(:last-child) {
@@ -44,6 +42,11 @@ const Card = styled.div`
     border: 2px solid #92c769;
     border-radius: 50px;
     margin-left: 0.5rem;
+  }
+
+  &:hover {
+    transform: scale(1.03);
+    cursor: pointer;
   }
 `;
 
@@ -72,7 +75,14 @@ const ProfileWithInfo = styled.div`
 
 function MoimCard({ moimInfo, setNeedUpdate, showStatus }) {
   const navigate = useNavigate();
+  const userInfo = useUserInfo();
   const moimStatus = ['모집 중', '모집 완료', '모집 취소', '모임 종료'];
+  const moimStatusEng = [
+    'Open',
+    'Recruitment complete',
+    'Recruitment cancelled',
+    'Finished',
+  ];
   const [selectedCategory] = useAtom(categoryAtom);
   const { width } = useWindowDimensions();
 
@@ -101,7 +111,13 @@ function MoimCard({ moimInfo, setNeedUpdate, showStatus }) {
         tabIndex="0"
       >
         {showStatus && (
-          <span className="status-text">{moimStatus[moimInfo.status]}</span>
+          <span className="status-text">
+            {
+              (userInfo.language === 0 ? moimStatus : moimStatusEng)[
+                moimInfo.status
+              ]
+            }
+          </span>
         )}
         <ProfileWithInfo>
           <ProfileImage vegeType={moimInfo.author.vegeType} isBig />
