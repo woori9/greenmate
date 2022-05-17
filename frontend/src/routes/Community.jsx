@@ -3,9 +3,19 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-// import ResponsiveNavbar from '../components/common/navbar/ResponsiveNavbar';
+import styled from 'styled-components';
+import ResponsiveNavbar from '../components/common/navbar/ResponsiveNavbar';
 import FloatingActionBtn from '../components/common/FloatingActionBtn';
 import Feeds from '../components/community/Feeds';
+
+const Container = styled.div`
+  padding: 5rem 1rem 5rem 1rem;
+
+  @media screen and (min-width: 1025px) {
+    margin: 60px 17rem 0 calc(130px + 17rem);
+    padding: 3rem;
+  }
+`;
 
 function Community() {
   const [category, setCategory] = useState(0);
@@ -19,11 +29,8 @@ function Community() {
 
   return (
     <>
-      <div>
-        <FormControl
-          variant="standard"
-          sx={{ mt: 5, ml: 3, mr: 3, minWidth: 120 }}
-        >
+      <Container>
+        <FormControl variant="standard" sx={{ ml: 3, mr: 3, minWidth: 120 }}>
           <InputLabel id="category">카테고리</InputLabel>
           <Select
             labelId="category"
@@ -39,7 +46,7 @@ function Community() {
             <MenuItem value={4}>레시피</MenuItem>
           </Select>
         </FormControl>
-        <FormControl variant="standard" sx={{ mt: 5, minWidth: 120 }}>
+        <FormControl variant="standard" sx={{ minWidth: 120 }}>
           <InputLabel id="vegeType">채식 타입</InputLabel>
           <Select
             labelId="vegeType"
@@ -57,9 +64,9 @@ function Community() {
             <MenuItem value={6}>폴로</MenuItem>
           </Select>
         </FormControl>
-      </div>
+      </Container>
       <Feeds categoryValue={category} vegeTypeValue={vegeType} />
-      {/* <ResponsiveNavbar /> */}
+      <ResponsiveNavbar />
       <FloatingActionBtn isForMoim={false} />
     </>
   );
