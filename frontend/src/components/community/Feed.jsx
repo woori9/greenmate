@@ -22,13 +22,15 @@ import styled from 'styled-components';
 import Stack from '@mui/material/Stack';
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
+import SendIcon from '@mui/icons-material/Send';
 import Button from '@mui/material/Button';
 import FeedImageCarousel from './FeedIamgeCarousel';
 import {
-  postLike,
-  getFeedTrans,
-  getCommentList,
+  postFeedLike,
   deleteFeed,
+  getCommentList,
+  createComment,
+  getFeedTrans,
 } from '../../api/community';
 import vegan from '../../assets/vegan-icon.png';
 import lacto from '../../assets/lacto-icon.png';
@@ -45,44 +47,104 @@ const Trans = styled.div`
 `;
 const Setting = styled.div`
   position: absolute;
-  left: 500px;
+  right: 0;
   z-index: 1;
-  width: 10%;
+  width: 20%;
   background-color: #fff;
   border-radius: 10px;
   filter: drop-shadow(0 -1px 4px rgba(0, 0, 0, 0.25));
 `;
+const Container = styled.div`
+  padding: 20px;
+
+  .small-font {
+    font-size: 12px;
+  }
+
+  .margin {
+    margin-bottom: 1rem;
+  }
+`;
 
 function SimpleDialog(props) {
-  const { onClose, open, comments } = props;
+  const {
+    onClose,
+    open,
+    comments,
+    nowFeedId,
+    setUseUpdate,
+    userInfoId,
+    vegeType,
+  } = props;
+  const [commentData, setCommentData] = useState('');
 
   const handleClose = () => {
     onClose();
   };
+  const handleSubmit = event => {
+    if (event.keyCode === 13 && commentData.length > 0) {
+      const feedId = nowFeedId;
+      const data = { content: commentData };
+      createComment({ feedId, data });
+      setUseUpdate(prev => prev + 1);
+      // eslint-disable-next-line no-param-reassign
+      event.target.value = '';
+    }
+  };
+  console.log(comments[0]);
 
   return (
     <Dialog onClose={handleClose} open={open}>
       <DialogTitle sx={{ m: 'auto' }}>댓글</DialogTitle>
-      {comments.length === 0 ? (
-        <span>댓글이 없습니다.</span>
-      ) : (
-        <div>
-          {comments.map(comment => (
-            <div key={comment.id}>
-              <Avatar>{comment.nickname}</Avatar>
-              <p>{comment.nickname}</p>
-              <p>
-                {`${comment.created_at.substr(0, 4)}년` +
-                  ' ' +
-                  `${comment.created_at.substr(5, 2)}월` +
-                  ' ' +
-                  `${comment.created_at.substr(8, 2)}일`}
-              </p>
-              <p>{comment.content}</p>
-            </div>
-          ))}
-        </div>
-      )}
+      <Container>
+        {comments.length === 0 ? (
+          <span>댓글이 없습니다.</span>
+        ) : (
+          <div>
+            {comments.map(comment => (
+              <div key={comment.id} className="margin">
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  sx={{ mb: 1 }}
+                >
+                  <Stack direction="row" alignItems="center">
+                    <Avatar
+                      src={vegeType[comment.vege_type]}
+                      alt={comment.nickname}
+                      sx={{ mr: 1, width: 24, height: 24 }}
+                    />
+                    <h4>{comment.nickname}</h4>
+                    <span>{comment.content}</span>
+                    <span className="small-font">
+                      {`${comment.created_at.substr(0, 4)}년` +
+                        ' ' +
+                        `${comment.created_at.substr(5, 2)}월` +
+                        ' ' +
+                        `${comment.created_at.substr(8, 2)}일`}
+                    </span>
+                  </Stack>
+                  {userInfoId === comment.author ? (
+                    <Button variant="text">삭제</Button>
+                  ) : (
+                    <Button disabled />
+                  )}
+                </Stack>
+              </div>
+            ))}
+          </div>
+        )}
+        <Stack direction="row" alignItems="center" sx={{ mt: 3, mb: 3 }}>
+          <SendIcon sx={{ fs: 'large', mr: 2 }} />
+          <Input
+            sx={{ width: '90%' }}
+            placeholder="댓글을 입력해주세요."
+            onChange={event => setCommentData(event.target.value)}
+            onKeyUp={event => handleSubmit(event)}
+          />
+        </Stack>
+      </Container>
     </Dialog>
   );
 }
@@ -103,16 +165,21 @@ SimpleDialog.propTypes = {
       updated_at: PropTypes.string,
     }),
   ),
+  nowFeedId: PropTypes.number,
+  setUseUpdate: PropTypes.func,
+  userInfoId: PropTypes.number,
+  vegeType: PropTypes.objectOf(PropTypes.string),
 }.isRequired;
 
-function Feed({ feed }) {
-  const [expanded, setExpanded] = useState(false);
+function Feed({ feed, setNeedUpdate }) {
   const [isLike, setIsLike] = useState(feed.is_like);
   const [isSetting, setIsSetting] = useState(false);
-  const [isTrans, setIsTrans] = useState(false);
+  const [isFeedTrans, setIsFeedTrans] = useState(false);
   const [feedTrans, setFeedTrans] = useState('');
   const [comments, setComments] = useState([]);
   const [open, setOpen] = useState(false);
+  const [commentData, setCommentData] = useState('');
+  const [useUpdate, setUseUpdate] = useState(1);
   const vegeType = {
     1: vegan,
     2: lacto,
@@ -130,11 +197,8 @@ function Feed({ feed }) {
   const handleClose = () => {
     setOpen(false);
   };
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
   const handleLike = feedId => {
-    postLike(feedId);
+    postFeedLike(feedId);
     setIsLike(!isLike);
   };
   useEffect(() => {
@@ -148,12 +212,22 @@ function Feed({ feed }) {
       setComments(resData);
     };
     getComments();
-  }, []);
+  }, [useUpdate]);
   const handleSetiing = () => {
     setIsSetting(!isSetting);
   };
+  const handleSubmit = event => {
+    if (event.keyCode === 13 && commentData.length > 0) {
+      const feedId = feed.id;
+      const data = { content: commentData };
+      createComment({ feedId, data });
+      setUseUpdate(prev => prev + 1);
+      // eslint-disable-next-line no-param-reassign
+      event.target.value = '';
+    }
+  };
   return (
-    <Card sx={{ mb: 7, maxWidth: 500 }}>
+    <Card sx={{ mb: 7, width: 500, position: 'relative' }}>
       <CardHeader
         avatar={
           <Avatar src={vegeType[feed.vege_type]} alt={feed.author.nickname} />
@@ -167,7 +241,7 @@ function Feed({ feed }) {
             <div />
           )
         }
-        title={feed.author.nickname}
+        title={<h4>{feed.author.nickname}</h4>}
         subheader={
           `${feed.created_at.substr(0, 4)}년` +
           ' ' +
@@ -190,6 +264,7 @@ function Feed({ feed }) {
                   primary="삭제"
                   onClick={() => {
                     deleteFeed(feed.id);
+                    setNeedUpdate(prev => prev + 1);
                   }}
                 />
               </ListItemButton>
@@ -215,12 +290,12 @@ function Feed({ feed }) {
             <FavoriteBorderIcon sx={{ color: red[400] }} />
           )}
         </IconButton>
-        <IconButton onClick={handleExpandClick}>
+        <IconButton onClick={handleClickOpen}>
           <InsertCommentIcon />
         </IconButton>
       </CardActions>
       <CardContent>
-        {isTrans ? (
+        {isFeedTrans ? (
           <Typography variant="body2" color="text.secondary">
             <Stack
               direction="row"
@@ -228,7 +303,9 @@ function Feed({ feed }) {
               alignItems="center"
             >
               <span>{feedTrans.content_trans}</span>
-              <Trans onClick={() => setIsTrans(!isTrans)}>원문보기</Trans>
+              <Trans onClick={() => setIsFeedTrans(!isFeedTrans)}>
+                원문보기
+              </Trans>
             </Stack>
           </Typography>
         ) : (
@@ -239,21 +316,99 @@ function Feed({ feed }) {
               alignItems="center"
             >
               <span>{feed.content}</span>
-              <Trans onClick={() => setIsTrans(!isTrans)}>번역보기</Trans>
+              <Trans onClick={() => setIsFeedTrans(!isFeedTrans)}>
+                번역보기
+              </Trans>
             </Stack>
           </Typography>
         )}
-        <Button variant="text" onClick={handleClickOpen}>
-          더보기
-        </Button>
-        <Input />
+        {comments.length >= 2 ? (
+          <div>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              sx={{ mt: 1, mb: 1 }}
+            >
+              <Stack direction="row" alignItems="center">
+                <Avatar
+                  src={vegeType[comments[0].vege_type]}
+                  alt={comments[0].nickname}
+                  sx={{ mr: 1, width: 24, height: 24 }}
+                />
+                <h4>{comments[0].nickname}</h4>
+                <span>{comments[0].content}</span>
+                <span className="small-font">
+                  {`${comments[0].created_at.substr(0, 4)}년` +
+                    ' ' +
+                    `${comments[0].created_at.substr(5, 2)}월` +
+                    ' ' +
+                    `${comments[0].created_at.substr(8, 2)}일`}
+                </span>
+              </Stack>
+              {userInfo.id === comments[0].author ? (
+                <Button variant="text">삭제</Button>
+              ) : (
+                <Button disabled />
+              )}
+            </Stack>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              sx={{ mb: 1 }}
+            >
+              <Stack direction="row" alignItems="center">
+                <Avatar
+                  src={vegeType[comments[1].vege_type]}
+                  alt={comments[1].nickname}
+                  sx={{ mr: 1, width: 24, height: 24 }}
+                />
+                <h4>{comments[1].nickname}</h4>
+                <span>{comments[1].content}</span>
+                <span className="small-font">
+                  {`${comments[1].created_at.substr(0, 4)}년` +
+                    ' ' +
+                    `${comments[1].created_at.substr(5, 2)}월` +
+                    ' ' +
+                    `${comments[1].created_at.substr(8, 2)}일`}
+                </span>
+              </Stack>
+              {userInfo.id === comments[1].author ? (
+                <Button variant="text">삭제</Button>
+              ) : (
+                <Button disabled />
+              )}
+            </Stack>
+          </div>
+        ) : (
+          <div />
+        )}
+        <Stack direction="row" alignItems="center" sx={{ mt: 3 }}>
+          <SendIcon sx={{ fs: 'large', mr: 2 }} />
+          <Input
+            sx={{ width: '90%' }}
+            placeholder="댓글을 입력해주세요."
+            onChange={event => setCommentData(event.target.value)}
+            onKeyUp={event => handleSubmit(event)}
+          />
+        </Stack>
       </CardContent>
-      <SimpleDialog open={open} onClose={handleClose} comments={comments} />
+      <SimpleDialog
+        open={open}
+        onClose={handleClose}
+        comments={comments}
+        nowFeedId={feed.id}
+        setUseUpdate={setUseUpdate}
+        userInfoId={userInfo.id}
+        vegeType={vegeType}
+      />
     </Card>
   );
 }
 
 Feed.propTypes = {
+  setNeedUpdate: PropTypes.func.isRequired,
   feed: PropTypes.shape({
     author: PropTypes.shape({
       id: PropTypes.number,
