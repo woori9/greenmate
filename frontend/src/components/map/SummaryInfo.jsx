@@ -1,5 +1,6 @@
 import { useAtom } from 'jotai';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import CloseIcon from '@mui/icons-material/Close';
@@ -16,7 +17,9 @@ import {
 
 const CloseButton = styled.div`
   text-align: end;
-  cursor: pointer;
+  .icon {
+    cursor: pointer;
+  }
 `;
 const Summary = styled.div`
   display: flex;
@@ -26,13 +29,16 @@ const SummaryBox = styled.div``;
 const BookMark = styled.div`
   align-self: center;
   margin-right: 10px;
+  cursor: pointer;
   .bookmark {
     font-size: 30px;
     color: #fcb448;
   }
 `;
+const BoxLetsEat = styled.div``;
 
 function SummaryInfo({ getMapwithCommand }) {
+  const navigate = useNavigate();
   const [, setPageStatus] = useAtom(pageStatusAtom);
   const [newSearchResult] = useAtom(searchResultsAtom);
   const [summaryRestau, setSummaryRestau] = useAtom(summaryRestauAtom);
@@ -48,6 +54,7 @@ function SummaryInfo({ getMapwithCommand }) {
     <>
       <CloseButton>
         <CloseIcon
+          className="icon"
           onClick={() => {
             if (newSearchResult.length) {
               setPageStatus('searchLst');
@@ -71,7 +78,18 @@ function SummaryInfo({ getMapwithCommand }) {
           )}
         </BookMark>
       </Summary>
-      <ButtonLetsEat />
+      <BoxLetsEat
+        onClick={() =>
+          navigate('/', {
+            state: {
+              inputRestauName: summaryRestau.res_info.name,
+              inputRestauPk: summaryRestau.id,
+            },
+          })
+        }
+      >
+        <ButtonLetsEat />
+      </BoxLetsEat>
     </>
   );
 }

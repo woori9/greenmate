@@ -100,7 +100,8 @@ const VegeTypeBox = styled.div`
     width: 60%;
   }
   p {
-    font-size: 10px;
+    font-size: 0.7rem;
+    white-space: nowrap;
     color: ${props => (props.selected ? '#fcb448' : 'black')};
   }
   :hover {

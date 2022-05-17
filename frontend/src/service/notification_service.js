@@ -1,6 +1,5 @@
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import app from './firebase';
-import { saveNotification } from './chat_service';
 import { sendToken } from '../api/notification';
 
 const messaging = getMessaging(app);
@@ -23,10 +22,9 @@ export const checkToken = async setTokenId => {
   }
 };
 
-export const onMessageListener = userId => {
+export const onMessageListener = () => {
   return onMessage(messaging, payload => {
     const { data } = payload;
     console.log('Foreground Message', data);
-    saveNotification(userId, data);
   });
 };

@@ -50,6 +50,7 @@ const RestaurantInfo = styled.div`
     }
   }
   .restaurant-address {
+    white-space: pre-line;
     p {
       color: #a9a9a9;
       font-size: 10px;
