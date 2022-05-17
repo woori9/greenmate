@@ -31,6 +31,8 @@ import { deleteToken } from './api/notification';
 import useUserInfo from './hooks/useUserInfo';
 import PrivateRoute from './routes/PrivateRoute';
 import Notification from './routes/Notification';
+import useNotificationList from './hooks/useNotificationList';
+import Footer from './components/common/Footer';
 
 const initialAlarmState = {
   open: false,
@@ -53,6 +55,7 @@ function App() {
   });
 
   const { open, message, vertical, horizontal } = alarm;
+  const { setNotifications } = useNotificationList();
 
   const handleOpenSnackbar = body => {
     const { pathname } = window.location;
@@ -75,12 +78,26 @@ function App() {
     let unsubscribe;
 
     if (notificationStatus === 'default') {
-      Notification.requestPermission();
+      try {
+        window.Notification.requestPermission();
+      } catch (error) {
+        if (error instanceof TypeError) {
+          console.log('safari');
+          window.Notification.requestPermission(permission => {
+            if (permission !== 'granted') {
+              // eslint-disable-next-line no-alert
+              alert('알림을 받으시려면 설정에서 알림 권한을 허용해주세요.');
+            }
+          });
+        } else {
+          console.error(error);
+        }
+      }
     }
 
     if (notificationStatus === 'granted') {
       checkToken(setTokenId);
-      unsubscribe = onMessageListener(handleOpenSnackbar);
+      unsubscribe = onMessageListener(handleOpenSnackbar, setNotifications);
     }
 
     if (notificationStatus !== 'granted' && tokenId !== null) {
@@ -102,41 +119,43 @@ function App() {
         />
         <Route path="/signup" element={<Signup />} />
         <Route element={<PrivateRoute isLoggedIn={!!userInfo} />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/community" element={<Community />} />
-          <Route path="/community/form" element={<CommunityForm />} />
           <Route path="/map" element={<Map />} />
-          <Route path="/mymoim" element={<MyMoim />} />
-          <Route path="/moim/form" element={<MoimForm />} />
-          <Route path="/moim/:moimId" element={<MoimDetail />} />
-          <Route path="/moim/:moimId/member" element={<ManageMember />} />
-          <Route path="/moim/:moimId/evaluation" element={<EvaluateMoim />} />
-          <Route path="/mypage/:userPk" element={<MyPage />} />
-          <Route
-            path="/mypage/:userPk/liked-restaurants"
-            element={<MyPageLikedRestaurants />}
-          />
-          <Route
-            path="/mypage/:userPk/liked-feeds"
-            element={<MyPageLikedFeeds />}
-          />
-          <Route
-            path="/mypage/:userPk/liked-reviews"
-            element={<MyPageLikedReview />}
-          />
-          <Route
-            path="/mypage/:userPk/evaluation"
-            element={<MyPageEvaluation />}
-          />
-          <Route
-            path="/mypage/:userPk/my-reviews"
-            element={<MyPageReviews />}
-          />
-          <Route path="/mypage/:userPk/my-feeds" element={<MyPageFeeds />} />
-          <Route path="/mypage/:userPk/setting" element={<MyPageSetting />} />
-          <Route path="/chat" element={<Chat />} />
           <Route path="/chatRoom" element={<ChatRoom />} />
-          <Route path="/notification" element={<Notification />} />
+          <Route element={<Footer />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/community" element={<Community />} />
+            <Route path="/community/form" element={<CommunityForm />} />
+            <Route path="/mymoim" element={<MyMoim />} />
+            <Route path="/moim/form" element={<MoimForm />} />
+            <Route path="/moim/:moimId" element={<MoimDetail />} />
+            <Route path="/moim/:moimId/member" element={<ManageMember />} />
+            <Route path="/moim/:moimId/evaluation" element={<EvaluateMoim />} />
+            <Route path="/mypage/:userPk" element={<MyPage />} />
+            <Route
+              path="/mypage/:userPk/liked-restaurants"
+              element={<MyPageLikedRestaurants />}
+            />
+            <Route
+              path="/mypage/:userPk/liked-feeds"
+              element={<MyPageLikedFeeds />}
+            />
+            <Route
+              path="/mypage/:userPk/liked-reviews"
+              element={<MyPageLikedReview />}
+            />
+            <Route
+              path="/mypage/:userPk/evaluation"
+              element={<MyPageEvaluation />}
+            />
+            <Route
+              path="/mypage/:userPk/my-reviews"
+              element={<MyPageReviews />}
+            />
+            <Route path="/mypage/:userPk/my-feeds" element={<MyPageFeeds />} />
+            <Route path="/mypage/:userPk/setting" element={<MyPageSetting />} />
+            <Route path="/chat" element={<Chat />} />
+            <Route path="/notification" element={<Notification />} />
+          </Route>
         </Route>
       </Routes>
       <BottomSheetBase />

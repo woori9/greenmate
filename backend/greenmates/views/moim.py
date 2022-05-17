@@ -107,9 +107,15 @@ def get_update_moim_detail(request, moim_id):
             tokens = FirebaseToken.objects.filter(user__mate__moim_id=moim_id).values_list('registration_token', flat=True).exclude(user=user)
             body = f'[{moim.title[:6]}…] 모임 시간이 변경되었습니다.'
             if tokens:
+<<<<<<< HEAD
                 guests_list = moim.mate_set.values_list('user_id', flat=True).exclude(user_id=user.pk)
                 create_multiple_alirm(guests_list, 2, '모임 시간 수정', body, user.pk)
                 send_message(list(tokens), body)
+=======
+                if send_message(list(tokens), body):
+                    guests_list = moim.mate_set.values_list('user_id', flat=True).exclude(user_id=user.pk)
+                    create_multiple_alirm(guests_list, 2, '모임 시간 수정', body, user.pk)
+>>>>>>> 671f736a50e7c460c4e56f1c54b921973890ac48
             return Response(serializer.data)
 
     user = get_request_user(request)
@@ -245,5 +251,21 @@ def search_moim(request):
         .prefetch_related(
             Prefetch('restaurant__restaurantinfo_set',
             queryset=RestaurantInfo.objects.filter(language=user.language)))
+    serializer = MoimSimpleSerializer(moim_list, context={'user': user}, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def search_restaurant_moim(request, res_id):
+    '''
+    GET: {res_id} 식당과 관련된 모임 조회
+    '''
+    user = get_request_user(request)
+    if not user:
+        return Response(status=HTTP_401_UNAUTHORIZED)
+    elif user == 'EXPIRED_TOKEN':
+        return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
+    
+    moim_list = Moim.objects.filter(restaurant_id=res_id, status=0).order_by('time')
     serializer = MoimSimpleSerializer(moim_list, context={'user': user}, many=True)
     return Response(serializer.data)

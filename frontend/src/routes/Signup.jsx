@@ -107,7 +107,8 @@ const VegeTypeBox = styled.div`
     }
   }
   p {
-    font-size: 0.65rem;
+    font-size: 0.7rem;
+    white-space: nowrap;
     color: ${props => (props.selected ? '#fcb448' : 'black')};
   }
   cursor: pointer;
@@ -161,6 +162,8 @@ const DescriptionVegeTypeTitle = styled.div`
   }
   p {
     color: black;
+    font-size: 0.6rem;
+    white-space: nowrap;
   }
 `;
 const Button = styled.button`
@@ -179,7 +182,7 @@ const Button = styled.button`
 function Signup() {
   const navigate = useNavigate();
   const [userInfo] = useAtom(userInfoAtom);
-  const [newSentence, setNewSentence] = useState('');
+  const [newSentence, setNewSentence] = useState('오늘 시작한');
   const [newNickname, setNewNickname] = useState(userInfo.nickname);
   const [nicknameStatus, SetNicknameStatus] = useState(false);
   const [newVegeType, setVegeType] = useState(null);
@@ -230,9 +233,9 @@ function Signup() {
     {
       id: 6,
       title: '관심있어요',
-      sentence: '',
+      sentence: '플렉시테리언',
       icon: flexiIcon,
-      rule: '채식 + 우유 + 유제품',
+      rule: '채식 + 우유 + 유제품 + 난류 + 바다동물 + 가금류 + 동물',
     },
   ];
   function checkNickname(putNickname) {
@@ -296,10 +299,10 @@ function Signup() {
             <Page className="descript-page">
               {vegeTypeLst.map(type => {
                 return (
-                  <DescriptionVegeTypeContainer key={type.title}>
+                  <DescriptionVegeTypeContainer key={type.id}>
                     <DescriptionVegeTypeTitle>
                       <img src={type.icon} alt={type.id} />
-                      <p>{type.title}</p>
+                      <p>{type.sentence}</p>
                     </DescriptionVegeTypeTitle>
                     <p>{type.rule}</p>
                   </DescriptionVegeTypeContainer>
@@ -310,8 +313,8 @@ function Signup() {
           <VegeTypeLst>
             {vegeTypeLst.map(type => (
               <VegeTypeBox
+                key={type.id}
                 selected={newVegeType === type.id}
-                key={type.vegeType}
                 onClick={() => {
                   setNewSentence(type.sentence);
                   setVegeType(type.id);

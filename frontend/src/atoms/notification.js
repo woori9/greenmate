@@ -1,17 +1,32 @@
 import { atom } from 'jotai';
 
-const today = new Date().toLocaleDateString();
-const sampleData = [
-  {
-    id: '1',
-    title:
-      '타이틀타이틀타이틀타이틀타이틀타이이틀타이틀타이틀타이틀타이틀타이틀타이틀타이틀타이틀타이틀',
-    sentBy: '1',
-    createdAt: today,
-  },
-  { id: '2', title: '타이틀', sentBy: '2', createdAt: today },
-];
+const atomWithSessionStorage = (key, initialValue) => {
+  const getInitialValue = () => {
+    const item = sessionStorage.getItem('notifications');
+    if (item !== null) {
+      return JSON.parse(item);
+    }
+    return initialValue;
+  };
+  const baseAtom = atom(getInitialValue());
+  const derivedAtom = atom(
+    get => get(baseAtom),
+    (get, set, update) => {
+      const nextValue =
+        typeof update === 'function' ? update(get(baseAtom)) : update;
+      set(baseAtom, nextValue);
+      sessionStorage.setItem(key, JSON.stringify(nextValue));
+    },
+  );
+  return derivedAtom;
+};
+const notificationAtom = atomWithSessionStorage('notifications', []);
 
-const notificationAtom = atom(sampleData);
+const deleteNotificationAtom = atom(null, (get, set, id) =>
+  set(
+    notificationAtom,
+    get(notificationAtom).filter(notification => notification.id !== id),
+  ),
+);
 
-export default notificationAtom;
+export { notificationAtom, deleteNotificationAtom };

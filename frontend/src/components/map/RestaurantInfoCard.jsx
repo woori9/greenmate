@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import StarIcon from '@mui/icons-material/Star';
+import { useAtom } from 'jotai';
+import { userInfoAtom } from '../../atoms/accounts';
 
 const Container = styled.div`
   display: flex;
@@ -31,7 +33,7 @@ const VegeTypeLst = styled.div`
     justify-content: center;
     align-items: center;
     margin-right: 5px;
-    font-size: 10px;
+    font-size: 20%;
     color: #fff;
   }
 `;
@@ -50,6 +52,7 @@ const RestaurantInfo = styled.div`
     }
   }
   .restaurant-address {
+    white-space: pre-line;
     p {
       color: #a9a9a9;
       font-size: 10px;
@@ -70,6 +73,7 @@ const RestaurantRate = styled.div`
 `;
 
 function RestaurantInfoCard({ arrayResult }) {
+  const [userInfo] = useAtom(userInfoAtom);
   const categoryLst = [
     '한식',
     '양식',
@@ -82,6 +86,26 @@ function RestaurantInfoCard({ arrayResult }) {
     '카페',
     '베이커리',
   ];
+  const engCategoryLst = [
+    'Korean',
+    'Western',
+    'Japanese',
+    'Chinese',
+    'Bunsik',
+    'Southeast Asian',
+    'Indian/Middle Eastern',
+    'Pub',
+    'Cafe',
+    'Bakery',
+  ];
+  const returnCategory = idx => {
+    const langIdx = userInfo.language;
+    if (langIdx === 0) {
+      return categoryLst[idx];
+    }
+    return engCategoryLst[idx];
+  };
+
   const { category, score } = arrayResult;
   const restauImg = arrayResult.img_url;
   const { name, address } = arrayResult.res_info;
@@ -100,7 +124,7 @@ function RestaurantInfoCard({ arrayResult }) {
         <RestaurantInfo>
           <div className="restaurant-name">
             <p className="name">{name}</p>
-            <p className="category">{categoryLst[category]}</p>
+            <p className="category">{returnCategory(category)}</p>
           </div>
           <div className="restaurant-address">
             <p>{address}</p>

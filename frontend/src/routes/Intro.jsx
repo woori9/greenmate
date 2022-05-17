@@ -3,9 +3,10 @@ import Slider from 'react-slick';
 import styled from 'styled-components';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import carouselImage1 from '../assets/carousel-img1.png';
-import carouselImage2 from '../assets/carousel-img2.png';
-import carouselImage3 from '../assets/carousel-img3.png';
+import carouselImage1 from '../assets/intro-img1.png';
+import carouselImage2 from '../assets/intro-img2.png';
+import carouselImage3 from '../assets/intro-img3.png';
+import carouselImage4 from '../assets/intro-img4.png';
 
 const REDIRECT_URI = 'http://localhost:3000/oauth/callback/kakao';
 const KAKAO_URL = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${process.env.REACT_APP_REST_API_KEY}&redirect_uri=${REDIRECT_URI}`;
@@ -71,10 +72,11 @@ const SliderItem = styled.div`
     flex-direction: row;
   }
   img {
-    height: 16rem;
+    max-height: 16rem;
+    max-width: 16rem;
     margin: 2rem 0;
     @media screen and (min-width: 1025px) {
-      padding-right: 1rem;
+      margin-right: 2rem;
     }
   }
   .text-container {
@@ -161,7 +163,7 @@ const sliderItems = [
     </div>
   </>,
   <>
-    <img src={carouselImage3} alt="" />
+    <img src={carouselImage4} alt="" />
     <div className="text-container">
       <div className="title">
         <p>지속 가능한 채식 생활을 위한</p>

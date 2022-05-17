@@ -1,4 +1,6 @@
 import styled from 'styled-components';
+import { useAtom } from 'jotai';
+import { userInfoAtom } from '../../atoms/accounts';
 
 const Button = styled.button`
   width: 100%;
@@ -8,10 +10,15 @@ const Button = styled.button`
   border: none;
   border-radius: 10px;
   font-size: 15px;
+  cursor: pointer;
 `;
 
 function ButtonLetsEat() {
-  return <Button>같이 먹기</Button>;
+  const [userInfo] = useAtom(userInfoAtom);
+
+  return (
+    <Button>{userInfo.language === 0 ? '같이 먹기' : "Let's greenmate"}</Button>
+  );
 }
 
 export default ButtonLetsEat;
