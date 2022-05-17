@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { apiGetSearchRestau } from '../../api/map';
 import { snakeToCamel } from '../../utils/formatKey';
+import useUserInfo from '../../hooks/useUserInfo';
 
 const SearchContainer = styled.div`
   position: relative;
@@ -45,10 +46,11 @@ function RestaurantSearchForm({
 }) {
   const [isSearch, setIsSearch] = useState(false);
   const [searchResult, setSearchResult] = useState([]);
+  const [timer, setTimer] = useState(0);
+  const userInfo = useUserInfo();
 
   async function handleKeyUp(e) {
-    e.preventDefault();
-    if (e.keyCode === 13 && searchKeyword.length > 0) {
+    if (searchKeyword.length > 0) {
       setIsSearch(true);
       setSearchKeyword(e.target.value);
       apiGetSearchRestau({ keyword: searchKeyword }).then(res => {
@@ -62,20 +64,30 @@ function RestaurantSearchForm({
   return (
     <SearchContainer>
       <label htmlFor="restaurant" className="input-label">
-        장소
+        {userInfo.language === 0 ? '장소' : 'Restaurant'}
       </label>
       <div>
         <Input
           id="restaurant"
           name="restaurant"
           value={searchKeyword}
-          onChange={e => setSearchKeyword(e.target.value)}
+          onChange={e => {
+            setSearchKeyword(e.target.value);
+            if (timer) {
+              clearTimeout(timer);
+            }
+            const newTimer = setTimeout(() => {
+              handleKeyUp(e.target.value);
+            }, 1000);
+            setTimer(newTimer);
+          }}
           onKeyUp={event => handleKeyUp(event)}
           disabled={!!isForUpdate}
           margin="dense"
           startAdornment={<InputAdornment position="start">@</InputAdornment>}
           inputProps={{
             'aria-label': 'restaurant',
+            enterKeyHint: 'enter',
           }}
           sx={{
             width: '100%',
@@ -98,7 +110,11 @@ function RestaurantSearchForm({
                 </li>
               ))
             ) : (
-              <li>검색 결과가 없습니다.</li>
+              <li>
+                {userInfo.language === 0
+                  ? '검색 결과가 없습니다.'
+                  : 'There are no search results.'}
+              </li>
             )}
           </SearchList>
         )}
