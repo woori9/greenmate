@@ -73,21 +73,6 @@ class RestaurantMapSerializer(serializers.ModelSerializer):
         return data
 
 
-# 모임 글에 보일 식당 정보
-class RestaurantMoimDataSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Restaurant
-        exclude = ('category', 'call', 'like_users',)
-
-    def to_representation(self, instance):
-        response = super().to_representation(instance)    
-        data = RestaurantInfo.objects.filter(restaurant=instance.id, language=self.context['user'].language)[0]
-        response['id'] = data.restaurant.pk
-        response['name'] = data.name
-        response['address'] = data.address
-        return response
-
-
 class RestaurantLikeSerializer(serializers.ModelSerializer):
     img_url = serializers.SerializerMethodField()
 
