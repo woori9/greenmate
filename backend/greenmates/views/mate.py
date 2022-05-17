@@ -26,8 +26,8 @@ User = get_user_model()
 def make_massage(me, you, title, body):
     token = FirebaseToken.objects.filter(user=you).values_list('registration_token', flat=True)
     if token:
-        if send_message(list(token), body):
-            create_single_alirm(you.pk, 2, title, body, me.pk)
+        create_single_alirm(you.pk, 2, title, body, me.pk)
+        send_message(list(token), body)
 
 @api_view(['POST'])
 def apply_mate(request, moim_id):
