@@ -17,6 +17,7 @@ import {
   searchResultsAtom,
 } from '../../atoms/map';
 import { apiPostLikeRestau } from '../../api/map';
+import { userInfoAtom } from '../../atoms/accounts';
 
 const Container = styled.div`
   padding-bottom: 5rem;
@@ -112,6 +113,7 @@ function copyAddress(text) {
 function DetailInfo() {
   const { width } = useWindowDimensions();
   const navigate = useNavigate();
+  const [userInfo] = useAtom(userInfoAtom);
   const [newSearchResult] = useAtom(searchResultsAtom);
   const [summaryRestau, setSummaryRestau] = useAtom(summaryRestauAtom);
   const [detailRestau, setDetailRestau] = useAtom(detailRestauAtom);
@@ -163,7 +165,9 @@ function DetailInfo() {
           <div className="address-text">
             <p>{address}</p>
           </div>
-          <Button onClick={() => copyAddress(address)}>복사하기</Button>
+          <Button onClick={() => copyAddress(address)}>
+            {userInfo.language === 0 ? '복사하기' : 'copy'}
+          </Button>
         </div>
         <div className="call">
           <CallIcon />
@@ -190,7 +194,9 @@ function DetailInfo() {
         ))}
       </Menu>
       <Review>
-        <h3 className="sub-title">리뷰</h3>
+        <h3 className="sub-title">
+          {userInfo.language === 0 ? '리뷰' : 'Reviews'}
+        </h3>
         <div>
           {reviewCnt ? (
             <div>
@@ -202,7 +208,11 @@ function DetailInfo() {
             </div>
           ) : (
             <div className="no-content">
-              <p>작성된 리뷰가 없습니다.</p>
+              <p>
+                {userInfo.language === 0
+                  ? '작성된 리뷰가 없습니다'
+                  : 'There are no reviews yet'}
+              </p>
             </div>
           )}
         </div>

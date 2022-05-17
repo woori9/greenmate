@@ -25,7 +25,7 @@ urlpatterns = [
     path('mates/out/<int:mate_id>/', mate.out_mate),
     path('mates/evaluate/', mate.evaluate_mate),
     path('mates/search/', moim.search_moim),
-
+    path('mates/search/<int:res_id>/', moim.search_restaurant_moim),
 
     # community
     path('community/feeds/', community.get_create_feedlist),

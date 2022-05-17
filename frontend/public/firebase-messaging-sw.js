@@ -22,18 +22,26 @@ const defaultConfig = {
   appId: true,
 };
 
-// Initialize Firebase app
-firebase.initializeApp(self.firebaseConfig || defaultConfig);
-// Retrieve firebase messaging
-const messaging = firebase.messaging();
+let messaging = null;
 
-messaging.onBackgroundMessage(function (payload) {
-  console.log('Received background message ', payload);
+if (firebase.messaging.isSupported()) {
+  // Initialize Firebase app
+  firebase.initializeApp(self.firebaseConfig || defaultConfig);
+  // Retrieve firebase messaging
+  messaging = firebase.messaging();
+} else {
+  console.log('no support firebase');
+}
 
-  const notificationTitle = payload.data.title;
-  const notificationOptions = {
-    body: payload.data.body,
-  };
+if (messaging) {
+  messaging.onBackgroundMessage(function (payload) {
+    console.log('Received background message ', payload);
 
-  self.registration.showNotification(notificationTitle, notificationOptions);
-});
+    const notificationTitle = payload.data.title;
+    const notificationOptions = {
+      body: payload.data.body,
+    };
+
+    self.registration.showNotification(notificationTitle, notificationOptions);
+  });
+}

@@ -1,6 +1,6 @@
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import app from './firebase';
-import { sendToken } from '../api/notification';
+import { sendToken, getNotifications } from '../api/notification';
 
 const messaging = getMessaging(app);
 
@@ -18,13 +18,16 @@ export const checkToken = async setTokenId => {
     }
   } catch (err) {
     setTokenId(null);
-    throw new Error('An error occurred while retrieving token. ', err);
+    throw new Error(err);
   }
 };
 
-export const onMessageListener = () => {
+export const onMessageListener = (handleOpenSnackbar, setNotifications) => {
   return onMessage(messaging, payload => {
     const { data } = payload;
     console.log('Foreground Message', data);
+    const { body } = data;
+    getNotifications(setNotifications);
+    handleOpenSnackbar(body);
   });
 };
