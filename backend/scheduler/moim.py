@@ -3,8 +3,6 @@ from greenmates.models import Moim, Mate
 from notifications.views import send_message, create_multiple_alirm
 from notifications.models import FirebaseToken
 
-now = datetime.datetime.now()
-
 def make_messages(tokens, body):
     if tokens:
         users_list = tokens.values_list('user', flat=True).distinct()
@@ -16,6 +14,7 @@ def update_status():
     1. 모임 시간 2시간 전 & 인원부족: 모집 취소 
     2. 모임 시간 이후 & 인원 충족: 모집 종료 
     '''
+    now = datetime.datetime.now()
     two_hrs = now + datetime.timedelta(hours=2)
     # 1. 모임 2시간 전인데, 모임 모집이 안된 경우 => moim status 0(모집중) -> 2(모집취소)
         ## mate_status 1(합류) -> 3(취소)
