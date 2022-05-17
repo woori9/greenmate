@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { useState, useEffect, useRef } from 'react';
@@ -126,6 +125,7 @@ function ChatRoom({ selectedChat, isFromChatPage }) {
     }
 
     sendNotification(notificationTargetId, type, id);
+    messageRef.current.value = '';
   };
 
   useEffect(() => {
@@ -150,6 +150,12 @@ function ChatRoom({ selectedChat, isFromChatPage }) {
     };
   }, [currentChat]);
 
+  const onKeyPress = event => {
+    if (event.key === 'Enter') {
+      handleSend();
+    }
+  };
+
   return (
     <StyledChatRoom
       className="room"
@@ -166,7 +172,7 @@ function ChatRoom({ selectedChat, isFromChatPage }) {
 
           <div className="input-container">
             <GradientBox />
-            <input ref={messageRef} type="text" />
+            <input ref={messageRef} type="text" onKeyPress={onKeyPress} />
             <button type="button" onClick={handleSend}>
               <SendIcon sx={{ fontSize: 40, color: '#a9a9a9' }} />
             </button>
