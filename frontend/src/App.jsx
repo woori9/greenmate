@@ -16,8 +16,6 @@ import ManageMember from './routes/ManageMember';
 import EvaluateMoim from './routes/EvaluateMoim';
 import MyPage from './routes/MyPage';
 import MyPageLikedRestaurants from './routes/MyPageLikedRestaurants';
-import MyPageLikedFeeds from './routes/MyPageLikedFeeds';
-import MyPageLikedReview from './routes/MyPageLikedReview';
 import MyPageEvaluation from './routes/MyPageEvaluation';
 import MyPageReviews from './routes/MyPageReviews';
 import MyPageFeeds from './routes/MyPageFeeds';
@@ -117,14 +115,6 @@ function App() {
             <Route
               path="/mypage/:userPk/liked-restaurants"
               element={<MyPageLikedRestaurants />}
-            />
-            <Route
-              path="/mypage/:userPk/liked-feeds"
-              element={<MyPageLikedFeeds />}
-            />
-            <Route
-              path="/mypage/:userPk/liked-reviews"
-              element={<MyPageLikedReview />}
             />
             <Route
               path="/mypage/:userPk/evaluation"
