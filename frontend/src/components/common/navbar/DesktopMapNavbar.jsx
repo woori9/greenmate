@@ -122,9 +122,7 @@ function DesktopNavbar() {
         </button>
         <AlertMenus>
           <li>
-            <Link to="/notification">
-              <NotificationIcon />
-            </Link>
+            <NotificationIcon />
           </li>
           <li>
             <Link to={`/mypage/${userInfo.id}`} style={{ color: 'black' }}>

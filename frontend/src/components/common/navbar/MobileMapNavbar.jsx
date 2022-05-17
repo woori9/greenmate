@@ -87,9 +87,7 @@ function MobileMapNavbar() {
   return (
     <>
       <NavTop>
-        <Link to="/notification">
-          <NotificationIcon />
-        </Link>
+        <NotificationIcon />
       </NavTop>
       <NavBottom>
         <ul>

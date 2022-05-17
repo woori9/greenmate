@@ -115,9 +115,7 @@ function MobileNavbar() {
         >
           <img src={logo} alt="logo-img" />
         </button>
-        <Link to="/notification">
-          <NotificationIcon />
-        </Link>
+        <NotificationIcon />
       </NavTop>
       <NavBottom>
         <ul>
