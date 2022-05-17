@@ -8,7 +8,7 @@ const StyledChatItem = styled.li`
   display: grid;
   grid-template-columns: 1.5fr 5fr 2fr;
   width: 100%;
-  padding: 0.5rem 1rem;
+  padding: 1rem;
   min-width: 200px;
   column-gap: 4%;
   border: gray 1px;

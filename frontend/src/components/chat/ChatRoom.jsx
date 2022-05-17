@@ -27,17 +27,18 @@ const StyledChatRoom = styled.div`
   left: ${props => props.needDesktopNavbar && '130px'};
   width: ${props => props.isFromChatPage && '100%'};
   width: ${props => props.needDesktopNavbar && 'calc(100% - 130px)'};
-  position: relative;
   bottom: 4.5rem;
   background-color: #f5f5f5;
   position: relative;
   min-height: calc(100vh - 50px);
 
   .wrapper {
+    position: absolute;
+    width: 100%;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100%;
     font-size: 1rem;
     color: #a9a9a9;
   }
