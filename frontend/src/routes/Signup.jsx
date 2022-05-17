@@ -90,23 +90,38 @@ const VegeTypeLst = styled.div`
   padding: 1rem 0;
 `;
 const VegeTypeBox = styled.div`
-  filter: ${props => (props.selected ? 'grayscale(100%)' : null)};
   width: 4rem;
   display: flex;
   flex-direction: column;
   align-items: center;
+  cursor: pointer;
+
   .img-box {
-    height: 4.5rem;
+    width: 2.2rem;
+    height: 2.2rem;
+    border: ${props => props.selected && '3px solid #fcb448'};
+    border-radius: ${props => props.selected && '50%'};
+
     .vege-img {
       width: 100%;
     }
   }
+
   p {
     font-size: 0.7rem;
     white-space: nowrap;
     color: ${props => (props.selected ? '#fcb448' : 'black')};
   }
-  cursor: pointer;
+
+  @media screen and (min-width: 1025px) {
+    .img-box {
+      width: 4rem;
+      height: 4rem;
+    }
+    p {
+      font-size: 0.9rem;
+    }
+  }
 `;
 const Page = styled.div`
   position: fixed;
