@@ -19,7 +19,9 @@ const Bar = styled.div`
     position: absolute;
     top: 8.5px;
     left: 0;
+    cursor: pointer;
   }
+
   p {
     width: 100%;
     word-break: keep-all;
