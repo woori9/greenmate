@@ -6,7 +6,6 @@ import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
 import { red } from '@mui/material/colors';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -66,7 +65,6 @@ const Container = styled.div`
     margin-bottom: 1rem;
   }
 `;
-
 function SimpleDialog(props) {
   const {
     onClose,
@@ -175,6 +173,24 @@ SimpleDialog.propTypes = {
   vegeType: PropTypes.objectOf(PropTypes.string),
 }.isRequired;
 
+const LikeCntNum = styled.span`
+  margin-left: -5px;
+  font-size: 12px;
+  color: lightgrey;
+  font-weight: bold;
+`;
+
+const DateFont = styled.span`
+  font-size: 12px;
+  color: grey;
+  font-weight: bold;
+`;
+
+const FeedContent = styled.span`
+  font-size: 1.2rem;
+  font-weight: bold;
+`;
+
 function Feed({ feed, setNeedUpdate }) {
   const [isLike, setIsLike] = useState(feed.is_like);
   const [likeCnt, setLikeCnt] = useState(feed.like_cnt);
@@ -253,11 +269,10 @@ function Feed({ feed, setNeedUpdate }) {
         }
         title={<h4>{feed.author.nickname}</h4>}
         subheader={
-          `${feed.created_at.substr(0, 4)}년` +
-          ' ' +
-          `${feed.created_at.substr(5, 2)}월` +
-          ' ' +
-          `${feed.created_at.substr(8, 2)}일`
+          <DateFont>
+            {feed.created_at.substr(0, 4)}년 {feed.created_at.substr(5, 2)}월{' '}
+            {feed.created_at.substr(8, 2)}일
+          </DateFont>
         }
       />
       {isSetting ? (
@@ -300,54 +315,51 @@ function Feed({ feed, setNeedUpdate }) {
             <FavoriteBorderIcon sx={{ color: red[400] }} />
           )}
         </IconButton>
-        <span>{likeCnt}</span>
+        <LikeCntNum>{likeCnt}</LikeCntNum>
         <IconButton onClick={handleClickOpen}>
           <InsertCommentIcon />
         </IconButton>
       </CardActions>
       <CardContent>
         {isFeedTrans ? (
-          <Typography variant="body2" color="text.secondary">
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <span>{feedTrans.content_trans}</span>
-              <Trans onClick={() => setIsFeedTrans(!isFeedTrans)}>
-                원문보기
-              </Trans>
-            </Stack>
-          </Typography>
-        ) : (
-          <Typography variant="body2" color="text.secondary">
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <span>{feed.content}</span>
-              <Trans onClick={() => setIsFeedTrans(!isFeedTrans)}>
-                번역보기
-              </Trans>
-            </Stack>
-          </Typography>
-        )}
-        {comments.length >= 2 ? (
           <div>
             <Stack
               direction="row"
               justifyContent="space-between"
               alignItems="center"
-              sx={{ mt: 1, mb: 1 }}
             >
+              <FeedContent>{feedTrans.content_trans}</FeedContent>
+              <Trans onClick={() => setIsFeedTrans(!isFeedTrans)}>
+                원문보기
+              </Trans>
+            </Stack>
+          </div>
+        ) : (
+          <div>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <FeedContent>{feed.content}</FeedContent>
+              <Trans onClick={() => setIsFeedTrans(!isFeedTrans)}>
+                번역보기
+              </Trans>
+            </Stack>
+          </div>
+        )}
+      </CardContent>
+      <CardContent>
+        {comments.length >= 2 ? (
+          <div>
+            <Stack direction="row" alignItems="center" sx={{ mt: 1, mb: 1 }}>
               <Stack direction="row" alignItems="center">
                 <Avatar
                   src={vegeType[comments[0].vege_type]}
                   alt={comments[0].nickname}
                   sx={{ mr: 1, width: 24, height: 24 }}
                 />
-                <h4>{comments[0].nickname}</h4>
+                <h4>{comments[0].nickname} |</h4>
                 <span>{comments[0].content}</span>
                 <span className="small-font">
                   {`${comments[0].created_at.substr(0, 4)}년` +
@@ -356,19 +368,14 @@ function Feed({ feed, setNeedUpdate }) {
                     ' ' +
                     `${comments[0].created_at.substr(8, 2)}일`}
                 </span>
+                {userInfo.id === comments[0].author ? (
+                  <Button variant="text">삭제</Button>
+                ) : (
+                  <Button disabled />
+                )}
               </Stack>
-              {userInfo.id === comments[0].author ? (
-                <Button variant="text">삭제</Button>
-              ) : (
-                <Button disabled />
-              )}
             </Stack>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              sx={{ mb: 1 }}
-            >
+            <Stack direction="row" alignItems="center" sx={{ mb: 1 }}>
               <Stack direction="row" alignItems="center">
                 <Avatar
                   src={vegeType[comments[1].vege_type]}
@@ -384,12 +391,14 @@ function Feed({ feed, setNeedUpdate }) {
                     ' ' +
                     `${comments[1].created_at.substr(8, 2)}일`}
                 </span>
+                {userInfo.id === comments[1].author ? (
+                  <Button variant="text" sx={{ color: red[300] }}>
+                    삭제
+                  </Button>
+                ) : (
+                  <Button disabled />
+                )}
               </Stack>
-              {userInfo.id === comments[1].author ? (
-                <Button variant="text">삭제</Button>
-              ) : (
-                <Button disabled />
-              )}
             </Stack>
           </div>
         ) : (
