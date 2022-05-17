@@ -107,15 +107,9 @@ def get_update_moim_detail(request, moim_id):
             tokens = FirebaseToken.objects.filter(user__mate__moim_id=moim_id).values_list('registration_token', flat=True).exclude(user=user)
             body = f'[{moim.title[:6]}…] 모임 시간이 변경되었습니다.'
             if tokens:
-<<<<<<< HEAD
                 guests_list = moim.mate_set.values_list('user_id', flat=True).exclude(user_id=user.pk)
                 create_multiple_alirm(guests_list, 2, '모임 시간 수정', body, user.pk)
                 send_message(list(tokens), body)
-=======
-                if send_message(list(tokens), body):
-                    guests_list = moim.mate_set.values_list('user_id', flat=True).exclude(user_id=user.pk)
-                    create_multiple_alirm(guests_list, 2, '모임 시간 수정', body, user.pk)
->>>>>>> 671f736a50e7c460c4e56f1c54b921973890ac48
             return Response(serializer.data)
 
     user = get_request_user(request)
