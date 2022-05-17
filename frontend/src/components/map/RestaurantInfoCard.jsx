@@ -33,7 +33,7 @@ const VegeTypeLst = styled.div`
     justify-content: center;
     align-items: center;
     margin-right: 5px;
-    font-size: 20%;
+    font-size: 10px;
     color: #fff;
   }
 `;
