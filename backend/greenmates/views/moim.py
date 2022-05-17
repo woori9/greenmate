@@ -1,10 +1,7 @@
-# 비속어 검열 모듈 korcen 
-# 출처: https://github.com/TANAT96564/korcen
-
 from django.shortcuts import get_list_or_404, get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from ..models import Moim
+from ..models import Moim, RestaurantInfo
 from ..serializers.moim import (
     MoimSimpleSerializer,
     MoimDetailSerializer, 
@@ -24,14 +21,13 @@ from rest_framework.status import (
 )
 import datetime
 from dateutil.relativedelta import relativedelta
-from django.db.models import Q
+from django.db.models import Q, Prefetch
 from django.contrib.auth import get_user_model
 from accounts.views.token import get_request_user
 from .community import n2mt
-# from korcen import korcen
 
 User = get_user_model()
-# user = get_object_or_404(User, pk=3)
+user = get_object_or_404(User, pk=3)
 
 @api_view(['GET', 'POST'])
 def get_create_moim_list(request):
@@ -40,7 +36,12 @@ def get_create_moim_list(request):
     POST: 새로운 모임 글을 작성
     '''
     def moim_list():
-        moims = Moim.objects.filter(status=0).order_by('time')
+        moims = Moim.objects\
+            .select_related('restaurant')\
+            .filter(status=0).order_by('time')\
+            .prefetch_related(
+                Prefetch('restaurant__restaurantinfo_set',
+                queryset=RestaurantInfo.objects.filter(language=user.language)))
         serializer = MoimSimpleSerializer(moims, context={'user': user}, many=True)
         return Response(serializer.data)
 
@@ -58,10 +59,6 @@ def get_create_moim_list(request):
                 status=HTTP_201_CREATED
             )
     
-    # def is_badword():
-    #     korcen = korcen.korcen()
-    #     return korcen.check(request.data['title'] + ' ' + request.data['content'])
-
     user = get_request_user(request)
     if not user:
         return Response(status=HTTP_401_UNAUTHORIZED)
@@ -72,11 +69,6 @@ def get_create_moim_list(request):
         return moim_list()
 
     elif request.method =="POST":
-        # if is_badword():
-        #    return Response(
-        #        data='욕설이 감지되었습니다. 고운말로 다시 작성해 주세요.',
-        #        status=HTTP_400_BAD_REQUEST
-        #    ) 
         return moim_create()
 
 @api_view(['GET', 'PUT'])
@@ -115,9 +107,9 @@ def get_update_moim_detail(request, moim_id):
             tokens = FirebaseToken.objects.filter(user__mate__moim_id=moim_id).values_list('registration_token', flat=True).exclude(user=user)
             body = f'[{moim.title[:6]}…] 모임 시간이 변경되었습니다.'
             if tokens:
-                if send_message(list(tokens), body):
-                    guests_list = moim.mate_set.values_list('user_id', flat=True).exclude(user_id=user.pk)
-                    create_multiple_alirm(guests_list, 2, '모임 시간 수정', body, user.pk)
+                guests_list = moim.mate_set.values_list('user_id', flat=True).exclude(user_id=user.pk)
+                create_multiple_alirm(guests_list, 2, '모임 시간 수정', body, user.pk)
+                send_message(list(tokens), body)
             return Response(serializer.data)
 
     user = get_request_user(request)
@@ -153,7 +145,12 @@ def get_waiting_moim(request):
     elif user == 'EXPIRED_TOKEN':
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
 
-    moims_list = Moim.objects.filter(mate__user=user.id, mate__mate_status=0).order_by('time')
+    moims_list = Moim.objects\
+        .select_related('restaurant')\
+        .filter(mate__user=user.id, mate__mate_status=0).order_by('time')\
+        .prefetch_related(
+            Prefetch('restaurant__restaurantinfo_set',
+            queryset=RestaurantInfo.objects.filter(language=user.language)))
     serializer = MoimDetailSerializer(moims_list, context={'user': user}, many=True)
     return Response(serializer.data)
 
@@ -168,7 +165,12 @@ def get_joined_moim(request):
     elif user == 'EXPIRED_TOKEN':
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
 
-    moims_list = Moim.objects.filter(mate__user=user.id, mate__mate_status=1).exclude(author_id=user.id).order_by('time')
+    moims_list = Moim.objects\
+        .select_related('restaurant')\
+        .filter(mate__user=user.id, mate__mate_status=1).exclude(author_id=user.id).order_by('time')\
+        .prefetch_related(
+            Prefetch('restaurant__restaurantinfo_set',
+            queryset=RestaurantInfo.objects.filter(language=user.language)))
     serializer = MoimDetailSerializer(moims_list, context={'user': user}, many=True)
     return Response(serializer.data)
 
@@ -183,7 +185,11 @@ def get_opened_moim(request):
     elif user == 'EXPIRED_TOKEN':
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
 
-    moims_list = Moim.objects.filter(author_id=user.id, status__lt=2).order_by('time')
+    moims_list = Moim.objects.filter(author_id=user.id, status__lt=2).order_by('time')\
+        .select_related('restaurant')\
+        .prefetch_related(
+            Prefetch('restaurant__restaurantinfo_set',
+            queryset=RestaurantInfo.objects.filter(language=user.language)))
     serializer = MoimAllSerializer(moims_list, context={'user': user}, many=True) 
     return Response(serializer.data)
 
@@ -199,7 +205,11 @@ def get_finished_moim(request):
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
     
     three_months = datetime.datetime.now() - relativedelta(months=3)
-    moims_list = Moim.objects.filter(time__gte=three_months, mate__user=user.id, mate__mate_status=4).order_by('-time')
+    moims_list = Moim.objects.filter(time__gte=three_months, mate__user=user.id, mate__mate_status=4).order_by('-time')\
+        .select_related('restaurant')\
+        .prefetch_related(
+            Prefetch('restaurant__restaurantinfo_set',
+            queryset=RestaurantInfo.objects.filter(language=user.language)))
     serializer = MoimFinishedSerializer(moims_list, context={'user': user}, many=True) 
     return Response(serializer.data)
 
@@ -230,7 +240,11 @@ def search_moim(request):
     if day:
         q &= Q(time__week_day=int(day)) 
     q &= Q(status=0)   
-    moim_list = Moim.objects.filter(q).distinct().order_by('time')
+    moim_list = Moim.objects.filter(q).distinct().order_by('time')\
+        .select_related('restaurant')\
+        .prefetch_related(
+            Prefetch('restaurant__restaurantinfo_set',
+            queryset=RestaurantInfo.objects.filter(language=user.language)))
     serializer = MoimSimpleSerializer(moim_list, context={'user': user}, many=True)
     return Response(serializer.data)
 
