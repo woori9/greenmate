@@ -337,6 +337,47 @@ const getNotifications = async userId => {
   return notifications;
 };
 
+const updateNickname = async (userId, changedNickname) => {
+  console.log('change nickname', userId, ' s to', changedNickname);
+  try {
+    const userRef = doc(db, 'users', userId);
+    updateDoc(userRef, {
+      nickname: changedNickname,
+    });
+
+    const querySnapshot = await getDocs(
+      collection(db, 'users', userId, 'rooms'),
+    );
+
+    const userRooms = querySnapshot.docs.map(room => room.id);
+
+    userRooms.forEach(room => {
+      const roomRef = doc(db, 'rooms', room);
+
+      const key = `membersInfo.nickname${userId}`;
+      const obj = {};
+      obj[key] = changedNickname;
+
+      updateDoc(roomRef, obj);
+    });
+
+    userRooms.forEach(room => {
+      const messagesRef = collection(db, 'message', room, 'messages');
+      getDocs(messagesRef).then(snapshot =>
+        snapshot.docs.forEach(message => {
+          const messageRef = doc(db, 'message', room, 'messages', message.id);
+
+          updateDoc(messageRef, {
+            'sentBy.nickname': changedNickname,
+          });
+        }),
+      );
+    });
+  } catch (err) {
+    throw new Error(err);
+  }
+};
+
 export {
   signInFirebase,
   sendMessage,
@@ -355,4 +396,5 @@ export {
   getNotifications,
   getChatRoomList,
   getCountUnreadMessages,
+  updateNickname,
 };
