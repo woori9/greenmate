@@ -181,7 +181,7 @@ const Button = styled.button`
 
 function Signup() {
   const navigate = useNavigate();
-  const [userInfo] = useAtom(userInfoAtom);
+  const [userInfo, setUserInfo] = useAtom(userInfoAtom);
   const [newSentence, setNewSentence] = useState('오늘 시작한');
   const [newNickname, setNewNickname] = useState(userInfo.nickname);
   const [nicknameStatus, SetNicknameStatus] = useState(false);
@@ -337,7 +337,10 @@ function Signup() {
                 nickname: newNickname,
                 vege_type: newVegeType,
               },
-              () => navigate('/'),
+              res => {
+                setUserInfo({ ...userInfo, ...res.data });
+                navigate('/');
+              },
             );
             signInFirebase({
               id: `${userInfo.id}`,
