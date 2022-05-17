@@ -38,18 +38,19 @@ const SubmitButton = styled.button`
   position: absolute;
   top: 0.9rem;
   right: 1rem;
-  color: ${props => (props.isActive ? '#f5bd68' : '#a9a9a9')};
+  color: ${props => (props.isActive ? '#fcb448' : '#a9a9a9')};
   font-size: 1.15rem;
   background: none;
   border: none;
+  cursor: pointer;
 
   @media screen and (min-width: 1025px) {
     position: fixed;
     top: auto;
     bottom: 2rem;
     right: 1rem;
-    color: ${props => (props.isActive ? '#000' : '#797979')};
-    background-color: ${props => (props.isActive ? '#f5bd68' : '#c4c4c4')};
+    color: ${props => (props.isActive ? '#fff' : '#797979')};
+    background-color: ${props => (props.isActive ? '#fcb448' : '#c4c4c4')};
     padding: 0.5rem 1.5rem;
     border: none;
     border-radius: 20px;

@@ -50,11 +50,10 @@ function RestaurantSearchForm({
     if (e.keyCode === 13 && searchKeyword.length > 0) {
       setIsSearch(true);
       setSearchKeyword(e.target.value);
-      const res = await apiGetSearchRestau({ keyword: searchKeyword });
-      const formattedData = res.map(item => {
-        const returnData = { ...snakeToCamel(item) };
-        return returnData;
-      });
+      const res = apiGetSearchRestau({ keyword: searchKeyword });
+      const formattedData = res.map(item => ({
+        ...snakeToCamel(item),
+      }));
       setSearchResult(formattedData);
     }
   }

@@ -1,9 +1,15 @@
 import datetime
 from greenmates.models import Moim, Mate
-from notifications.views import send_message
+from notifications.views import send_message, create_multiple_alirm
 from notifications.models import FirebaseToken
 
 now = datetime.datetime.now()
+
+def make_messages(tokens, body):
+    if tokens:
+        if send_message(list(tokens), body):
+            users_list = tokens.values_list('user', flat=True).distinct()
+            create_multiple_alirm(users_list, 2, '모임 자동 취소', body, users_list[0])
 
 def update_status():
     '''
@@ -15,12 +21,11 @@ def update_status():
         ## mate_status 1(합류) -> 3(취소)
     Moim.objects.filter(time__lte=two_hrs, status=0).update(status=2)
     mates =  Mate.objects.filter(mate_status=1, moim__status=2)
-    mates.update(mate_status=3)
     tokens = FirebaseToken.objects.filter(user__mate__in=mates).distinct().values_list('registration_token', flat=True)
     body = f'인원부족으로 취소된 모임이 있습니다.'
-    if tokens:
-        send_message(list(tokens), body)
-
+    make_messages(tokens, body)
+    mates.update(mate_status=3)
+    
     # 2. 모임 시간 후, moim status가 1(모집 완료)인 모임 => moim status 1(모집완료) -> 3(모임 종료)
         ## mate_status 1(합류) -> 4(완료)
     Moim.objects.filter(time__lte=now, status=1).update(status=3)

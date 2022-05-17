@@ -31,6 +31,7 @@ import { deleteToken } from './api/notification';
 import useUserInfo from './hooks/useUserInfo';
 import PrivateRoute from './routes/PrivateRoute';
 import Notification from './routes/Notification';
+import Footer from './components/common/Footer';
 
 const initialAlarmState = {
   open: false,
@@ -102,41 +103,43 @@ function App() {
         />
         <Route path="/signup" element={<Signup />} />
         <Route element={<PrivateRoute isLoggedIn={!!userInfo} />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/community" element={<Community />} />
-          <Route path="/community/form" element={<CommunityForm />} />
           <Route path="/map" element={<Map />} />
-          <Route path="/mymoim" element={<MyMoim />} />
-          <Route path="/moim/form" element={<MoimForm />} />
-          <Route path="/moim/:moimId" element={<MoimDetail />} />
-          <Route path="/moim/:moimId/member" element={<ManageMember />} />
-          <Route path="/moim/:moimId/evaluation" element={<EvaluateMoim />} />
-          <Route path="/mypage/:userPk" element={<MyPage />} />
-          <Route
-            path="/mypage/:userPk/liked-restaurants"
-            element={<MyPageLikedRestaurants />}
-          />
-          <Route
-            path="/mypage/:userPk/liked-feeds"
-            element={<MyPageLikedFeeds />}
-          />
-          <Route
-            path="/mypage/:userPk/liked-reviews"
-            element={<MyPageLikedReview />}
-          />
-          <Route
-            path="/mypage/:userPk/evaluation"
-            element={<MyPageEvaluation />}
-          />
-          <Route
-            path="/mypage/:userPk/my-reviews"
-            element={<MyPageReviews />}
-          />
-          <Route path="/mypage/:userPk/my-feeds" element={<MyPageFeeds />} />
-          <Route path="/mypage/:userPk/setting" element={<MyPageSetting />} />
-          <Route path="/chat" element={<Chat />} />
-          <Route path="/chatRoom" element={<ChatRoom />} />
-          <Route path="/notification" element={<Notification />} />
+          <Route element={<Footer />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/community" element={<Community />} />
+            <Route path="/community/form" element={<CommunityForm />} />
+            <Route path="/mymoim" element={<MyMoim />} />
+            <Route path="/moim/form" element={<MoimForm />} />
+            <Route path="/moim/:moimId" element={<MoimDetail />} />
+            <Route path="/moim/:moimId/member" element={<ManageMember />} />
+            <Route path="/moim/:moimId/evaluation" element={<EvaluateMoim />} />
+            <Route path="/mypage/:userPk" element={<MyPage />} />
+            <Route
+              path="/mypage/:userPk/liked-restaurants"
+              element={<MyPageLikedRestaurants />}
+            />
+            <Route
+              path="/mypage/:userPk/liked-feeds"
+              element={<MyPageLikedFeeds />}
+            />
+            <Route
+              path="/mypage/:userPk/liked-reviews"
+              element={<MyPageLikedReview />}
+            />
+            <Route
+              path="/mypage/:userPk/evaluation"
+              element={<MyPageEvaluation />}
+            />
+            <Route
+              path="/mypage/:userPk/my-reviews"
+              element={<MyPageReviews />}
+            />
+            <Route path="/mypage/:userPk/my-feeds" element={<MyPageFeeds />} />
+            <Route path="/mypage/:userPk/setting" element={<MyPageSetting />} />
+            <Route path="/chat" element={<Chat />} />
+            <Route path="/chatRoom" element={<ChatRoom />} />
+            <Route path="/notification" element={<Notification />} />
+          </Route>
         </Route>
       </Routes>
       <BottomSheetBase />
