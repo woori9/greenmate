@@ -9,6 +9,7 @@ import { categoryAtom, moimListAtom } from '../atoms/moim';
 import { getMyMoimList } from '../api/moim';
 import { snakeToCamel } from '../utils/formatKey';
 import useWindowDimensions from '../utils/windowDimension';
+import useUserInfo from '../hooks/useUserInfo';
 
 const Container = styled.div`
   padding: 5rem 1rem 5rem 1rem;
@@ -34,11 +35,12 @@ function MyMoim() {
   const [selectedCategory, setSelectedCategory] = useAtom(categoryAtom);
   const [moimList, setMoimList] = useAtom(moimListAtom);
   const [needUpdate, setNeedUpdate] = useState(0);
+  const userInfo = useUserInfo();
   const moimCategories = [
-    ['대기', 0],
-    ['참여', 1],
-    ['진행', 5],
-    ['완료', 4],
+    ['대기', 'Waiting', 0],
+    ['참여', 'Participating', 1],
+    ['진행', 'Hosting', 5],
+    ['완료', 'Finished', 4],
   ];
 
   useEffect(() => {
@@ -68,9 +70,9 @@ function MyMoim() {
       <CategoryDiv>
         {moimCategories.map(category => (
           <MoimCategory
-            name={category[0]}
-            value={category[1]}
-            isSelected={selectedCategory === category[1]}
+            name={category[userInfo.language === 0 ? 0 : 1]}
+            value={category[2]}
+            isSelected={selectedCategory === category[2]}
             setSelectedCategory={setSelectedCategory}
             key={category}
           />

@@ -248,11 +248,10 @@ def evaluate_mate(request):
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
 
     evaluations_list = request.data
-    evaluations_dict = {x['mate']:x['evaluation'] for x in evaluations_list}
     serializer = UserReviewPostSerializer(
         data=evaluations_list, 
         many=True, 
-        context={'user':user, 'evaluations': evaluations_dict}
+        context={'user':user}
         )
     if serializer.is_valid(raise_exception=True):
         serializer.save()

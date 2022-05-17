@@ -2,8 +2,8 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { useAtom } from 'jotai';
 import { useNavigate } from 'react-router-dom';
-import { onDismissAtom } from '../../atoms/bottomSheet';
-import { exitMoim } from '../../api/moim';
+import { onDismissAtom } from '../../../atoms/bottomSheet';
+import { exitMoim } from '../../../api/moim';
 
 const Container = styled.div`
   display: flex;
@@ -36,7 +36,7 @@ const Container = styled.div`
   }
 `;
 
-function ConfirmDeleteMoim({ mateId }) {
+function MobileConfirmDeleteMoim({ mateId }) {
   const [, onDismiss] = useAtom(onDismissAtom);
   const navigate = useNavigate();
 
@@ -64,8 +64,8 @@ function ConfirmDeleteMoim({ mateId }) {
   );
 }
 
-ConfirmDeleteMoim.propTypes = {
+MobileConfirmDeleteMoim.propTypes = {
   mateId: PropTypes.number.isRequired,
 };
 
-export default ConfirmDeleteMoim;
+export default MobileConfirmDeleteMoim;

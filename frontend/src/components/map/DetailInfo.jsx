@@ -1,5 +1,6 @@
 import { useAtom } from 'jotai';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import CloseIcon from '@mui/icons-material/Close';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -20,9 +21,11 @@ import { apiPostLikeRestau } from '../../api/map';
 const Container = styled.div`
   padding-bottom: 5rem;
 `;
-
 const CloseButton = styled.div`
   text-align: end;
+  .icon {
+    cursor: pointer;
+  }
 `;
 const Summary = styled.div`
   display: flex;
@@ -31,6 +34,7 @@ const Summary = styled.div`
 `;
 const BookMark = styled.div`
   align-self: center;
+  cursor: pointer;
   .bookmark {
     font-size: 30px;
     color: #fcb448;
@@ -50,8 +54,9 @@ const Detail = styled.div`
   }
   .address {
     line-height: 140%;
-    p {
+    .address-text {
       max-width: 70%;
+      white-space: pre-line;
     }
   }
 `;
@@ -68,6 +73,7 @@ const Menu = styled.div`
   padding: 1rem 0;
   .menu {
     padding: 1rem 0.5rem;
+    white-space: pre-line;
     .vege-type {
       padding-top: 5px;
       color: #a9a9a9;
@@ -92,6 +98,7 @@ const Review = styled.div`
     padding: 1rem 0.5rem;
   }
 `;
+const BoxLetsEat = styled.div``;
 
 function copyAddress(text) {
   const t = document.createElement('textarea');
@@ -104,6 +111,7 @@ function copyAddress(text) {
 
 function DetailInfo() {
   const { width } = useWindowDimensions();
+  const navigate = useNavigate();
   const [newSearchResult] = useAtom(searchResultsAtom);
   const [summaryRestau, setSummaryRestau] = useAtom(summaryRestauAtom);
   const [detailRestau, setDetailRestau] = useAtom(detailRestauAtom);
@@ -125,18 +133,19 @@ function DetailInfo() {
   }
   return (
     <Container>
-      <CloseButton
-        onClick={() => {
-          if (width < 1024) {
-            setPageStatus('summary');
-          } else if (newSearchResult.length) {
-            setPageStatus('searchLst');
-          } else {
-            setPageStatus('searchBox');
-          }
-        }}
-      >
-        <CloseIcon />
+      <CloseButton>
+        <CloseIcon
+          className="icon"
+          onClick={() => {
+            if (width < 1024) {
+              setPageStatus('summary');
+            } else if (newSearchResult.length) {
+              setPageStatus('searchLst');
+            } else {
+              setPageStatus('searchBox');
+            }
+          }}
+        />
       </CloseButton>
       <Summary>
         <RestaurantInfoCard arrayResult={detailRestau} />
@@ -151,7 +160,9 @@ function DetailInfo() {
       <Detail>
         <div className="address">
           <LocationOnIcon />
-          <p>{address}</p>
+          <div className="address-text">
+            <p>{address}</p>
+          </div>
           <Button onClick={() => copyAddress(address)}>복사하기</Button>
         </div>
         <div className="call">
@@ -167,10 +178,14 @@ function DetailInfo() {
       </Detail>
       <Menu>
         <h3 className="sub-title">메뉴</h3>
-        {splitMenus.map(menu => (
-          <div key={menu} className="menu">
-            <p>{menu.split('(')[0]}</p>
-            <p className="vege-type">{menu.split(/[(, )]/)[1]}</p>
+        {splitMenus.map((menu, idx) => (
+          <div key={menu && idx}>
+            {!menu.split('(')[0].includes('possible') ? (
+              <div className="menu">
+                <p>{menu.split('(')[0]}</p>
+                <p className="vege-type">{menu.split(/[( )]/)[1]}</p>
+              </div>
+            ) : null}
           </div>
         ))}
       </Menu>
@@ -192,7 +207,18 @@ function DetailInfo() {
           )}
         </div>
       </Review>
-      <ButtonLetsEat />
+      <BoxLetsEat
+        onClick={() =>
+          navigate('/', {
+            state: {
+              inputRestauName: restauInfo.name,
+              inputRestauPk: detailRestau.id,
+            },
+          })
+        }
+      >
+        <ButtonLetsEat />
+      </BoxLetsEat>
     </Container>
   );
 }
