@@ -22,6 +22,7 @@ const Container = styled.div`
 function MyPageSetting() {
   const navigate = useNavigate();
   const [userInfo] = useAtom(userInfoAtom);
+  const { language } = userInfo;
   const { width } = useWindowDimensions();
   const isDesktop = width > 1024;
   const [pageStatus, setPageStatus] = useState('settingLst');
@@ -39,10 +40,10 @@ function MyPageSetting() {
     deleteUser: <SettingDropUser />,
   };
   const pageTitle = {
-    settingLst: '설정',
-    setNickname: '내 정보',
-    setLanguage: '언어 설정',
-    registerNewRestau: '식당 등록 요청',
+    settingLst: `${language === 0 ? '설정' : 'Settings'}`,
+    setNickname: `${language === 0 ? '내 정보' : 'Account'}`,
+    setLanguage: `${language === 0 ? '언어 설정' : 'Language'}`,
+    registerNewRestau: `${language === 0 ? '식당 등록 요청' : 'Send Feedback'}`,
     deleteUser: '',
   };
   const settingGoBackHandler = () => {
