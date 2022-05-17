@@ -18,7 +18,7 @@ const Container = styled.div`
 `;
 function Feeds({ categoryValue, vegeTypeValue }) {
   const [feeds, setFeeds] = useState([]);
-  // const [res, setRes] = useState([]);
+
   useEffect(() => {
     const getFeeds = async () => {
       const resData = await getFeedList();
