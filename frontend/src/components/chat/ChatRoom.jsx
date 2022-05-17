@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { useState, useEffect, useRef } from 'react';
 import SendIcon from '@mui/icons-material/Send';
 import { useLocation } from 'react-router-dom';
+import ForumIcon from '@mui/icons-material/Forum';
 import MessageList from './MessageList';
 import {
   getMessages,
@@ -21,14 +22,29 @@ import useWindowDimensions from '../../utils/windowDimension';
 import DesktopNavbar from '../common/navbar/DesktopNavbar';
 
 const StyledChatRoom = styled.div`
-  width: 100%;
-  padding-top: ${props => (props.needDesktopNavbar ? '110px' : '52px')};
-  padding-top: ${props => props.isFromChatPage && '0px'};
-  padding-left: ${props => props.needDesktopNavbar && '150px'};
-  min-height: 100vh;
-  padding-bottom: 4.5rem;
+  top: ${props => (props.needDesktopNavbar ? '110px' : '52px')};
+  top: ${props => props.isFromChatPage && '0px'};
+  left: ${props => props.needDesktopNavbar && '130px'};
+  width: ${props => props.isFromChatPage && '100%'};
+  width: ${props => props.needDesktopNavbar && 'calc(100% - 130px)'};
+  position: relative;
+  bottom: 4.5rem;
   background-color: #f5f5f5;
   position: relative;
+  min-height: calc(100vh - 50px);
+
+  .wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    font-size: 1rem;
+    color: #a9a9a9;
+  }
+
+  .container {
+    position: relative;
+  }
 
   .input-container {
     width: ${props =>
@@ -39,7 +55,8 @@ const StyledChatRoom = styled.div`
     position: fixed;
     bottom: 0px;
     right: 0;
-    padding: 0rem 0.5rem;
+    padding: 0rem 0.5rem 0.5rem;
+    background-color: white;
     @media screen and (max-width: 1024px) {
       width: 100%;
     }
@@ -49,7 +66,26 @@ const StyledChatRoom = styled.div`
       border: 1px solid #a9a9a9;
       border-radius: 25px;
     }
+    button {
+      border: 0;
+      outline: 0;
+      background: none;
+    }
   }
+`;
+
+const GradientBox = styled.div`
+  position: absolute;
+  top: -24px;
+  left: 0px;
+  width: 100%;
+  height: 24px;
+  z-index: 2;
+  background: linear-gradient(
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.95) 99.9%,
+    rgba(255, 255, 255, 0.95) 99.99%
+  );
 `;
 
 function ChatRoom({ selectedChat, isFromChatPage }) {
@@ -124,18 +160,22 @@ function ChatRoom({ selectedChat, isFromChatPage }) {
         <GoBackBar title={currentChat ? currentChat.chatTitle : ''} />
       )}
       {currentChat ? (
-        <>
+        <div className="container">
           <MessageList messages={messages} userId={user.id} />
 
           <div className="input-container">
+            <GradientBox />
             <input ref={messageRef} type="text" />
             <button type="button" onClick={handleSend}>
-              <SendIcon sx={{ fontSize: 30 }} />
+              <SendIcon sx={{ fontSize: 40, color: '#a9a9a9' }} />
             </button>
           </div>
-        </>
+        </div>
       ) : (
-        <h3>대화를 시작해보세요</h3>
+        <div className="wrapper">
+          <ForumIcon sx={{ fontSize: 50, color: '#a9a9a9' }} />
+          <p className="text">대화를 시작해보세요</p>
+        </div>
       )}
     </StyledChatRoom>
   );

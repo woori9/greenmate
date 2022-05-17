@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { formatChatDateTime } from '../../utils/formattedDate';
+import ProfileImage from '../common/ProfileImage';
 
 const StyledChatItem = styled.li`
   background-color: ${props => props.isSelected && 'azure'};
@@ -12,11 +13,10 @@ const StyledChatItem = styled.li`
   column-gap: 4%;
   border: gray 1px;
 
-  img {
+  .img-wrapper {
     max-width: 100%;
     height: auto;
     border-radius: 50%;
-    background-color: azure;
     grid-row: 1 / 3;
     margin: auto;
   }
@@ -86,7 +86,9 @@ function ChatItem({ chat, onChatClick, user, countUnreadMessage, isSelected }) {
 
   return (
     <StyledChatItem isSelected={isSelected} onClick={() => onChatClick(chat)}>
-      <img src={`${process.env.PUBLIC_URL}/logo192.png`} alt="sample" />
+      <div className="img-wrapper">
+        <ProfileImage vegeType={membersInfo[`vegeType${pairId}`]} isBig />
+      </div>
       <p className="nickname horizon-align">
         {membersInfo[`nickname${pairId}`]}
       </p>

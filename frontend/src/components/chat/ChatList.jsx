@@ -6,6 +6,8 @@ const StyledChatList = styled.ul`
   list-style: none;
   padding: 0;
   margin: 0;
+  position: fixed;
+  width: calc((100% - 130px) * 0.4);
 `;
 
 function ChatList({ chats, onChatClick, user, unreadMessage, selectChatId }) {
