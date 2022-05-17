@@ -39,6 +39,7 @@ import lactoOvo from '../../assets/lacto-ovo-icon.png';
 import pesco from '../../assets/pesco-icon.png';
 import polo from '../../assets/polo-icon.png';
 import useUserInfo from '../../hooks/useUserInfo';
+import CommentDetail from './CommentDetail';
 
 const Trans = styled.div`
   cursor: pointer;
@@ -77,7 +78,6 @@ function SimpleDialog(props) {
     vegeType,
   } = props;
   const [commentData, setCommentData] = useState('');
-
   const handleClose = () => {
     onClose();
   };
@@ -91,7 +91,6 @@ function SimpleDialog(props) {
       event.target.value = '';
     }
   };
-  console.log(comments[0]);
 
   return (
     <Dialog onClose={handleClose} open={open}>
@@ -116,7 +115,12 @@ function SimpleDialog(props) {
                       sx={{ mr: 1, width: 24, height: 24 }}
                     />
                     <h4>{comment.nickname}</h4>
-                    <span>{comment.content}</span>
+                    <CommentDetail
+                      commentId={comment.id}
+                      commentContent={comment.content}
+                      commentIsLike={comment.is_like}
+                      commentLikeCnt={comment.like_cnt}
+                    />
                     <span className="small-font">
                       {`${comment.created_at.substr(0, 4)}년` +
                         ' ' +
@@ -173,6 +177,7 @@ SimpleDialog.propTypes = {
 
 function Feed({ feed, setNeedUpdate }) {
   const [isLike, setIsLike] = useState(feed.is_like);
+  const [likeCnt, setLikeCnt] = useState(feed.like_cnt);
   const [isSetting, setIsSetting] = useState(false);
   const [isFeedTrans, setIsFeedTrans] = useState(false);
   const [feedTrans, setFeedTrans] = useState('');
@@ -199,6 +204,11 @@ function Feed({ feed, setNeedUpdate }) {
   };
   const handleLike = feedId => {
     postFeedLike(feedId);
+    if (isLike) {
+      setLikeCnt(prev => prev - 1);
+    } else {
+      setLikeCnt(prev => prev + 1);
+    }
     setIsLike(!isLike);
   };
   useEffect(() => {
@@ -290,6 +300,7 @@ function Feed({ feed, setNeedUpdate }) {
             <FavoriteBorderIcon sx={{ color: red[400] }} />
           )}
         </IconButton>
+        <span>{likeCnt}</span>
         <IconButton onClick={handleClickOpen}>
           <InsertCommentIcon />
         </IconButton>

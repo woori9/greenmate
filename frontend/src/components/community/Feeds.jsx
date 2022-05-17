@@ -8,7 +8,7 @@ const Container = styled.div`
   padding: 0rem 1rem 5rem 1rem;
 
   @media screen and (min-width: 1025px) {
-    margin: 0 17rem 0 calc(130px + 17rem);
+    margin: 0 17rem -5rem calc(130px + 17rem);
     padding: 3rem;
   }
 

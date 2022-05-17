@@ -56,7 +56,7 @@ export async function postFeedLike(feedId) {
 // 댓글 좋아요 등록
 export async function postCommentLike(commentId) {
   const response = await apiInstance.post(
-    `/greenmates/community/feed/${commentId}/like/`,
+    `/greenmates/community/comment/${commentId}/like/`,
   );
   return response.data;
 }
