@@ -265,7 +265,7 @@ function MoimDetail() {
           )
         }
       >
-        {userInfo.language === 0 ? '대기 취소하기' : 'Cancel participation'}
+        {userInfo.language === 0 ? '참여 취소하기' : 'Cancel participation'}
       </button>
     ),
     5: (
