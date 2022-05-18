@@ -34,7 +34,7 @@ function MyPageReviews() {
     getMyFeeds(
       { userId: userPk },
       res => {
-        setFeeds(res.data);
+        setFeeds(res);
       },
       err => {
         console.log(err);

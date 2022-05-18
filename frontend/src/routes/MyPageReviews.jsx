@@ -33,7 +33,7 @@ function MyPageReviews() {
     getMyReviews(
       { userId: userPk },
       res => {
-        setReviews(res.data);
+        setReviews(res);
       },
       err => {
         console.log(err);
