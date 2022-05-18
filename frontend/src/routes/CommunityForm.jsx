@@ -293,7 +293,7 @@ function CommunityForm() {
         <label htmlFor="category">
           {userInfo.language === 0 ? '카테고리' : 'Category'}
         </label>
-        <Stack direction="row" spacing={3}>
+        <Stack direction="row" spacing={2}>
           <Stack direction="column" alignItems="center">
             <Avatar
               sx={{
@@ -345,6 +345,7 @@ function CommunityForm() {
                 cursor: 'pointer',
                 bgcolor: category === 4 ? '#fcb448' : '#a9a9a9',
               }}
+              className="mouse-hover"
               onClick={() => {
                 setCategory(4);
               }}

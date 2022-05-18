@@ -242,7 +242,7 @@ function Feed({ feed, setNeedUpdate }) {
     getComments();
   }, [useUpdate]);
   const handleSetiing = () => {
-    setIsSetting(!isSetting);
+    setIsSetting(prev => !prev);
   };
   const handleSubmit = event => {
     if (event.keyCode === 13 && commentData.length > 0) {
@@ -263,7 +263,7 @@ function Feed({ feed, setNeedUpdate }) {
         action={
           feed.author.id === userInfo.id ? (
             <IconButton>
-              <MoreVertIcon onClick={handleSetiing} />
+              <MoreVertIcon onClick={() => handleSetiing()} />
             </IconButton>
           ) : (
             <div />
