@@ -13,6 +13,7 @@ class FeedSimpleSerializer(serializers.ModelSerializer):
     is_like = serializers.SerializerMethodField()
     like_cnt = serializers.IntegerField(source='like_users.count', read_only=True)
     img_paths = serializers.SerializerMethodField()
+    comment_cnt = serializers.SerializerMethodField()
     # like_users = UserSerializer(many=True)
 
     class Meta:
@@ -31,6 +32,9 @@ class FeedSimpleSerializer(serializers.ModelSerializer):
     def get_is_like(self, obj):
         return Feed.objects.filter(pk=obj.id, like_users=self.context['user'].id).exists()
 
+    def get_comment_cnt(self, obj):
+        return Comment.objects.filter(feed=obj).count()
+        
 
 class FeedSerializer(FeedSimpleSerializer):
 

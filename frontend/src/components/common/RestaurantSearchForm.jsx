@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { apiGetSearchRestau } from '../../api/map';
 import { snakeToCamel } from '../../utils/formatKey';
+import useUserInfo from '../../hooks/useUserInfo';
 
 const SearchContainer = styled.div`
   position: relative;
@@ -17,6 +18,8 @@ const SearchList = styled.ul`
   clear: both;
   list-style-type: none;
   width: 100%;
+  height: 400%;
+  overflow-y: scroll;
   background-color: #fff;
   padding-left: 0;
   border: 1px solid #a9a9a9;
@@ -26,6 +29,10 @@ const SearchList = styled.ul`
   li {
     padding: 0.5rem;
 
+    :hover {
+      background-color: #f2f2f2;
+      cursor: pointer;
+    }
     &:not(:last-child) {
       border-bottom: 1px solid #a9a9a9;
     }
@@ -45,9 +52,9 @@ function RestaurantSearchForm({
 }) {
   const [isSearch, setIsSearch] = useState(false);
   const [searchResult, setSearchResult] = useState([]);
+  const userInfo = useUserInfo();
 
   async function handleKeyUp(e) {
-    e.preventDefault();
     if (e.keyCode === 13 && searchKeyword.length > 0) {
       setIsSearch(true);
       setSearchKeyword(e.target.value);
@@ -62,10 +69,11 @@ function RestaurantSearchForm({
   return (
     <SearchContainer>
       <label htmlFor="restaurant" className="input-label">
-        장소
+        {userInfo.language === 0 ? '장소' : 'Restaurant'}
       </label>
       <div>
         <Input
+          type="search"
           id="restaurant"
           name="restaurant"
           value={searchKeyword}
@@ -76,6 +84,7 @@ function RestaurantSearchForm({
           startAdornment={<InputAdornment position="start">@</InputAdornment>}
           inputProps={{
             'aria-label': 'restaurant',
+            enterKeyHint: 'enter',
           }}
           sx={{
             width: '100%',
@@ -98,7 +107,11 @@ function RestaurantSearchForm({
                 </li>
               ))
             ) : (
-              <li>검색 결과가 없습니다.</li>
+              <li>
+                {userInfo.language === 0
+                  ? '검색 결과가 없습니다.'
+                  : 'There are no search results.'}
+              </li>
             )}
           </SearchList>
         )}

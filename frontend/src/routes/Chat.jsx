@@ -16,8 +16,16 @@ import {
 } from '../service/chat_service';
 
 const StyledDiv = styled.div`
-  padding-top: ${props => (props.isDesktop ? '60px' : '52px')};
-  padding-left: ${props => props.isDesktop && '130px'};
+  position: relative;
+  top: 52px;
+  min-height: calc(100vh - 52px);
+
+  @media screen and (min-width: 1024px) {
+    top: 60px;
+    left: 130px;
+    width: calc(100% - 130px);
+    min-height: calc(100vh - 60px);
+  }
 `;
 
 const GridChatContainer = styled.div`
@@ -97,14 +105,18 @@ function Chat() {
         <>
           <DesktopNavbar />
           <GridChatContainer>
-            <ChatList
-              chats={chatList}
-              onChatClick={selectChat}
-              user={userInfo.id}
-              unreadMessage={unreadMessage}
-              selectChatId={selectedChat && selectedChat.id}
-            />
-            <ChatRoom selectedChat={selectedChat} isFromChatPage />
+            <div>
+              <ChatList
+                chats={chatList}
+                onChatClick={selectChat}
+                user={userInfo.id}
+                unreadMessage={unreadMessage}
+                selectChatId={selectedChat && selectedChat.id}
+              />
+            </div>
+            <div>
+              <ChatRoom selectedChat={selectedChat} isFromChatPage />
+            </div>
           </GridChatContainer>
         </>
       ) : (

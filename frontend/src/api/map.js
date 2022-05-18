@@ -54,3 +54,11 @@ export function apiPostLikeRestau(data, res, err) {
     .then(res)
     .catch(err);
 }
+
+/* 같이 먹기 모임 검색 */
+export function apiGetLetseatMoim(data, res, err) {
+  apiInstance
+    .get(`/greenmates/mates/search/${data.restauId}/`)
+    .then(res)
+    .catch(err);
+}

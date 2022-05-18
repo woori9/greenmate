@@ -14,7 +14,8 @@ export default function useNotificationStatus() {
         notificationPerm.onchange = () => {
           setNotificationStatus(notificationPerm.state);
         };
-      });
+      })
+      .catch(err => console.error(err));
   }, []);
 
   return notificationStatus;

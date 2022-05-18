@@ -9,16 +9,16 @@ export async function getFeedList() {
 // 피드 작성
 export async function createFeed(data) {
   const response = await apiInstance.post('/greenmates/community/feeds/', data);
-  return response.data;
+  return response;
 }
 
 // 피드 수정
 export async function updateFeed(feedId, data) {
-  const response = await apiInstance.post(
+  const response = await apiInstance.put(
     `/greenmates/community/feed/${feedId}/`,
     data,
   );
-  return response.data;
+  return response;
 }
 
 // 피드 삭제
@@ -37,12 +37,35 @@ export async function getCommentList(feedId) {
   return response.data;
 }
 
-// 댓글 삭제
+// 댓글 작성
+export async function createComment({ feedId, data }) {
+  const response = await apiInstance.post(
+    `/greenmates/community/comment/${feedId}/`,
+    data,
+  );
+  return response.data;
+}
 
-// 좋아요 등록
-export async function postLike(feedId) {
+// 댓글 삭제
+export async function deleteComment(commentId) {
+  const response = await apiInstance.delete(
+    `/greenmates/community/comment/detail/${commentId}/`,
+  );
+  return response.data;
+}
+
+// 피드 좋아요 등록
+export async function postFeedLike(feedId) {
   const response = await apiInstance.post(
     `/greenmates/community/feed/${feedId}/like/`,
+  );
+  return response.data;
+}
+
+// 댓글 좋아요 등록
+export async function postCommentLike(commentId) {
+  const response = await apiInstance.post(
+    `/greenmates/community/comment/${commentId}/like/`,
   );
   return response.data;
 }

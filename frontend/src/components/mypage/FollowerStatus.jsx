@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import { useAtom } from 'jotai';
+import { userInfoAtom } from '../../atoms/accounts';
 
 const Ul = styled.ul`
   padding: 0;
@@ -14,21 +16,23 @@ const Li = styled.li`
   font-size: 13px;
   .name {
     padding-bottom: 5px;
+    font-size: 70%;
   }
 `;
 
 function FollowerStatus({ profileInfo, isDesktop }) {
+  const [{ language }] = useAtom(userInfoAtom);
   const statusLst = [
     {
-      name: '팔로워',
+      name: `${language === 0 ? '팔로워' : 'follower'}`,
       cnt: profileInfo.follower_cnt,
     },
     {
-      name: '팔로잉',
+      name: `${language === 0 ? '팔로잉' : 'following'}`,
       cnt: profileInfo.following_cnt,
     },
     {
-      name: '모임횟수',
+      name: `${language === 0 ? '그린메이트' : 'greenmate'}`,
       cnt: profileInfo.moim_cnt,
     },
   ];

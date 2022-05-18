@@ -2,16 +2,16 @@ import styled from 'styled-components';
 import ResponsiveNavbar from '../components/common/navbar/ResponsiveNavbar';
 import ResponsiveProfile from '../components/mypage/profile/ResponsiveProfile';
 
-const Page = styled.div`
-  min-height: 800px;
+const Container = styled.div`
+  min-height: calc(100vh + 62px);
 `;
 
 function MyPage() {
   return (
-    <Page>
+    <Container>
       <ResponsiveNavbar />
       <ResponsiveProfile />
-    </Page>
+    </Container>
   );
 }
 

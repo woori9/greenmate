@@ -82,7 +82,6 @@ function SummaryInfo({ getMapwithCommand }) {
         onClick={() =>
           navigate('/', {
             state: {
-              inputRestauName: summaryRestau.res_info.name,
               inputRestauPk: summaryRestau.id,
             },
           })

@@ -337,6 +337,23 @@ const getNotifications = async userId => {
   return notifications;
 };
 
+const updateUserInfo = async (userId, nickname, vegeType) => {
+  try {
+    const userRef = doc(db, 'users', userId);
+    updateDoc(userRef, {
+      nickname,
+    });
+
+    updateDoc(userRef, {
+      vegeType,
+    });
+  } catch (err) {
+    // eslint-disable-next-line no-alert
+    alert('회원 정보를 수정하지 못했습니다. 다시 한번 시도해주세요.');
+    throw new Error(err);
+  }
+};
+
 export {
   signInFirebase,
   sendMessage,
@@ -355,4 +372,5 @@ export {
   getNotifications,
   getChatRoomList,
   getCountUnreadMessages,
+  updateUserInfo,
 };

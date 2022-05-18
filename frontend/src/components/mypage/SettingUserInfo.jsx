@@ -7,6 +7,7 @@ import ProfileImage from '../common/ProfileImage';
 import SettingCenteredModalBase from './SettingCenteredModalBase';
 import { userInfoAtom } from '../../atoms/accounts';
 import { apiCheckNickname, apiPutUserInfo } from '../../api/accounts';
+import { updateUserInfo } from '../../service/chat_service';
 
 const Container = styled.div`
   display: flex;
@@ -49,7 +50,7 @@ const ModifyNickName = styled.div`
   }
 `;
 const ButtonContainer = styled.div`
-  position: absolute;
+  position: fixed;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -94,12 +95,18 @@ const DesktopBtn = styled.div`
 function SettingUserInfo({ setPageStatus, isDesktop }) {
   const isBig = true;
   const [userInfo, setUserInfo] = useAtom(userInfoAtom);
+  const { language } = userInfo;
   const nowNickname = userInfo.nickname;
   const [newNickname, setNewNickname] = useState(nowNickname);
   const nowVegeType = userInfo.vege_type;
   const [newVegeType, setVegeType] = useState(nowVegeType);
 
   function checkNickname(putNickname) {
+    if (putNickname === '') {
+      setNewNickname(null);
+      alert('입력한 닉네임을 확인해주세요');
+      return;
+    }
     apiCheckNickname(
       { nickname: putNickname },
       () => {
@@ -155,12 +162,13 @@ function SettingUserInfo({ setPageStatus, isDesktop }) {
               checkNickname(newNickname.trim());
             }}
           >
-            중복 확인
+            {language === 0 ? '중복 확인' : 'check'}
           </button>
         </ModifyNickName>
         <SettingCenteredModalBase
           vegeType={newVegeType}
           mainAction={setVegeType}
+          language={language}
         />
       </Container>
       {isDesktop ? (
@@ -168,6 +176,7 @@ function SettingUserInfo({ setPageStatus, isDesktop }) {
           type="button"
           onClick={() => {
             putUserInfo(newNickname, newVegeType);
+            updateUserInfo(`${userInfo.id}`, newNickname, newVegeType);
           }}
         >
           수정
@@ -179,6 +188,7 @@ function SettingUserInfo({ setPageStatus, isDesktop }) {
             className="delete-btn"
             onClick={() => {
               putUserInfo(newNickname, newVegeType);
+              updateUserInfo(`${userInfo.id}`, newNickname, newVegeType);
             }}
           >
             수정

@@ -82,6 +82,7 @@ function KakaoRedirectHandler() {
         const accessToken = response.data.access_token;
         apiLogin({ access_token: accessToken }, res => {
           sessionStorage.setItem('Authorization', res.data.access_token);
+          sessionStorage.setItem('Refresh', res.data.refresh_token);
           setUserInfo(res.data);
 
           apiInstance.defaults.headers.common.Authorization = `Bearer ${res.data.access_token}`;
