@@ -14,11 +14,11 @@ export async function createFeed(data) {
 
 // 피드 수정
 export async function updateFeed(feedId, data) {
-  const response = await apiInstance.post(
+  const response = await apiInstance.put(
     `/greenmates/community/feed/${feedId}/`,
     data,
   );
-  return response.data;
+  return response;
 }
 
 // 피드 삭제
