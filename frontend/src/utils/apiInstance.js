@@ -30,8 +30,8 @@ apiInstance.interceptors.response.use(
         });
         sessionStorage.setItem('Authorization', res.data.access_token);
         sessionStorage.setItem('Refresh', res.data.refresh_token);
-      } catch {
-        console.log(err);
+      } catch (error) {
+        console.log(error);
       }
     } else {
       console.log(statusCode);
