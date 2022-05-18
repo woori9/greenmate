@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { useLocation, useNavigate } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 import Avatar from '@mui/material/Avatar';
@@ -61,6 +61,7 @@ const Form = styled.div`
     border: none;
     border-radius: 5px;
     padding: 0.5rem 0;
+    margin: 0 auto;
     cursor: pointer;
   }
 
@@ -88,6 +89,76 @@ const Form = styled.div`
   .mouse-hover:hover {
     background-color: #fcb448;
   }
+
+  .img-count {
+    color: #fcb448;
+    text-align: center;
+  }
+
+  @media screen and (min-width: 1025px) {
+    .input-file-button {
+      width: 50%;
+    }
+  }
+`;
+
+const ImageBox = styled.div`
+  width: 100%;
+  height: 40vh;
+  margin: 0.5rem auto;
+
+  .image-upload {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #a1a1a1;
+    border-radius: 10px;
+
+    #input-img {
+      width: 50px;
+    }
+  }
+  label {
+    cursor: pointer;
+  }
+  input {
+    display: none;
+  }
+  .image-preview {
+    position: relative;
+
+    #close-icon {
+      position: absolute;
+      right: 15px;
+      top: 10px;
+      cursor: pointer;
+      width: 30px;
+      height: 30px;
+      z-index: 1;
+    }
+  }
+
+  @media screen and (min-width: 1025px) {
+    width: 50%;
+  }
+`;
+
+const Img = styled.div`
+  ${props =>
+    props.value &&
+    css`
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('${props.value}');
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: contain;
+    `}
 `;
 
 const VegeTypeLst = styled.div`
@@ -128,8 +199,8 @@ const VegeTypeBox = styled.div`
 
   @media screen and (min-width: 1200px) {
     .img-box {
-      width: 4.5rem;
-      height: 4.5rem;
+      width: 4rem;
+      height: 4rem;
     }
   }
 `;
@@ -185,6 +256,7 @@ function CommunityForm() {
   const [content, setContent] = useState('');
   const [vegeType, setVegeType] = useState(null);
   const [imgs, setImgs] = useState(null);
+  const [showImg, setShowImg] = useState(null);
   const [selectedRestaurantId, setSelectedRestaurantId] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [isForUpdate, setIsForUpdate] = useState(false);
@@ -255,6 +327,7 @@ function CommunityForm() {
     }
   }
 
+  console.log(imgs);
   return (
     <Container>
       {width > 1024 ? (
@@ -270,6 +343,36 @@ function CommunityForm() {
             {userInfo.language === 0 ? '글 작성하기' : 'Write a post'}
           </h1>
         )}
+        {imgs && (
+          <>
+            <ImageBox>
+              <div className="image-upload image-preview">
+                <svg
+                  id="close-icon"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="#848282"
+                  aria-label="닫기"
+                  onClick={() => setShowImg(null)}
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <Img value={showImg} aria-label="메모 이미지" />
+              </div>
+            </ImageBox>
+            <p className="img-count">
+              {imgs.length}
+              {userInfo.language === 0
+                ? '개의 사진 업로드'
+                : ' photos are uploaded'}
+            </p>
+          </>
+        )}
         <label className="input-file-button" htmlFor="input-file">
           {userInfo.language === 0 ? '사진 추가' : 'Upload photos'}
         </label>
@@ -280,16 +383,17 @@ function CommunityForm() {
           id="input-file"
           accept="image/*"
           name="file"
-          onChange={event => setImgs(event.target.files)}
+          onChange={event => {
+            // console.log('here!!!!!!!!!!!!!');
+            // console.log(event.target.files);
+            setImgs(event.target.files);
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              setShowImg(e.target.result);
+            };
+            reader.readAsDataURL(event.target.files[0]);
+          }}
         />
-        {imgs && (
-          <p>
-            {imgs.length}
-            {userInfo.language === 0
-              ? '개의 사진 업로드'
-              : ' photos are uploaded'}
-          </p>
-        )}
         <label htmlFor="category">
           {userInfo.language === 0 ? '카테고리' : 'Category'}
         </label>
