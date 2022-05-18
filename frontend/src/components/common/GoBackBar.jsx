@@ -4,17 +4,27 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import PropTypes from 'prop-types';
 
 const Bar = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  justify-content: center;
   align-items: center;
   position: fixed;
-  top: 0px;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 52px;
   background-color: white;
   z-index: 3;
 
+  svg {
+    position: absolute;
+    top: 8.5px;
+    left: 0;
+    cursor: pointer;
+  }
+
   p {
+    width: 100%;
+    word-break: keep-all;
     font-size: 1.25rem;
     text-align: center;
   }

@@ -5,10 +5,10 @@ import { getFeedList } from '../../api/community';
 import Feed from './Feed';
 
 const Container = styled.div`
-  padding: 5rem 1rem 5rem 1rem;
+  padding: 0rem 1rem 5rem 1rem;
 
   @media screen and (min-width: 1025px) {
-    margin: 60px 17rem -5rem calc(130px + 17rem);
+    margin: 0 17rem -5rem calc(130px + 17rem);
     padding: 3rem;
   }
 
@@ -38,7 +38,6 @@ function Feeds({ categoryValue, vegeTypeValue }) {
   if (categoryValue === 0 && vegeTypeValue === 0) {
     res = feeds;
   }
-
   return (
     <Container>
       {res.length !== 0 ? (

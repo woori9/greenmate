@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import ProfileImage from '../common/ProfileImage';
 
 const StyledBox = styled.div`
   display: flex;
@@ -31,25 +32,27 @@ const StyledMessage = styled.div`
 
   .profile {
     display: flex;
-    justify-content: ${props =>
-      props.isMyMessage ? 'flex-end' : 'flex-start'};
+    justify-content: flex-start;
     font-size: 1em;
-    padding: 0 5%;
     margin-top: 3px;
+    align-items: center;
+    color: #454545;
 
-    img {
-      width: 80px;
+    p {
+      position: relative;
+      left: -10px;
     }
   }
 `;
 
 function Message({ message, isMyMessage, showProfile }) {
+  const { sentBy } = message;
   return (
     <StyledMessage isMyMessage={isMyMessage}>
       {showProfile && (
         <div className="profile">
-          <img src={`${process.env.PUBLIC_URL}/logo192.png`} alt="profile" />
-          <p>프로필</p>
+          <ProfileImage vegeType={sentBy.vegeType} isBig />
+          <p>{sentBy.nickname}</p>
         </div>
       )}
       <StyledBox isMyMessage={isMyMessage}>

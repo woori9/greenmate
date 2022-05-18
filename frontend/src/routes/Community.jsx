@@ -9,11 +9,11 @@ import FloatingActionBtn from '../components/common/FloatingActionBtn';
 import Feeds from '../components/community/Feeds';
 
 const Container = styled.div`
-  padding: 5rem 1rem 5rem 1rem;
+  padding: 5rem 1rem 3rem 1rem;
 
   @media screen and (min-width: 1025px) {
     margin: 60px 17rem 0 calc(130px + 17rem);
-    padding: 3rem;
+    padding: 3rem 3rem 0 3rem;
   }
 `;
 
@@ -30,13 +30,14 @@ function Community() {
   return (
     <>
       <Container>
-        <FormControl variant="standard" sx={{ ml: 3, mr: 3, minWidth: 120 }}>
+        <FormControl sx={{ ml: 3, mr: 3, width: 100 }}>
           <InputLabel id="category">카테고리</InputLabel>
           <Select
             labelId="category"
             id="standard"
             value={category}
             onChange={handleCategoryChange}
+            displayEmpty
             label="category"
           >
             <MenuItem value={0}>전체</MenuItem>
@@ -46,13 +47,14 @@ function Community() {
             <MenuItem value={4}>레시피</MenuItem>
           </Select>
         </FormControl>
-        <FormControl variant="standard" sx={{ minWidth: 120 }}>
+        <FormControl sx={{ width: 100 }}>
           <InputLabel id="vegeType">채식 타입</InputLabel>
           <Select
             labelId="vegeType"
             id="vegeType"
             value={vegeType}
             onChange={handleVegeTypeChange}
+            displayEmpty
             label="vegeType"
           >
             <MenuItem value={0}>전체</MenuItem>

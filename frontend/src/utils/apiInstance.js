@@ -12,4 +12,31 @@ apiInstance.defaults.headers.common.Authorization = `Bearer ${sessionStorage.get
   'Authorization',
 )}`;
 
+apiInstance.interceptors.response.use(
+  res => {
+    return res;
+  },
+  async err => {
+    const originalConfig = err.config;
+    const statusCode = err.response.status;
+    const errMsg = err.response.data;
+    if (errMsg === 'EXPIRED_TOKEN') {
+      originalConfig.retry = true;
+      try {
+        const res = await apiInstance.get('/accounts/token/', {
+          headers: {
+            Refresh: `${sessionStorage.getItem('Refresh')}`,
+          },
+        });
+        sessionStorage.setItem('Authorization', res.data.access_token);
+        sessionStorage.setItem('Refresh', res.data.refresh_token);
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      console.log(statusCode);
+    }
+  },
+);
+
 export default apiInstance;

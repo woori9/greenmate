@@ -33,7 +33,7 @@ const VegeTypeLst = styled.div`
     justify-content: center;
     align-items: center;
     margin-right: 5px;
-    font-size: 20%;
+    font-size: 10px;
     color: #fff;
   }
 `;
@@ -132,7 +132,7 @@ function RestaurantInfoCard({ arrayResult }) {
         </RestaurantInfo>
         <RestaurantRate>
           <StarIcon className="star-icon" />
-          <p>{score}</p>
+          <p>{score === 0 ? '아직 등록된 별점이 없습니다' : { score }}</p>
         </RestaurantRate>
       </Text>
     </Container>

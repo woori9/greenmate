@@ -18,6 +18,8 @@ import { createMoimChat } from '../service/chat_service';
 import useUserInfo from '../hooks/useUserInfo';
 import useWindowDimensions from '../utils/windowDimension';
 
+const { check } = require('korcen');
+
 const Container = styled.div`
   padding: 5rem 1rem 5rem 1rem;
 
@@ -120,6 +122,11 @@ function MoimForm() {
       return;
     }
 
+    if (check(title) || check(content)) {
+      alert('욕설은 입력할 수 없습니다.');
+      return;
+    }
+
     const datetimeLocaleKo = new Date(datetimeValue);
     datetimeLocaleKo.setHours(datetimeLocaleKo.getHours() + 9);
 
@@ -152,10 +159,27 @@ function MoimForm() {
 
   return (
     <Container>
-      {width > 1024 ? <DesktopNavbar /> : <GoBackBar title="메이트 구하기" />}
+      {width > 1024 ? (
+        <DesktopNavbar />
+      ) : (
+        <GoBackBar
+          title={
+            userInfo.language === 0 ? '메이트 구하기' : 'Create an appointment'
+          }
+        />
+      )}
       <Form>
-        {width > 1024 && <h1 className="form-title">메이트 구하기</h1>}
-        <label htmlFor="title">모임 제목</label>
+        {width > 1024 && (
+          <h1 className="form-title">
+            {userInfo.language === 0
+              ? '메이트 구하기'
+              : 'Create an appointment'}
+          </h1>
+        )}
+        <label htmlFor="title">
+          {' '}
+          {userInfo.language === 0 ? '모임 제목' : 'Title'}
+        </label>
         <TextField
           id="title"
           name="title"
@@ -171,7 +195,9 @@ function MoimForm() {
           setSearchKeyword={setSearchKeyword}
           setSelectedRestaurantId={setSelectedRestaurantId}
         />
-        <label htmlFor="datetime">날짜</label>
+        <label htmlFor="datetime">
+          {userInfo.language === 0 ? '날짜' : 'Date'}
+        </label>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DateTimePicker
             value={datetimeValue}
@@ -185,8 +211,16 @@ function MoimForm() {
             renderInput={params => <TextField {...params} margin="normal" />}
           />
         </LocalizationProvider>
-        <label htmlFor="count">인원 (본인 포함)</label>
-        <p className="help-text">인원을 채우지 못하면 모임이 취소됩니다.</p>
+        <label htmlFor="count">
+          {userInfo.language === 0
+            ? '인원 (본인 포함)'
+            : 'Number of people (including yourself)'}
+        </label>
+        <p className="help-text">
+          {userInfo.language === 0
+            ? '인원을 채우지 못하면 모임이 취소됩니다.'
+            : 'If you fail to meet the number of people, the meeting will be canceled.'}
+        </p>
         <Input
           id="count"
           name="count"
@@ -205,14 +239,21 @@ function MoimForm() {
             width: '6rem',
           }}
         />
-        <label htmlFor="content">내용</label>
+        <label htmlFor="content">
+          {' '}
+          {userInfo.language === 0 ? '내용' : 'Content'}
+        </label>
         <TextField
           id="content"
           name="content"
           value={content}
           onChange={e => setContent(e.target.value)}
           disabled={!!isForUpdate}
-          placeholder="내용을 입력해주세요."
+          placeholder={
+            userInfo.language === 0
+              ? '내용을 입력해주세요.'
+              : 'Please enter the contents.'
+          }
           multiline
           minRows="5"
           margin="normal"
@@ -223,7 +264,7 @@ function MoimForm() {
           className={`submit-btn ${width > 1024 && 'mini-btn'}`}
           onClick={() => handleSubmit()}
         >
-          작성
+          {userInfo.language === 0 ? '작성' : 'Submit'}
         </button>
       </Form>
     </Container>

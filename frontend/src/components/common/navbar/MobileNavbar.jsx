@@ -45,19 +45,23 @@ const StyledLink = styled(Link)`
 `;
 
 const NavTop = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 56px;
+  background-color: #fff;
   padding: 0 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  z-index: 3;
+
   p {
     font-size: 28px;
     color: #a9a9a9;
   }
+
   .logo-btn {
     display: inline-block;
     width: auto;

@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { apiGetSearchRestau } from '../../api/map';
 import { snakeToCamel } from '../../utils/formatKey';
+import useUserInfo from '../../hooks/useUserInfo';
 
 const SearchContainer = styled.div`
   position: relative;
@@ -45,26 +46,28 @@ function RestaurantSearchForm({
 }) {
   const [isSearch, setIsSearch] = useState(false);
   const [searchResult, setSearchResult] = useState([]);
+  const userInfo = useUserInfo();
 
   async function handleKeyUp(e) {
-    if (e.keyCode === 13 && searchKeyword.length > 0) {
+    if (searchKeyword.length > 0) {
       setIsSearch(true);
       setSearchKeyword(e.target.value);
-      const res = apiGetSearchRestau({ keyword: searchKeyword });
-      const formattedData = res.map(item => ({
-        ...snakeToCamel(item),
-      }));
-      setSearchResult(formattedData);
+      apiGetSearchRestau({ keyword: searchKeyword }).then(res => {
+        const formattedData = res.map(item => ({
+          ...snakeToCamel(item),
+        }));
+        setSearchResult(formattedData);
+      });
     }
   }
-
   return (
     <SearchContainer>
       <label htmlFor="restaurant" className="input-label">
-        장소
+        {userInfo.language === 0 ? '장소' : 'Restaurant'}
       </label>
       <div>
         <Input
+          type="search"
           id="restaurant"
           name="restaurant"
           value={searchKeyword}
@@ -75,6 +78,7 @@ function RestaurantSearchForm({
           startAdornment={<InputAdornment position="start">@</InputAdornment>}
           inputProps={{
             'aria-label': 'restaurant',
+            enterKeyHint: 'enter',
           }}
           sx={{
             width: '100%',
@@ -97,7 +101,11 @@ function RestaurantSearchForm({
                 </li>
               ))
             ) : (
-              <li>검색 결과가 없습니다.</li>
+              <li>
+                {userInfo.language === 0
+                  ? '검색 결과가 없습니다.'
+                  : 'There are no search results.'}
+              </li>
             )}
           </SearchList>
         )}
