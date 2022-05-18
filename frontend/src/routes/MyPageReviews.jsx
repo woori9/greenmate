@@ -8,8 +8,7 @@ import { getMyReviews } from '../api/mypage';
 import useWindowDimensions from '../utils/windowDimension';
 
 const Container = styled.div`
-  border: 1px solid red;
-  margin: ${props =>
+  padding: ${props =>
     props.isDesktop ? '0 2rem 0 34rem' : '62px 1rem 5rem 1rem'};
 `;
 
@@ -41,7 +40,7 @@ function MyPageReviews() {
         <GoBackBar title="작성한 리뷰" />
       )}
       <Container isDesktop={isDesktop}>
-        <p>평가</p>
+        <p>리뷰</p>
       </Container>
     </>
   );

@@ -66,6 +66,7 @@ function RestaurantSearchForm({
       </label>
       <div>
         <Input
+          type="search"
           id="restaurant"
           name="restaurant"
           value={searchKeyword}

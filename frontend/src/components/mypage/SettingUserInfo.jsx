@@ -101,6 +101,11 @@ function SettingUserInfo({ setPageStatus, isDesktop }) {
   const [newVegeType, setVegeType] = useState(nowVegeType);
 
   function checkNickname(putNickname) {
+    if (putNickname === '') {
+      setNewNickname(null);
+      alert('입력한 닉네임을 확인해주세요');
+      return;
+    }
     apiCheckNickname(
       { nickname: putNickname },
       () => {

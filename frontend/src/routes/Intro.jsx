@@ -62,7 +62,7 @@ const Container = styled.div`
   }
 `;
 const SliderItem = styled.div`
-  height: 90vh;
+  min-height: 90vh;
   display: grid;
   place-content: center;
   display: flex;
@@ -74,12 +74,12 @@ const SliderItem = styled.div`
   img {
     max-height: 16rem;
     max-width: 16rem;
-    margin: 2rem 0;
     @media screen and (min-width: 1025px) {
       margin-right: 2rem;
     }
   }
   .text-container {
+    padding: 2rem 0;
     width: 16rem;
     .title {
       font-size: 1.3rem;
@@ -107,13 +107,13 @@ const BottomContainer = styled.div`
     width: 16rem;
     padding: 0.7rem 0;
     border-radius: 20px;
-    border: 2px solid #ffeb00;
+    border: 2px solid #fcb448;
     display: flex;
     justify-content: center;
     align-items: center;
     margin: 1.5rem 0;
     p {
-      color: #ffeb00;
+      color: #fcb448;
     }
   }
 `;

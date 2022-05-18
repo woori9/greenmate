@@ -14,9 +14,11 @@ import EvalueImg3 from '../assets/evalue-img3.png';
 const Container = styled.div`
   margin: 62px 1rem 5rem 1rem;
   padding: 0 1rem;
+  border-radius: 10px;
   @media screen and (min-width: 1025px) {
     margin: 0 2rem 0 34rem;
     border: 1px solid #f2f2f2;
+    height: 33rem;
   }
 `;
 const TitleContainer = styled.div`
@@ -101,7 +103,7 @@ function MyPageEvaluation() {
           <ResponsiveProfile />
         </>
       ) : (
-        <GoBackBar title="평가" />
+        <GoBackBar title="메이트 평가" />
       )}
       <Container isDesktop={isDesktop}>
         {evaluationLst.length ? (

@@ -9,12 +9,12 @@ import useWindowDimensions from '../utils/windowDimension';
 
 const Container = styled.div`
   border-radius: 10px;
-  margin: 78px 1rem 5rem 1rem;
+  padding: 78px 1rem 5rem 1rem;
   height: calc(100vh - 104px - 4rem);
   @media screen and (min-width: 1025px) {
     margin: 0 2rem 0 34rem;
     border: 1px solid #f2f2f2;
-    height: calc(100vh - 60px - 2rem);
+    height: 33rem;
   }
 `;
 const RestauDiv = styled.div`
@@ -83,7 +83,7 @@ function MyPageLikedRestaurants() {
           <ResponsiveProfile />
         </>
       ) : (
-        <GoBackBar title="좋아요한 식당" />
+        <GoBackBar title="저장한 식당" />
       )}
       <Container>
         {likedRestau.length ? (
