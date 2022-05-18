@@ -64,6 +64,17 @@ const MainBox = styled.div`
   border-radius: 10px;
   margin: 1.5rem 0;
 
+  .profile-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 1rem;
+    background: none;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+  }
+
   .profile-img {
     position: absolute;
     top: -1.5rem;
@@ -88,8 +99,8 @@ const MainBox = styled.div`
 
 const DeleteBtn = styled.button`
   position: absolute;
-  top: 0.9rem;
-  right: 2rem;
+  top: 8px;
+  right: 1rem;
   width: 30px;
   height: 30px;
   border: none;
@@ -153,6 +164,8 @@ const H2 = styled.h2`
 const ButtonDiv = styled.div`
   position: fixed;
   border-top: 1px solid #a9a9a9;
+  background-color: #fff;
+  z-index: 1;
 
   button {
     width: 18rem;
@@ -179,6 +192,7 @@ const ButtonDiv = styled.div`
     border-top: none;
     bottom: 2rem;
     right: 1rem;
+    background: none;
 
     button {
       width: 10rem;
@@ -237,7 +251,7 @@ function MoimDetail() {
           )
         }
       >
-        대기 취소하기
+        {userInfo.language === 0 ? '대기 취소하기' : 'Cancel wait'}
       </button>
     ),
     1: (
@@ -251,7 +265,7 @@ function MoimDetail() {
           )
         }
       >
-        참여 취소하기
+        {userInfo.language === 0 ? '대기 취소하기' : 'Cancel participation'}
       </button>
     ),
     5: (
@@ -271,7 +285,7 @@ function MoimDetail() {
           })
         }
       >
-        수정하기
+        {userInfo.language === 0 ? '수정하기' : 'Modify'}
       </button>
     ),
     6: (
@@ -285,7 +299,7 @@ function MoimDetail() {
           );
         }}
       >
-        참여하기
+        {userInfo.language === 0 ? '참여하기' : 'Participate in'}
       </button>
     ),
   };
@@ -328,8 +342,14 @@ function MoimDetail() {
       <OrangeBack />
       <MainBox>
         <h1>{moimInfo.title}</h1>
-        <ProfileImage vegeType={moimInfo.author.vegeType} isBig={false} />
-        <p>{moimInfo.author.nickname}</p>
+        <button
+          type="button"
+          className="profile-btn"
+          onClick={() => navigate(`/mypage/${moimInfo.author.id}`)}
+        >
+          <ProfileImage vegeType={moimInfo.author.vegeType} isBig={false} />
+          <p>{moimInfo.author.nickname}</p>
+        </button>
       </MainBox>
       <DataList>
         <div className="info-data">
@@ -375,7 +395,7 @@ function MoimDetail() {
           <dd>
             <PeopleAltIcon sx={{ color: '#a9a9a9', marginRight: '0.5rem' }} />
           </dd>
-          <dd>{moimInfo.headCnt}명</dd>
+          <dd>{`${moimInfo.nowCnt} / ${moimInfo.headCnt}`}</dd>
         </div>
 
         <div className="info-data translation-box">
@@ -386,7 +406,7 @@ function MoimDetail() {
             </dd>
             <dd>{moimInfo.content}</dd>
           </div>
-          {userInfo.language !== 0 && !toggleTranslation && (
+          {!toggleTranslation && (
             <button
               type="button"
               className="mini-btn translate-btn"
@@ -399,27 +419,27 @@ function MoimDetail() {
                 setToggleTranslation(prev => !prev);
               }}
             >
-              See translation
-            </button>
-          )}
-          {userInfo.language !== 0 && toggleTranslation && (
-            <button
-              type="button"
-              className="mini-btn translate-btn"
-              onClick={() => {
-                setToggleTranslation(prev => !prev);
-              }}
-            >
-              Collapse translation
+              {userInfo.language === 0 ? '번역 보기' : 'See translation'}
             </button>
           )}
           {toggleTranslation && (
-            <dd className="translation-txt">{translation}</dd>
+            <>
+              <button
+                type="button"
+                className="mini-btn translate-btn"
+                onClick={() => {
+                  setToggleTranslation(prev => !prev);
+                }}
+              >
+                {userInfo.language === 0 ? '원문 보기' : 'Collapse translation'}
+              </button>
+              <dd className="translation-txt">{translation}</dd>
+            </>
           )}
         </div>
       </DataList>
 
-      <H2>멤버 소개</H2>
+      <H2>{userInfo.language === 0 ? '멤버 소개' : 'Members'}</H2>
       {moimInfo.mates.map(mate => {
         if (mate.mateStatus === 1) {
           return <UserInfo userInfo={mate} key={mate.userId} />;

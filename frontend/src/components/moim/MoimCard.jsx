@@ -44,9 +44,11 @@ const Card = styled.div`
     margin-left: 0.5rem;
   }
 
-  &:hover {
-    transform: scale(1.03);
-    cursor: pointer;
+  @media screen and (min-width: 1025px) {
+    &:hover {
+      transform: scale(1.03);
+      cursor: pointer;
+    }
   }
 `;
 

@@ -14,7 +14,7 @@ import { userInfoAtom } from '../atoms/accounts';
 import { snakeToCamel } from '../utils/formatKey';
 
 const Container = styled.div`
-  padding: 5rem 1rem 5rem 1rem;
+  padding: 5rem 1rem calc(5rem + 140px) 1rem;
 
   .inform-txt-container {
     width: 100%;
@@ -23,7 +23,7 @@ const Container = styled.div`
   }
 
   @media screen and (min-width: 1025px) {
-    padding: 60px 3rem 0 calc(130px + 3rem);
+    padding: 60px 3rem 150px calc(130px + 3rem);
 
     .moim-card-container {
       display: grid;
