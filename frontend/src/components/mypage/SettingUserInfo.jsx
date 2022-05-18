@@ -49,7 +49,7 @@ const ModifyNickName = styled.div`
   }
 `;
 const ButtonContainer = styled.div`
-  position: absolute;
+  position: fixed;
   display: flex;
   flex-direction: column;
   align-items: center;

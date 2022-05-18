@@ -8,10 +8,21 @@ import { getMyReviews } from '../api/mypage';
 import useWindowDimensions from '../utils/windowDimension';
 
 const Container = styled.div`
-  padding: ${props =>
-    props.isDesktop ? '0 2rem 0 34rem' : '62px 1rem 5rem 1rem'};
+  border-radius: 10px;
+  padding: 78px 1rem 5rem 1rem;
+  height: calc(100vh - 104px - 4rem);
+  @media screen and (min-width: 1025px) {
+    margin: 0 2rem 0 34rem;
+    border: 1px solid #f2f2f2;
+    height: 33rem;
+  }
 `;
-
+const NoContent = styled.div`
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 function MyPageReviews() {
   const { width } = useWindowDimensions();
   const isDesktop = width > 1024;
@@ -22,7 +33,7 @@ function MyPageReviews() {
     getMyReviews(
       { userId: userPk },
       res => {
-        setReviews(res.data);
+        setReviews(res);
       },
       err => {
         console.log(err);
@@ -40,7 +51,17 @@ function MyPageReviews() {
         <GoBackBar title="작성한 리뷰" />
       )}
       <Container isDesktop={isDesktop}>
-        <p>리뷰</p>
+        {reviews.length ? (
+          <>
+            {reviews.map(review => (
+              <p>{review}</p>
+            ))}
+          </>
+        ) : (
+          <NoContent>
+            <p>아직 작성된 리뷰가 없습니다</p>
+          </NoContent>
+        )}
       </Container>
     </>
   );
