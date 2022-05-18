@@ -6,12 +6,12 @@ const StyledFooter = styled.footer`
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 160px;
+  height: 140px;
   background-color: #f2f2f2;
+  padding: 2rem 0;
 
   .footer-content {
     text-align: center;
-    padding: 2rem 0;
     line-height: 2;
   }
 
@@ -20,10 +20,8 @@ const StyledFooter = styled.footer`
   }
 
   @media screen and (max-width: 1024px) {
-    padding-bottom: 90px;
-
     .footer-content {
-      padding-bottom: calc(2rem + 62px);
+      padding-bottom: 62px;
     }
   }
 

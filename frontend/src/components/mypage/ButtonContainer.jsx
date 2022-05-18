@@ -51,7 +51,10 @@ function ButtonContainer({ getProfileInfo, profileInfo }) {
   }
 
   async function onClickMessage() {
-    if (profileInfo.id === userInfo.id) return;
+    if (profileInfo.id === userInfo.id) {
+      navigate('/chat');
+      return;
+    }
 
     let chatRoom = await findPrivateChatRoom(
       `${profileInfo.id}`,
