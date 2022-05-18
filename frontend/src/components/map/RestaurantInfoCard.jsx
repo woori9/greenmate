@@ -132,7 +132,7 @@ function RestaurantInfoCard({ arrayResult }) {
         </RestaurantInfo>
         <RestaurantRate>
           <StarIcon className="star-icon" />
-          <p>{score}</p>
+          <p>{score === 0 ? '아직 등록된 별점이 없습니다' : { score }}</p>
         </RestaurantRate>
       </Text>
     </Container>
