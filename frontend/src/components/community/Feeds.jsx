@@ -5,10 +5,10 @@ import { getFeedList } from '../../api/community';
 import Feed from './Feed';
 
 const Container = styled.div`
-  padding: 5rem 1rem 5rem 1rem;
+  padding: 0rem 1rem 5rem 1rem;
 
   @media screen and (min-width: 1025px) {
-    margin: 60px 17rem -5rem calc(130px + 17rem);
+    margin: 0 17rem -5rem calc(130px + 17rem);
     padding: 3rem;
   }
 
@@ -18,6 +18,7 @@ const Container = styled.div`
 `;
 function Feeds({ categoryValue, vegeTypeValue }) {
   const [feeds, setFeeds] = useState([]);
+  const [needUpdate, setNeedUpdate] = useState(1);
 
   useEffect(() => {
     const getFeeds = async () => {
@@ -25,7 +26,7 @@ function Feeds({ categoryValue, vegeTypeValue }) {
       setFeeds(resData);
     };
     getFeeds();
-  }, []);
+  }, [needUpdate]);
 
   let res = feeds.filter(
     feed => feed.category === categoryValue && feed.vege_type === vegeTypeValue,
@@ -38,14 +39,13 @@ function Feeds({ categoryValue, vegeTypeValue }) {
   if (categoryValue === 0 && vegeTypeValue === 0) {
     res = feeds;
   }
-
   return (
     <Container>
       {res.length !== 0 ? (
         <div>
           {res.map(feed => (
             <div key={feed.id}>
-              <Feed feed={feed} />
+              <Feed feed={feed} setNeedUpdate={setNeedUpdate} />
             </div>
           ))}
         </div>
