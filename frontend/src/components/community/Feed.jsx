@@ -24,7 +24,6 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
 import SendIcon from '@mui/icons-material/Send';
 import Button from '@mui/material/Button';
-import { useNavigate } from 'react-router-dom';
 import FeedImageCarousel from './FeedIamgeCarousel';
 import {
   postFeedLike,
