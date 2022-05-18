@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import Avatar from '@mui/material/Avatar';
@@ -192,6 +193,7 @@ const FeedContent = styled.span`
 `;
 
 function Feed({ feed, setNeedUpdate }) {
+  const navigate = useNavigate();
   const [isLike, setIsLike] = useState(feed.is_like);
   const [likeCnt, setLikeCnt] = useState(feed.like_cnt);
   const [isSetting, setIsSetting] = useState(false);
@@ -280,7 +282,20 @@ function Feed({ feed, setNeedUpdate }) {
           <List>
             <ListItem disablePadding>
               <ListItemButton>
-                <ListItemText primary="수정" />
+                <ListItemText
+                  primary="수정"
+                  onClick={() =>
+                    navigate('/community/form', {
+                      state: {
+                        feedId: feed.id,
+                        originalCategory: feed.category,
+                        originalContent: feed.content,
+                        originalVegeType: feed.vege_type,
+                        originalImgs: feed.img_paths,
+                      },
+                    })
+                  }
+                />
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>

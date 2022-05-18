@@ -4,7 +4,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
-import { grey } from '@mui/material/colors';
 import ParkIcon from '@mui/icons-material/Park';
 import LocalDiningIcon from '@mui/icons-material/LocalDining';
 import ScaleIcon from '@mui/icons-material/Scale';
@@ -15,6 +14,7 @@ import RatingForm from '../components/community/RatingForm';
 import VegeTypeInform from '../components/common/VegeTypeInform';
 import DesktopNavbar from '../components/common/navbar/DesktopNavbar';
 import GoBackBar from '../components/common/GoBackBar';
+import useUserInfo from '../hooks/useUserInfo';
 import useWindowDimensions from '../utils/windowDimension';
 import vegeTypeList from '../utils/vegeTypeList';
 
@@ -38,6 +38,7 @@ const Form = styled.div`
 
   label {
     margin-top: 1rem;
+    width: 150px;
   }
 
   .input-label {
@@ -109,8 +110,8 @@ const VegeTypeBox = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 3rem;
-    height: 3rem;
+    width: 2.5rem;
+    height: 2.5rem;
     border: ${props => props.selected && '3px solid #fcb448'};
     border-radius: ${props => props.selected && '50%'};
 
@@ -186,12 +187,12 @@ function CommunityForm() {
   const [imgs, setImgs] = useState(null);
   const [selectedRestaurantId, setSelectedRestaurantId] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState('');
-  const [isCategoryClick, setIsCategoryClick] = useState(0);
   const [isForUpdate, setIsForUpdate] = useState(false);
   const [originalFeedId, setOriginalFeedId] = useState();
   const [rating, setRating] = useState();
   const location = useLocation();
   const navigate = useNavigate();
+  const userInfo = useUserInfo();
 
   useEffect(() => {
     if (location.state) {
@@ -222,7 +223,7 @@ function CommunityForm() {
   function handleSubmit(e) {
     e.preventDefault();
     if (category === 0 || !content || !imgs) {
-      if (isCategoryClick === 2) {
+      if (category === 2) {
         if (!selectedRestaurantId) {
           alert('입력하지 않은 정보가 있습니다.');
           return;
@@ -256,11 +257,21 @@ function CommunityForm() {
 
   return (
     <Container>
-      {width > 1024 ? <DesktopNavbar /> : <GoBackBar title="글 작성하기" />}
-      <Form target="_blank">
-        {width > 1024 && <h1 className="form-title">글 작성하기</h1>}
+      {width > 1024 ? (
+        <DesktopNavbar />
+      ) : (
+        <GoBackBar
+          title={userInfo.language === 0 ? '글 작성하기' : 'Write a post'}
+        />
+      )}
+      <Form>
+        {width > 1024 && (
+          <h1 className="form-title">
+            {userInfo.language === 0 ? '글 작성하기' : 'Write a post'}
+          </h1>
+        )}
         <label className="input-file-button" htmlFor="input-file">
-          사진 업로드
+          {userInfo.language === 0 ? '사진 추가' : 'Upload photos'}
         </label>
         <input
           type="file"
@@ -271,108 +282,76 @@ function CommunityForm() {
           name="file"
           onChange={event => setImgs(event.target.files)}
         />
-        {imgs && <p>{imgs.length}개의 사진 업로드</p>}
-        <label htmlFor="category">카테고리</label>
+        {imgs && (
+          <p>
+            {imgs.length}
+            {userInfo.language === 0
+              ? '개의 사진 업로드'
+              : ' photos are uploaded'}
+          </p>
+        )}
+        <label htmlFor="category">
+          {userInfo.language === 0 ? '카테고리' : 'Category'}
+        </label>
         <Stack direction="row" spacing={3}>
           <Stack direction="column" alignItems="center">
-            {isCategoryClick === 1 ? (
-              <Avatar
-                sx={{ cursor: 'pointer', bgcolor: '#fcb448' }}
-                onClick={() => {
-                  setIsCategoryClick(0);
-                  setCategory(0);
-                }}
-              >
-                <ParkIcon />
-              </Avatar>
-            ) : (
-              <Avatar
-                sx={{ cursor: 'pointer', bgcolor: grey[300] }}
-                className="mouse-hover"
-                onClick={() => {
-                  setIsCategoryClick(1);
-                  setCategory(1);
-                }}
-              >
-                <ParkIcon />
-              </Avatar>
-            )}
-            <p>일상</p>
+            <Avatar
+              sx={{
+                cursor: 'pointer',
+                bgcolor: category === 1 ? '#fcb448' : '#a9a9a9',
+              }}
+              className="mouse-hover"
+              onClick={() => {
+                setCategory(1);
+              }}
+            >
+              <ParkIcon />
+            </Avatar>
+            <p>{userInfo.language === 0 ? '일상' : 'Daily'}</p>
           </Stack>
           <Stack direction="column" alignItems="center">
-            {isCategoryClick === 2 ? (
-              <Avatar
-                sx={{ cursor: 'pointer', bgcolor: '#fcb448' }}
-                onClick={() => {
-                  setIsCategoryClick(0);
-                  setCategory(0);
-                }}
-              >
-                <LocalDiningIcon />
-              </Avatar>
-            ) : (
-              <Avatar
-                sx={{ cursor: 'pointer', bgcolor: grey[300] }}
-                className="mouse-hover"
-                onClick={() => {
-                  setIsCategoryClick(2);
-                  setCategory(2);
-                }}
-              >
-                <LocalDiningIcon />
-              </Avatar>
-            )}
-            <p>식당</p>
+            <Avatar
+              sx={{
+                cursor: 'pointer',
+                bgcolor: category === 2 ? '#fcb448' : '#a9a9a9',
+              }}
+              className="mouse-hover"
+              onClick={() => {
+                setCategory(2);
+              }}
+            >
+              <LocalDiningIcon />
+            </Avatar>
+            <p>{userInfo.language === 0 ? '식당' : 'Restaurant'}</p>
           </Stack>
           <Stack direction="column" alignItems="center">
-            {isCategoryClick === 3 ? (
-              <Avatar
-                sx={{ cursor: 'pointer', bgcolor: '#fcb448' }}
-                onClick={() => {
-                  setIsCategoryClick(0);
-                  setCategory(0);
-                }}
-              >
-                <RoomServiceIcon />
-              </Avatar>
-            ) : (
-              <Avatar
-                sx={{ cursor: 'pointer', bgcolor: grey[300] }}
-                className="mouse-hover"
-                onClick={() => {
-                  setIsCategoryClick(3);
-                  setCategory(3);
-                }}
-              >
-                <RoomServiceIcon />
-              </Avatar>
-            )}
-            <p>제품</p>
+            <Avatar
+              sx={{
+                cursor: 'pointer',
+                bgcolor: category === 3 ? '#fcb448' : '#a9a9a9',
+              }}
+              className="mouse-hover"
+              onClick={() => {
+                setCategory(3);
+              }}
+            >
+              <RoomServiceIcon />
+            </Avatar>
+            <p>{userInfo.language === 0 ? '제품' : 'Product'}</p>
           </Stack>
           <Stack direction="column" alignItems="center">
-            {isCategoryClick === 4 ? (
-              <Avatar
-                sx={{ cursor: 'pointer', bgcolor: '#fcb448' }}
-                onClick={() => {
-                  setIsCategoryClick(0);
-                  setCategory(0);
-                }}
-              >
-                <ScaleIcon />
-              </Avatar>
-            ) : (
-              <Avatar
-                sx={{ cursor: 'pointer', bgcolor: grey[300] }}
-                className="mouse-hover"
-                onClick={() => {
-                  setIsCategoryClick(4);
-                  setCategory(4);
-                }}
-              >
-                <ScaleIcon />
-              </Avatar>
-            )}
-            <p>레시피</p>
+            <Avatar
+              sx={{
+                cursor: 'pointer',
+                bgcolor: category === 4 ? '#fcb448' : '#a9a9a9',
+              }}
+              onClick={() => {
+                setCategory(4);
+              }}
+            >
+              <ScaleIcon />
+            </Avatar>
+            <p>{userInfo.language === 0 ? '레시피' : 'Recipe'}</p>
           </Stack>
         </Stack>
         <Stack
@@ -380,9 +359,16 @@ function CommunityForm() {
           justifyContent="space-between"
           alignItems="center"
         >
-          <label htmlFor="vege_type">채식 타입</label>
+          <label htmlFor="vege_type">
+            {userInfo.language === 0 ? '채식 타입' : 'Vegetarian type'}
+          </label>
           <Description>
-            <Info>채식 타입 안내 {'>'}</Info>
+            <Info>
+              {userInfo.language === 0
+                ? '채식 타입 안내'
+                : 'A guide to vegetarian types'}{' '}
+              {'>'}
+            </Info>
             <Page className="descript-page">
               <VegeTypeInform />
             </Page>
@@ -404,7 +390,7 @@ function CommunityForm() {
             </VegeTypeBox>
           ))}
         </VegeTypeLst>
-        {isCategoryClick === 2 ? (
+        {category === 2 ? (
           <div className="review_margin">
             <RestaurantSearchForm
               isForUpdate={isForUpdate}
@@ -413,21 +399,29 @@ function CommunityForm() {
               setSelectedRestaurantId={setSelectedRestaurantId}
             />
             <div className="review_margin">
-              <label htmlFor="rating">평점</label>
+              <label htmlFor="rating">
+                {userInfo.language === 0 ? '평점' : 'Rating'}
+              </label>
               <RatingForm rating={rating} setRating={setRating} />
             </div>
           </div>
         ) : (
           <div />
         )}
-        <label htmlFor="content">내용</label>
+        <label htmlFor="content">
+          {userInfo.language === 0 ? '내용' : 'Content'}
+        </label>
         <TextField
           id="content"
           name="content"
           value={content}
           onChange={e => setContent(e.target.value)}
           // disabled={!!isForUpdate}
-          placeholder="내용을 입력해주세요."
+          placeholder={
+            userInfo.language === 0
+              ? '내용을 입력해주세요.'
+              : 'Please enter the contents.'
+          }
           multiline
           minRows="5"
           margin="normal"
@@ -438,7 +432,7 @@ function CommunityForm() {
           className={`submit-btn ${width > 1024 && 'mini-btn'}`}
           onClick={e => handleSubmit(e)}
         >
-          작성
+          {userInfo.language === 0 ? '작성' : 'Submit'}
         </button>
       </Form>
     </Container>
