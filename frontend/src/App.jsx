@@ -130,25 +130,25 @@ function App() {
           <Route path="/moim/:moimId/member" element={<ManageMember />} />
           <Route path="/moim/:moimId/evaluation" element={<EvaluateMoim />} />
           <Route path="/community/form" element={<CommunityForm />} />
+          <Route
+            path="/mypage/:userPk/liked-restaurants"
+            element={<MyPageLikedRestaurants />}
+          />
+          <Route
+            path="/mypage/:userPk/evaluation"
+            element={<MyPageEvaluation />}
+          />
+          <Route
+            path="/mypage/:userPk/my-reviews"
+            element={<MyPageReviews />}
+          />
+          <Route path="/mypage/:userPk/my-feeds" element={<MyPageFeeds />} />
+          <Route path="/mypage/:userPk/setting" element={<MyPageSetting />} />
           <Route element={<Footer />}>
             <Route path="/" element={<Home />} />
             <Route path="/community" element={<Community />} />
             <Route path="/mymoim" element={<MyMoim />} />
             <Route path="/mypage/:userPk" element={<MyPage />} />
-            <Route
-              path="/mypage/:userPk/liked-restaurants"
-              element={<MyPageLikedRestaurants />}
-            />
-            <Route
-              path="/mypage/:userPk/evaluation"
-              element={<MyPageEvaluation />}
-            />
-            <Route
-              path="/mypage/:userPk/my-reviews"
-              element={<MyPageReviews />}
-            />
-            <Route path="/mypage/:userPk/my-feeds" element={<MyPageFeeds />} />
-            <Route path="/mypage/:userPk/setting" element={<MyPageSetting />} />
             <Route path="/notification" element={<Notification />} />
           </Route>
         </Route>

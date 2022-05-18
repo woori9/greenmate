@@ -1,10 +1,12 @@
 import PropTypes from 'prop-types';
+import { useAtom } from 'jotai';
 import styled from 'styled-components';
 import Nickname from '../Nickname';
 import FollowerStatus from '../FollowerStatus';
 import ButtonContainer from '../ButtonContainer';
 import ProfileLst from '../ProfileLst';
 import ProfileImg from '../../common/ProfileImage';
+import { userInfoAtom } from '../../../atoms/accounts';
 
 const LeftContainer = styled.div`
   position: fixed;
@@ -24,12 +26,13 @@ const NameNStatus = styled.div`
 `;
 
 function DesktopProfile({ getProfileInfo, profileInfo, isDesktop }) {
+  const [userInfo] = useAtom(userInfoAtom);
   const isBig = true;
   return (
     <LeftContainer>
       <NameNStatus>
-        <ProfileImg vegeType={profileInfo.vege_type} isBig={isBig} />
-        <Nickname profileInfo={profileInfo} isDesktop={isDesktop} />
+        <ProfileImg vegeType={userInfo.vege_type} isBig={isBig} />
+        <Nickname isDesktop={isDesktop} />
         <FollowerStatus profileInfo={profileInfo} isDesktop={isDesktop} />
       </NameNStatus>
       <ButtonContainer
