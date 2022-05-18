@@ -39,6 +39,10 @@ html, body {
   padding-bottom: 140px;
 }
 
+::-webkit-scrollbar {
+  width: 0 !important;
+}
+
 @media screen and (min-width: 1025px) {
   body {
     min-height: 100vh;

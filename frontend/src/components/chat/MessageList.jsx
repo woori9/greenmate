@@ -7,11 +7,7 @@ const StyledMessageList = styled.ul`
   list-style: none;
   padding: 0;
   margin: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  ::-webkit-scrollbar {
-    width: 0;
-  }
+  padding-bottom: 5rem;
 `;
 
 function MessageList({ messages, userId }) {

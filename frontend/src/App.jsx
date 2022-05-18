@@ -123,6 +123,7 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route element={<PrivateRoute isLoggedIn={!!userInfo} />}>
           <Route path="/map" element={<Map />} />
+          <Route path="/chat" element={<Chat />} />
           <Route path="/chatRoom" element={<ChatRoom />} />
           <Route element={<Footer />}>
             <Route path="/" element={<Home />} />
@@ -148,7 +149,6 @@ function App() {
             />
             <Route path="/mypage/:userPk/my-feeds" element={<MyPageFeeds />} />
             <Route path="/mypage/:userPk/setting" element={<MyPageSetting />} />
-            <Route path="/chat" element={<Chat />} />
             <Route path="/notification" element={<Notification />} />
           </Route>
         </Route>
