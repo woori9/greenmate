@@ -12,10 +12,19 @@ export async function createFeed(data) {
   return response.data;
 }
 
+// 피드 수정
+export async function updateFeed(feedId, data) {
+  const response = await apiInstance.post(
+    `/greenmates/community/feed/${feedId}/`,
+    data,
+  );
+  return response.data;
+}
+
 // 피드 삭제
 export async function deleteFeed(feedId) {
   const response = await apiInstance.delete(
-    `/greenmates/community/feed/${feedId}`,
+    `/greenmates/community/feed/${feedId}/`,
   );
   return response.data;
 }

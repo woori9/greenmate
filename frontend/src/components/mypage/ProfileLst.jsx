@@ -1,7 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
-import FavoriteIcon from '@mui/icons-material/Favorite';
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
 import ArticleIcon from '@mui/icons-material/Article';
 import StarIcon from '@mui/icons-material/Star';
@@ -35,6 +34,7 @@ const StyledLink = styled(Link)`
 function ProfileLst() {
   const [userInfo] = useAtom(userInfoAtom);
   const userPk = userInfo.id;
+  const userLanguage = userInfo.language;
   const { pathname } = useLocation();
   const profileUserPk = pathname.split('/')[2];
   const profilePageTitle = pathname.split('/')[3];
@@ -43,49 +43,35 @@ function ProfileLst() {
     {
       icon: <StarIcon />,
       pageStatus: 'my-reviews',
-      pageName: '리뷰',
+      pageName: `${userLanguage === 0 ? '리뷰' : 'Reviews'}`,
       path: `/mypage/${profileUserPk}/my-reviews`,
       isAvailable: true,
     },
     {
       icon: <ArticleIcon />,
       pageStatus: 'my-feeds',
-      pageName: '피드',
+      pageName: `${userLanguage === 0 ? '피드' : 'Posts'}`,
       path: `/mypage/${profileUserPk}/my-feeds`,
-      isAvailable: true,
-    },
-    {
-      icon: <PeopleAltOutlinedIcon />,
-      pageStatus: 'evaluation',
-      pageName: '메이트 평가',
-      path: `/mypage/${profileUserPk}/evaluation`,
       isAvailable: true,
     },
     {
       icon: <BookmarkIcon />,
       pageStatus: 'liked-restaurants',
-      pageName: '저장한 식당',
+      pageName: `${userLanguage === 0 ? '저장한 식당' : 'Saved Restaurants'}`,
       path: `/mypage/${profileUserPk}/liked-restaurants`,
       isAvailable: isMypage,
     },
     {
-      icon: <FavoriteIcon />,
-      pageStatus: 'liked-reviews',
-      pageName: '좋아요한 리뷰',
-      path: `/mypage/${profileUserPk}/liked-reviews`,
-      isAvailable: isMypage,
-    },
-    {
-      icon: <FavoriteIcon />,
-      pageStatus: 'liked-feeds',
-      pageName: '좋아요한 피드',
-      path: `/mypage/${profileUserPk}/liked-feeds`,
-      isAvailable: isMypage,
+      icon: <PeopleAltOutlinedIcon />,
+      pageStatus: 'evaluation',
+      pageName: `${userLanguage === 0 ? '받은 메이트 평가' : 'Feedback'}`,
+      path: `/mypage/${profileUserPk}/evaluation`,
+      isAvailable: true,
     },
     {
       icon: <SettingsIcon />,
       pageStatus: 'setting',
-      pageName: '설정',
+      pageName: `${userLanguage === 0 ? '설정' : 'Settings'}`,
       path: `/mypage/${profileUserPk}/setting`,
       isAvailable: isMypage,
     },

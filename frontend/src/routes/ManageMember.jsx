@@ -19,21 +19,12 @@ const Container = styled.div`
   padding: 5rem 1rem 5rem 1rem;
   margin: 0 auto;
 
-  .go-back-bar {
-    left: 0;
-  }
-
   @media screen and (min-width: 1025px) {
     padding: 112px 2rem 0 calc(130px + 2rem);
 
     .go-back-bar {
       background-color: #f2f2f2;
       left: 130px;
-
-      p {
-        position: absolute;
-        left: 45%;
-      }
     }
   }
 `;

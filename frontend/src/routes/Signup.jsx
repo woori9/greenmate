@@ -3,16 +3,11 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAtom } from 'jotai';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import VegeTypeInform from '../components/common/VegeTypeInform';
 import { userInfoAtom } from '../atoms/accounts';
 import { apiCheckNickname, apiPutUserInfo } from '../api/accounts';
 import { signInFirebase } from '../service/chat_service';
-import veganIcon from '../assets/vegan-icon.png';
-import lactoIcon from '../assets/lacto-icon.png';
-import ovoIcon from '../assets/ovo-icon.png';
-import lactoOvoUcon from '../assets/lacto-ovo-icon.png';
-import pescoIcon from '../assets/pesco-icon.png';
-import poloIcon from '../assets/polo-icon.png';
-import flexiIcon from '../assets/flexi-icon.png';
+import vegeTypeList from '../utils/vegeTypeList';
 
 const Container = styled.div`
   height: 100vh;
@@ -95,23 +90,38 @@ const VegeTypeLst = styled.div`
   padding: 1rem 0;
 `;
 const VegeTypeBox = styled.div`
-  filter: ${props => (props.selected ? 'grayscale(100%)' : null)};
   width: 4rem;
   display: flex;
   flex-direction: column;
   align-items: center;
+  cursor: pointer;
+
   .img-box {
-    height: 4.5rem;
+    width: 2.2rem;
+    height: 2.2rem;
+    border: ${props => props.selected && '3px solid #fcb448'};
+    border-radius: ${props => props.selected && '50%'};
+
     .vege-img {
       width: 100%;
     }
   }
+
   p {
     font-size: 0.7rem;
     white-space: nowrap;
     color: ${props => (props.selected ? '#fcb448' : 'black')};
   }
-  cursor: pointer;
+
+  @media screen and (min-width: 1025px) {
+    .img-box {
+      width: 4rem;
+      height: 4rem;
+    }
+    p {
+      font-size: 0.9rem;
+    }
+  }
 `;
 const Page = styled.div`
   position: fixed;
@@ -137,35 +147,15 @@ const Description = styled.div`
   }
   :hover {
     cursor: pointer;
+    .info-txt {
+      color: #fcb448;
+    }
     ${Page} {
       display: block;
     }
   }
 `;
-const DescriptionVegeTypeContainer = styled.div`
-  display: flex;
-  justify-content: start;
-  p {
-    font-size: 10px;
-  }
-`;
-const DescriptionVegeTypeTitle = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  width: 3rem;
-  padding-bottom: 0.3rem;
-  margin-right: 1rem;
-  img {
-    width: 60%;
-  }
-  p {
-    color: black;
-    font-size: 0.6rem;
-    white-space: nowrap;
-  }
-`;
+
 const Button = styled.button`
   position: absolute;
   bottom: 1rem;
@@ -181,63 +171,12 @@ const Button = styled.button`
 
 function Signup() {
   const navigate = useNavigate();
-  const [userInfo] = useAtom(userInfoAtom);
+  const [userInfo, setUserInfo] = useAtom(userInfoAtom);
   const [newSentence, setNewSentence] = useState('오늘 시작한');
   const [newNickname, setNewNickname] = useState(userInfo.nickname);
   const [nicknameStatus, SetNicknameStatus] = useState(false);
   const [newVegeType, setVegeType] = useState(null);
 
-  const vegeTypeLst = [
-    {
-      id: 0,
-      title: '비건',
-      sentence: '비건',
-      icon: veganIcon,
-      rule: '식물식',
-    },
-    {
-      id: 1,
-      title: '락토',
-      sentence: '락토',
-      icon: lactoIcon,
-      rule: '채식 + 우유 + 유제품',
-    },
-    {
-      id: 2,
-      title: '오보',
-      sentence: '오보',
-      icon: ovoIcon,
-      rule: '채식 + 난류',
-    },
-    {
-      id: 3,
-      title: '락토오보',
-      sentence: '락토오보',
-      icon: lactoOvoUcon,
-      rule: '채식 + 우유 + 유제품 + 난류',
-    },
-    {
-      id: 4,
-      title: '페스코',
-      sentence: '페스코',
-      icon: pescoIcon,
-      rule: '채식 + 우유 + 유제품 + 난류 + 바다동물',
-    },
-    {
-      id: 5,
-      title: '폴로',
-      sentence: '폴로',
-      icon: poloIcon,
-      rule: '채식 + 우유 + 유제품 + 난류 + 바다동물 + 가금류',
-    },
-    {
-      id: 6,
-      title: '관심있어요',
-      sentence: '플렉시테리언',
-      icon: flexiIcon,
-      rule: '채식 + 우유 + 유제품 + 난류 + 바다동물 + 가금류 + 동물',
-    },
-  ];
   function checkNickname(putNickname) {
     if (putNickname === '') {
       SetNicknameStatus(false);
@@ -262,9 +201,9 @@ function Signup() {
     <Container>
       <TextContainer>
         {newVegeType === null ? (
-          <img src={vegeTypeLst[6].icon} alt="lacto" />
+          <img src={vegeTypeList[6].icon} alt="lacto" />
         ) : (
-          <img src={vegeTypeLst[newVegeType].icon} alt="lacto" />
+          <img src={vegeTypeList[newVegeType].icon} alt="lacto" />
         )}
         <p>
           <span>{newSentence} </span>
@@ -294,24 +233,14 @@ function Signup() {
         <VegeTypeContainer>
           <p className="title">채식 타입을 선택해주세요</p>
           <Description>
-            <p>채식 타입 안내</p>
+            <p className="info-txt">채식 타입 안내</p>
             <ChevronRightIcon />
             <Page className="descript-page">
-              {vegeTypeLst.map(type => {
-                return (
-                  <DescriptionVegeTypeContainer key={type.id}>
-                    <DescriptionVegeTypeTitle>
-                      <img src={type.icon} alt={type.id} />
-                      <p>{type.sentence}</p>
-                    </DescriptionVegeTypeTitle>
-                    <p>{type.rule}</p>
-                  </DescriptionVegeTypeContainer>
-                );
-              })}
+              <VegeTypeInform />
             </Page>
           </Description>
           <VegeTypeLst>
-            {vegeTypeLst.map(type => (
+            {vegeTypeList.map(type => (
               <VegeTypeBox
                 key={type.id}
                 selected={newVegeType === type.id}
@@ -337,7 +266,10 @@ function Signup() {
                 nickname: newNickname,
                 vege_type: newVegeType,
               },
-              () => navigate('/'),
+              res => {
+                setUserInfo({ ...userInfo, ...res.data });
+                navigate('/');
+              },
             );
             signInFirebase({
               id: `${userInfo.id}`,

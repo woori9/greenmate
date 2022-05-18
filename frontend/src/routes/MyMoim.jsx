@@ -12,10 +12,10 @@ import useWindowDimensions from '../utils/windowDimension';
 import useUserInfo from '../hooks/useUserInfo';
 
 const Container = styled.div`
-  padding: 5rem 1rem 5rem 1rem;
+  padding: 5rem 1rem calc(5rem + 140px) 1rem;
 
   @media screen and (min-width: 1025px) {
-    padding: 60px 2rem 0 calc(130px + 2rem);
+    padding: 60px 2rem 140px calc(130px + 2rem);
   }
 `;
 
@@ -37,9 +37,9 @@ function MyMoim() {
   const [needUpdate, setNeedUpdate] = useState(0);
   const userInfo = useUserInfo();
   const moimCategories = [
-    ['대기', 'Waiting', 0],
-    ['참여', 'Participating', 1],
-    ['진행', 'Hosting', 5],
+    ['대기', 'Wait', 0],
+    ['참여', 'Join', 1],
+    ['진행', 'Host', 5],
     ['완료', 'Finished', 4],
   ];
 

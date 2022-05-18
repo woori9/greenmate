@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useAtom } from 'jotai';
 import ResponsiveNavbar from '../components/common/navbar/ResponsiveNavbar';
 import FloatingActionBtn from '../components/common/FloatingActionBtn';
@@ -8,11 +9,12 @@ import HomeCarousel from '../components/home/HomeCarousel';
 import FilterSearchBar from '../components/home/FilterSearchBar';
 import { categoryAtom, moimListAtom } from '../atoms/moim';
 import { getMoimList } from '../api/moim';
+import { apiGetLetseatMoim } from '../api/map';
 import { userInfoAtom } from '../atoms/accounts';
 import { snakeToCamel } from '../utils/formatKey';
 
 const Container = styled.div`
-  padding: 5rem 1rem 5rem 1rem;
+  padding: 5rem 1rem calc(5rem + 140px) 1rem;
 
   .inform-txt-container {
     width: 100%;
@@ -21,7 +23,7 @@ const Container = styled.div`
   }
 
   @media screen and (min-width: 1025px) {
-    padding: 60px 3rem 0 calc(130px + 3rem);
+    padding: 60px 3rem 150px calc(130px + 3rem);
 
     .moim-card-container {
       display: grid;
@@ -54,10 +56,12 @@ const Hr = styled.hr`
 `;
 
 function Home() {
+  const location = useLocation();
   const [searchKeyword, setSearchKeyword] = useState('');
   const [, setSelectedCategory] = useAtom(categoryAtom);
   const [moimList, setMoimList] = useAtom(moimListAtom);
   const [userInfo] = useAtom(userInfoAtom);
+  let selectedRestau;
 
   useEffect(() => {
     setSelectedCategory(6);
@@ -71,6 +75,23 @@ function Home() {
       },
       () => {},
     );
+    if (location.state) {
+      const { inputRestauPk } = location.state;
+      selectedRestau = { inputRestauPk };
+      apiGetLetseatMoim(
+        {
+          restauId: selectedRestau.inputRestauPk,
+        },
+        res => {
+          const formattedData = res.data.map(item => ({
+            ...snakeToCamel(item),
+            time: new Date(item.time),
+          }));
+          setMoimList(formattedData);
+        },
+        () => {},
+      );
+    }
   }, []);
 
   return (

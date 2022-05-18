@@ -94,12 +94,18 @@ const DesktopBtn = styled.div`
 function SettingUserInfo({ setPageStatus, isDesktop }) {
   const isBig = true;
   const [userInfo, setUserInfo] = useAtom(userInfoAtom);
+  const { language } = userInfo;
   const nowNickname = userInfo.nickname;
   const [newNickname, setNewNickname] = useState(nowNickname);
   const nowVegeType = userInfo.vege_type;
   const [newVegeType, setVegeType] = useState(nowVegeType);
 
   function checkNickname(putNickname) {
+    if (putNickname === '') {
+      setNewNickname(null);
+      alert('입력한 닉네임을 확인해주세요');
+      return;
+    }
     apiCheckNickname(
       { nickname: putNickname },
       () => {
@@ -155,12 +161,13 @@ function SettingUserInfo({ setPageStatus, isDesktop }) {
               checkNickname(newNickname.trim());
             }}
           >
-            중복 확인
+            {language === 0 ? '중복 확인' : 'check'}
           </button>
         </ModifyNickName>
         <SettingCenteredModalBase
           vegeType={newVegeType}
           mainAction={setVegeType}
+          language={language}
         />
       </Container>
       {isDesktop ? (

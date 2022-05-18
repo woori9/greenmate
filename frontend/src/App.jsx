@@ -16,8 +16,6 @@ import ManageMember from './routes/ManageMember';
 import EvaluateMoim from './routes/EvaluateMoim';
 import MyPage from './routes/MyPage';
 import MyPageLikedRestaurants from './routes/MyPageLikedRestaurants';
-import MyPageLikedFeeds from './routes/MyPageLikedFeeds';
-import MyPageLikedReview from './routes/MyPageLikedReview';
 import MyPageEvaluation from './routes/MyPageEvaluation';
 import MyPageReviews from './routes/MyPageReviews';
 import MyPageFeeds from './routes/MyPageFeeds';
@@ -83,12 +81,17 @@ function App() {
       } catch (error) {
         if (error instanceof TypeError) {
           console.log('safari');
-          window.Notification.requestPermission(permission => {
-            if (permission !== 'granted') {
-              // eslint-disable-next-line no-alert
-              alert('알림을 받으시려면 설정에서 알림 권한을 허용해주세요.');
-            }
-          });
+          try {
+            window.Notification.requestPermission(permission => {
+              if (permission !== 'granted') {
+                // eslint-disable-next-line no-alert
+                alert('알림을 받으시려면 설정에서 알림 권한을 허용해주세요.');
+              }
+            });
+          } catch (err) {
+            // eslint-disable-next-line no-alert
+            alert('알림을 지원하지 않는 기기입니다.');
+          }
         } else {
           console.error(error);
         }
@@ -120,28 +123,21 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route element={<PrivateRoute isLoggedIn={!!userInfo} />}>
           <Route path="/map" element={<Map />} />
+          <Route path="/chat" element={<Chat />} />
           <Route path="/chatRoom" element={<ChatRoom />} />
+          <Route path="/moim/:moimId" element={<MoimDetail />} />
+          <Route path="/moim/form" element={<MoimForm />} />
+          <Route path="/moim/:moimId/member" element={<ManageMember />} />
+          <Route path="/moim/:moimId/evaluation" element={<EvaluateMoim />} />
+          <Route path="/community/form" element={<CommunityForm />} />
           <Route element={<Footer />}>
             <Route path="/" element={<Home />} />
             <Route path="/community" element={<Community />} />
-            <Route path="/community/form" element={<CommunityForm />} />
             <Route path="/mymoim" element={<MyMoim />} />
-            <Route path="/moim/form" element={<MoimForm />} />
-            <Route path="/moim/:moimId" element={<MoimDetail />} />
-            <Route path="/moim/:moimId/member" element={<ManageMember />} />
-            <Route path="/moim/:moimId/evaluation" element={<EvaluateMoim />} />
             <Route path="/mypage/:userPk" element={<MyPage />} />
             <Route
               path="/mypage/:userPk/liked-restaurants"
               element={<MyPageLikedRestaurants />}
-            />
-            <Route
-              path="/mypage/:userPk/liked-feeds"
-              element={<MyPageLikedFeeds />}
-            />
-            <Route
-              path="/mypage/:userPk/liked-reviews"
-              element={<MyPageLikedReview />}
             />
             <Route
               path="/mypage/:userPk/evaluation"
@@ -153,7 +149,6 @@ function App() {
             />
             <Route path="/mypage/:userPk/my-feeds" element={<MyPageFeeds />} />
             <Route path="/mypage/:userPk/setting" element={<MyPageSetting />} />
-            <Route path="/chat" element={<Chat />} />
             <Route path="/notification" element={<Notification />} />
           </Route>
         </Route>

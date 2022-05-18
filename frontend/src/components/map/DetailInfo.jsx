@@ -221,7 +221,6 @@ function DetailInfo() {
         onClick={() =>
           navigate('/', {
             state: {
-              inputRestauName: restauInfo.name,
               inputRestauPk: detailRestau.id,
             },
           })

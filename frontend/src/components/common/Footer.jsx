@@ -3,15 +3,16 @@ import styled from 'styled-components';
 
 const StyledFooter = styled.footer`
   position: absolute;
-  bottom: 0;
+  bottom: 62px;
   left: 0;
   width: 100%;
-  height: 160px;
+  height: 140px;
   background-color: #f2f2f2;
+  padding: 2rem 0;
+  z-index: -1;
 
   .footer-content {
     text-align: center;
-    padding: 2rem 0;
     line-height: 2;
   }
 
@@ -19,16 +20,10 @@ const StyledFooter = styled.footer`
     font-weight: 700;
   }
 
-  @media screen and (max-width: 1024px) {
-    padding-bottom: 90px;
-
-    .footer-content {
-      padding-bottom: calc(2rem + 62px);
-    }
-  }
-
   @media screen and (min-width: 1025px) {
+    bottom: 0;
     padding-left: 130px;
+    margin-top: auto;
   }
 `;
 

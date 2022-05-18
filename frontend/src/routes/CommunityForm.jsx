@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { useLocation, useNavigate } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
@@ -8,26 +9,20 @@ import ParkIcon from '@mui/icons-material/Park';
 import LocalDiningIcon from '@mui/icons-material/LocalDining';
 import ScaleIcon from '@mui/icons-material/Scale';
 import RoomServiceIcon from '@mui/icons-material/RoomService';
-import AdjustIcon from '@mui/icons-material/Adjust';
-import PropTypes from 'prop-types';
-import DialogTitle from '@mui/material/DialogTitle';
-import Dialog from '@mui/material/Dialog';
-import { createFeed } from '../api/community';
+import { createFeed, updateFeed } from '../api/community';
 import RestaurantSearchForm from '../components/common/RestaurantSearchForm';
-import Rating from '../components/community/rating';
-import useWindowDimensions from '../utils/windowDimension';
+import RatingForm from '../components/community/RatingForm';
+import VegeTypeInform from '../components/common/VegeTypeInform';
 import DesktopNavbar from '../components/common/navbar/DesktopNavbar';
 import GoBackBar from '../components/common/GoBackBar';
-import vegeTypeImg from '../assets/vege_type.png';
-import vegan from '../assets/vegan-icon.png';
-import lacto from '../assets/lacto-icon.png';
-import ovo from '../assets/ovo-icon.png';
-import lactoOvo from '../assets/lacto-ovo-icon.png';
-import pesco from '../assets/pesco-icon.png';
-import polo from '../assets/polo-icon.png';
+import useWindowDimensions from '../utils/windowDimension';
+import vegeTypeList from '../utils/vegeTypeList';
+
+const { check } = require('korcen');
 
 const Container = styled.div`
   padding: 5rem 1rem 5rem 1rem;
+  max-width: 100vw;
 
   @media screen and (min-width: 1025px) {
     margin: 60px 17rem 0 calc(130px + 17rem);
@@ -37,7 +32,7 @@ const Container = styled.div`
   }
 `;
 
-const Form = styled.form`
+const Form = styled.div`
   display: flex;
   flex-direction: column;
 
@@ -47,19 +42,6 @@ const Form = styled.form`
 
   .input-label {
     margin-bottom: 1rem;
-  }
-
-  .submit-btn {
-    position: fixed;
-    left: 1rem;
-    bottom: 5rem;
-    width: 90%;
-    color: #fff;
-    font-weight: 600;
-    background-color: #fcb448;
-    border: none;
-    border-radius: 5px;
-    padding: 0.5rem 0;
   }
 
   .review_margin {
@@ -80,46 +62,121 @@ const Form = styled.form`
     padding: 0.5rem 0;
     cursor: pointer;
   }
+
   .imgInput {
     display: none;
   }
+
+  .submit-btn {
+    width: 100%;
+    color: #fff;
+    font-weight: 600;
+    background-color: #fcb448;
+    border: none;
+    border-radius: 5px;
+    padding: 0.5rem 0;
+    margin-top: 1rem;
+    cursor: pointer;
+  }
+
   .mini-btn {
     width: 4.5rem;
     margin-left: auto;
   }
+
   .mouse-hover:hover {
     background-color: #fcb448;
   }
 `;
 
+const VegeTypeLst = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 0;
+
+  @media screen and (min-width: 1025px) {
+    max-width: 500px;
+  }
+`;
+
+const VegeTypeBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+
+  .img-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 3rem;
+    height: 3rem;
+    border: ${props => props.selected && '3px solid #fcb448'};
+    border-radius: ${props => props.selected && '50%'};
+
+    .vege-img {
+      width: 80%;
+    }
+  }
+
+  p {
+    font-size: 0.9rem;
+    white-space: nowrap;
+    color: ${props => (props.selected ? '#fcb448' : 'black')};
+  }
+
+  @media screen and (min-width: 1200px) {
+    .img-box {
+      width: 4.5rem;
+      height: 4.5rem;
+    }
+  }
+`;
+
 const Info = styled.span`
   cursor: pointer;
-  color: lightgrey;
-  font-size: 13px;
+  color: #a9a9a9;
 
   :hover {
     color: #fcb448;
   }
 `;
-function SimpleDialog(props) {
-  const { onClose, open } = props;
 
-  const handleClose = () => {
-    onClose();
-  };
+const Page = styled.div`
+  position: absolute;
+  right: 11%;
+  background-color: #fff;
+  padding: 1rem;
+  border-radius: 10px;
+  z-index: 6;
+  filter: drop-shadow(0 -1px 4px rgba(0, 0, 0, 0.25));
+`;
 
-  return (
-    <Dialog onClose={handleClose} open={open}>
-      <DialogTitle sx={{ m: 'auto' }}>채식 타입</DialogTitle>
-      <img src={vegeTypeImg} alt="채식 단계" />
-    </Dialog>
-  );
-}
+const Description = styled.div`
+  position: relative;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  width: 90%;
+  max-width: 33rem;
+  color: #a9a9a9;
 
-SimpleDialog.propTypes = {
-  onClose: PropTypes.func.isRequired,
-  open: PropTypes.bool.isRequired,
-};
+  p {
+    margin: auto 0;
+    font-size: 13px;
+  }
+
+  .descript-page {
+    display: none;
+  }
+
+  :hover {
+    cursor: pointer;
+    ${Page} {
+      display: block;
+    }
+  }
+`;
 
 function CommunityForm() {
   const { width } = useWindowDimensions();
@@ -130,18 +187,40 @@ function CommunityForm() {
   const [selectedRestaurantId, setSelectedRestaurantId] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [isCategoryClick, setIsCategoryClick] = useState(0);
-  const [isVegeTypeClick, setIsVegeTypeClick] = useState(0);
-  const [open, setOpen] = useState(false);
+  const [isForUpdate, setIsForUpdate] = useState(false);
+  const [originalFeedId, setOriginalFeedId] = useState();
+  const [rating, setRating] = useState();
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
+  useEffect(() => {
+    if (location.state) {
+      const {
+        feedId,
+        originalCategory,
+        originalContent,
+        originalVegeType,
+        originalImgs,
+      } = location.state;
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+      setIsForUpdate(true);
+      setOriginalFeedId(feedId);
+      setCategory(originalCategory);
+      setContent(originalContent);
+      setVegeType(originalVegeType);
+      setImgs(originalImgs);
+      if (originalCategory === 2) {
+        const { restaurantId, restaurantName, restaurantRating } =
+          location.state;
+        setSelectedRestaurantId(restaurantId);
+        setSearchKeyword(restaurantName);
+        setRating(restaurantRating);
+      }
+    }
+  }, []);
 
-  function handleSubmit() {
+  function handleSubmit(e) {
+    e.preventDefault();
     if (category === 0 || !content || !imgs) {
       if (isCategoryClick === 2) {
         if (!selectedRestaurantId) {
@@ -152,23 +231,47 @@ function CommunityForm() {
       alert('입력하지 않은 정보가 있습니다.');
       return;
     }
+
+    if (check(content)) {
+      alert('욕설은 입력할 수 없습니다.');
+      return;
+    }
+
     const formData = new FormData();
     formData.append('category', category);
     formData.append('content', content);
-    formData.append('vege_type', vegeType);
+    formData.append('vege_type', vegeType + 1);
     formData.append('retaurant_id', selectedRestaurantId);
     for (let i = 0; i < imgs.length; i += 1) {
       formData.append('img_path', imgs[i]);
     }
     formData.append('enctype', 'multipart/form-data');
-    createFeed(formData);
+
+    if (isForUpdate) {
+      updateFeed(originalFeedId, formData).then(() => navigate('/community'));
+    } else {
+      createFeed(formData).then(() => navigate('/community'));
+    }
   }
 
   return (
     <Container>
-      {width > 1024 ? <DesktopNavbar /> : <GoBackBar title="메이트 구하기" />}
-      <Form>
-        {width > 1024 && <h1 className="form-title">메이트 구하기</h1>}
+      {width > 1024 ? <DesktopNavbar /> : <GoBackBar title="글 작성하기" />}
+      <Form target="_blank">
+        {width > 1024 && <h1 className="form-title">글 작성하기</h1>}
+        <label className="input-file-button" htmlFor="input-file">
+          사진 업로드
+        </label>
+        <input
+          type="file"
+          multiple="multiple"
+          className="imgInput"
+          id="input-file"
+          accept="image/*"
+          name="file"
+          onChange={event => setImgs(event.target.files)}
+        />
+        {imgs && <p>{imgs.length}개의 사진 업로드</p>}
         <label htmlFor="category">카테고리</label>
         <Stack direction="row" spacing={3}>
           <Stack direction="column" alignItems="center">
@@ -278,213 +381,45 @@ function CommunityForm() {
           alignItems="center"
         >
           <label htmlFor="vege_type">채식 타입</label>
-          <Info onClick={handleClickOpen}>채식 타입 안내 {'>'}</Info>
-          <SimpleDialog open={open} onClose={handleClose} />
+          <Description>
+            <Info>채식 타입 안내 {'>'}</Info>
+            <Page className="descript-page">
+              <VegeTypeInform />
+            </Page>
+          </Description>
         </Stack>
-        <Stack direction="row" spacing={3}>
-          <Stack direction="column" alignItems="center">
-            {isVegeTypeClick === 1 ? (
-              <Avatar
-                sx={{ cursor: 'pointer', bgcolor: '#fcb448' }}
-                src={vegan}
-                alt="vegan"
-                onClick={() => {
-                  setIsVegeTypeClick(0);
-                  setVegeType(0);
-                }}
-              >
-                <AdjustIcon />
-              </Avatar>
-            ) : (
-              <Avatar
-                sx={{ cursor: 'pointer' }}
-                src={vegan}
-                alt="vegan"
-                className="mouse-hover"
-                onClick={() => {
-                  setIsVegeTypeClick(1);
-                  setVegeType(1);
-                }}
-              >
-                <AdjustIcon />
-              </Avatar>
-            )}
-            <p>비건</p>
-          </Stack>
-          <Stack direction="column" alignItems="center">
-            {isVegeTypeClick === 2 ? (
-              <Avatar
-                sx={{ cursor: 'pointer', bgcolor: '#fcb448' }}
-                src={lacto}
-                alt="lacto"
-                onClick={() => {
-                  setIsVegeTypeClick(0);
-                  setVegeType(0);
-                }}
-              >
-                <AdjustIcon />
-              </Avatar>
-            ) : (
-              <Avatar
-                sx={{ cursor: 'pointer' }}
-                src={lacto}
-                alt="lacto"
-                className="mouse-hover"
-                onClick={() => {
-                  setIsVegeTypeClick(2);
-                  setVegeType(2);
-                }}
-              >
-                <AdjustIcon />
-              </Avatar>
-            )}
-            <p>락토</p>
-          </Stack>
-          <Stack direction="column" alignItems="center">
-            {isVegeTypeClick === 3 ? (
-              <Avatar
-                sx={{ cursor: 'pointer', bgcolor: '#fcb448' }}
-                src={ovo}
-                alt="ovo"
-                onClick={() => {
-                  setIsVegeTypeClick(0);
-                  setVegeType(0);
-                }}
-              >
-                <AdjustIcon />
-              </Avatar>
-            ) : (
-              <Avatar
-                sx={{ cursor: 'pointer' }}
-                src={ovo}
-                alt="ovo"
-                className="mouse-hover"
-                onClick={() => {
-                  setIsVegeTypeClick(3);
-                  setVegeType(3);
-                }}
-              >
-                <AdjustIcon />
-              </Avatar>
-            )}
-            <p>오보</p>
-          </Stack>
-          <Stack direction="column" alignItems="center">
-            {isVegeTypeClick === 4 ? (
-              <Avatar
-                sx={{ cursor: 'pointer', bgcolor: '#fcb448' }}
-                src={lactoOvo}
-                alt="lactoOvo"
-                onClick={() => {
-                  setIsVegeTypeClick(0);
-                  setVegeType(0);
-                }}
-              >
-                <AdjustIcon />
-              </Avatar>
-            ) : (
-              <Avatar
-                sx={{ cursor: 'pointer' }}
-                src={lactoOvo}
-                alt="lactoOvo"
-                className="mouse-hover"
-                onClick={() => {
-                  setIsVegeTypeClick(4);
-                  setVegeType(4);
-                }}
-              >
-                <AdjustIcon />
-              </Avatar>
-            )}
-            <p>락토오보</p>
-          </Stack>
-          <Stack direction="column" alignItems="center">
-            {isVegeTypeClick === 5 ? (
-              <Avatar
-                sx={{ cursor: 'pointer', bgcolor: '#fcb448' }}
-                src={pesco}
-                alt="pesco"
-                onClick={() => {
-                  setIsVegeTypeClick(0);
-                  setVegeType(0);
-                }}
-              >
-                <AdjustIcon />
-              </Avatar>
-            ) : (
-              <Avatar
-                sx={{ cursor: 'pointer' }}
-                src={pesco}
-                alt="pesco"
-                className="mouse-hover"
-                onClick={() => {
-                  setIsVegeTypeClick(5);
-                  setVegeType(5);
-                }}
-              >
-                <AdjustIcon />
-              </Avatar>
-            )}
-            <p>페스코</p>
-          </Stack>
-          <Stack direction="column" alignItems="center">
-            {isVegeTypeClick === 6 ? (
-              <Avatar
-                sx={{ cursor: 'pointer', bgcolor: '#fcb448' }}
-                src={polo}
-                alt="polo"
-                onClick={() => {
-                  setIsVegeTypeClick(0);
-                  setVegeType(0);
-                }}
-              >
-                <AdjustIcon />
-              </Avatar>
-            ) : (
-              <Avatar
-                sx={{ cursor: 'pointer' }}
-                src={polo}
-                alt="polo"
-                className="mouse-hover"
-                onClick={() => {
-                  setIsVegeTypeClick(6);
-                  setVegeType(6);
-                }}
-              >
-                <AdjustIcon />
-              </Avatar>
-            )}
-            <p>폴로</p>
-          </Stack>
-        </Stack>
+        <VegeTypeLst>
+          {vegeTypeList.slice(0, 6).map(type => (
+            <VegeTypeBox
+              key={type.id}
+              selected={vegeType === type.id}
+              onClick={() => {
+                setVegeType(type.id);
+              }}
+            >
+              <div className="img-box">
+                <img className="vege-img" src={type.icon} alt="vege-img" />
+              </div>
+              <p>{type.title}</p>
+            </VegeTypeBox>
+          ))}
+        </VegeTypeLst>
         {isCategoryClick === 2 ? (
           <div className="review_margin">
             <RestaurantSearchForm
+              isForUpdate={isForUpdate}
               searchKeyword={searchKeyword}
               setSearchKeyword={setSearchKeyword}
               setSelectedRestaurantId={setSelectedRestaurantId}
             />
             <div className="review_margin">
               <label htmlFor="rating">평점</label>
-              <Rating />
+              <RatingForm rating={rating} setRating={setRating} />
             </div>
           </div>
         ) : (
           <div />
         )}
-        <label className="input-file-button" htmlFor="input-file">
-          사진 업로드
-        </label>
-        <input
-          type="file"
-          multiple="multiple"
-          className="imgInput"
-          id="input-file"
-          accept="image/*"
-          name="file"
-          onChange={event => setImgs(event.target.files)}
-        />
-        {imgs ? <p>{imgs.length}개의 사진 업로드</p> : <div />}
         <label htmlFor="content">내용</label>
         <TextField
           id="content"
@@ -501,7 +436,7 @@ function CommunityForm() {
         <button
           type="button"
           className={`submit-btn ${width > 1024 && 'mini-btn'}`}
-          onClick={() => handleSubmit()}
+          onClick={e => handleSubmit(e)}
         >
           작성
         </button>
