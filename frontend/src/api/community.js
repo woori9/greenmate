@@ -9,7 +9,7 @@ export async function getFeedList() {
 // 피드 작성
 export async function createFeed(data) {
   const response = await apiInstance.post('/greenmates/community/feeds/', data);
-  return response.data;
+  return response;
 }
 
 // 피드 수정
