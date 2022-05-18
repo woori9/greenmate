@@ -4,12 +4,12 @@ import PropTypes from 'prop-types';
 
 const StarContainer = styled.div`
   label {
-    width: 2rem;
+    width: 3rem !important;
   }
 
   svg {
-    width: 30px;
-    height: 30px;
+    width: 30px !important;
+    height: 30px !important;
   }
 `;
 
