@@ -23,6 +23,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
 import SendIcon from '@mui/icons-material/Send';
 import Button from '@mui/material/Button';
+import { useNavigate } from 'react-router-dom';
 import FeedImageCarousel from './FeedIamgeCarousel';
 import {
   postFeedLike,
@@ -45,15 +46,7 @@ const Trans = styled.div`
   font-size: 5px;
   color: lightgrey;
 `;
-const Setting = styled.div`
-  position: absolute;
-  right: 0;
-  z-index: 1;
-  width: 20%;
-  background-color: #fff;
-  border-radius: 10px;
-  filter: drop-shadow(0 -1px 4px rgba(0, 0, 0, 0.25));
-`;
+
 const Container = styled.div`
   padding: 20px;
 
@@ -65,17 +58,12 @@ const Container = styled.div`
     margin-bottom: 1rem;
   }
 `;
+
 function SimpleDialog(props) {
-  const {
-    onClose,
-    open,
-    comments,
-    nowFeedId,
-    setUseUpdate,
-    userInfoId,
-    vegeType,
-  } = props;
+  const { onClose, open, comments, nowFeedId, setUseUpdate, userInfoId } =
+    props;
   const [commentData, setCommentData] = useState('');
+
   const handleClose = () => {
     onClose();
   };
@@ -89,7 +77,6 @@ function SimpleDialog(props) {
       event.target.value = '';
     }
   };
-
   return (
     <Dialog onClose={handleClose} open={open}>
       <DialogTitle sx={{ m: 'auto' }}>댓글</DialogTitle>
@@ -107,17 +94,14 @@ function SimpleDialog(props) {
                   sx={{ mb: 1 }}
                 >
                   <Stack direction="row" alignItems="center">
-                    <Avatar
-                      src={vegeType[comment.vege_type]}
-                      alt={comment.nickname}
-                      sx={{ mr: 1, width: 24, height: 24 }}
-                    />
-                    <h4>{comment.nickname}</h4>
                     <CommentDetail
+                      commentVegeType={comment.vege_type}
+                      commentNickname={comment.nickname}
                       commentId={comment.id}
                       commentContent={comment.content}
                       commentIsLike={comment.is_like}
                       commentLikeCnt={comment.like_cnt}
+                      commentAuthor={comment.author}
                     />
                     <span className="small-font">
                       {`${comment.created_at.substr(0, 4)}년` +
@@ -170,7 +154,6 @@ SimpleDialog.propTypes = {
   nowFeedId: PropTypes.number,
   setUseUpdate: PropTypes.func,
   userInfoId: PropTypes.number,
-  vegeType: PropTypes.objectOf(PropTypes.string),
 }.isRequired;
 
 const LikeCntNum = styled.span`
@@ -190,8 +173,25 @@ const FeedContent = styled.span`
   font-size: 1.2rem;
   font-weight: bold;
 `;
+const Setting = styled.div`
+  position: absolute;
+  right: 0;
+  z-index: 1;
+  width: 20%;
+  background-color: #fff;
+  border-radius: 10px;
+  filter: drop-shadow(0 -1px 4px rgba(0, 0, 0, 0.25));
+`;
+const GoProfile = styled.div`
+  position: absolute;
+  z-index: 1;
+  width: 25%;
+  background-color: #fff;
+  border-radius: 10px;
+  filter: drop-shadow(0 -1px 4px rgba(0, 0, 0, 0.25));
+`;
 
-function Feed({ feed, setNeedUpdate }) {
+function Feed({ feed }) {
   const [isLike, setIsLike] = useState(feed.is_like);
   const [likeCnt, setLikeCnt] = useState(feed.like_cnt);
   const [isSetting, setIsSetting] = useState(false);
@@ -201,6 +201,7 @@ function Feed({ feed, setNeedUpdate }) {
   const [open, setOpen] = useState(false);
   const [commentData, setCommentData] = useState('');
   const [useUpdate, setUseUpdate] = useState(1);
+  const [isGoProfile, setIsGoPropfile] = useState(false);
   const vegeType = {
     1: vegan,
     2: lacto,
@@ -210,6 +211,7 @@ function Feed({ feed, setNeedUpdate }) {
     6: polo,
   };
   const userInfo = useUserInfo();
+  const navigate = useNavigate();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -256,7 +258,14 @@ function Feed({ feed, setNeedUpdate }) {
     <Card sx={{ mb: 7, width: 500, position: 'relative' }}>
       <CardHeader
         avatar={
-          <Avatar src={vegeType[feed.vege_type]} alt={feed.author.nickname} />
+          <Avatar
+            src={vegeType[feed.vege_type]}
+            alt={feed.author.nickname}
+            onClick={() => {
+              setIsGoPropfile(!isGoProfile);
+            }}
+            sx={{ cursor: 'pointer' }}
+          />
         }
         action={
           feed.author.id === userInfo.id ? (
@@ -289,13 +298,29 @@ function Feed({ feed, setNeedUpdate }) {
                   primary="삭제"
                   onClick={() => {
                     deleteFeed(feed.id);
-                    setNeedUpdate(prev => prev + 1);
+                    alert('삭제가 완료되었습니다!');
+                    window.location.replace('/community');
                   }}
                 />
               </ListItemButton>
             </ListItem>
           </List>
         </Setting>
+      ) : (
+        <div />
+      )}
+      {isGoProfile ? (
+        <GoProfile>
+          <List>
+            <ListItem disablePadding>
+              <ListItemButton
+                onClick={() => navigate(`/mypage/${feed.author.id}`)}
+              >
+                <ListItemText primary="프로필 보기" />
+              </ListItemButton>
+            </ListItem>
+          </List>
+        </GoProfile>
       ) : (
         <div />
       )}
@@ -428,7 +453,6 @@ function Feed({ feed, setNeedUpdate }) {
 }
 
 Feed.propTypes = {
-  setNeedUpdate: PropTypes.func.isRequired,
   feed: PropTypes.shape({
     author: PropTypes.shape({
       id: PropTypes.number,

@@ -18,7 +18,6 @@ const Container = styled.div`
 `;
 function Feeds({ categoryValue, vegeTypeValue }) {
   const [feeds, setFeeds] = useState([]);
-  const [needUpdate, setNeedUpdate] = useState(1);
 
   useEffect(() => {
     const getFeeds = async () => {
@@ -26,7 +25,7 @@ function Feeds({ categoryValue, vegeTypeValue }) {
       setFeeds(resData);
     };
     getFeeds();
-  }, [needUpdate]);
+  }, []);
 
   let res = feeds.filter(
     feed => feed.category === categoryValue && feed.vege_type === vegeTypeValue,
@@ -45,7 +44,7 @@ function Feeds({ categoryValue, vegeTypeValue }) {
         <div>
           {res.map(feed => (
             <div key={feed.id}>
-              <Feed feed={feed} setNeedUpdate={setNeedUpdate} />
+              <Feed feed={feed} />
             </div>
           ))}
         </div>
