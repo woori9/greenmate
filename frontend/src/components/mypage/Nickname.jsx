@@ -21,7 +21,7 @@ const NameBox = styled.div`
   }
 `;
 
-function Nickname({ isDesktop }) {
+function Nickname({ profileInfo, isDesktop }) {
   const [userInfo] = useAtom(userInfoAtom);
   const vegeTypes = [
     '비건',
@@ -49,12 +49,13 @@ function Nickname({ isDesktop }) {
   };
   return (
     <NameBox isDesktop={isDesktop}>
-      <p className="nickname">{userInfo.nickname}</p>
-      <p className="vege-type">{getVegeType(userInfo.vege_type)}</p>
+      <p className="nickname">{profileInfo.nickname}</p>
+      <p className="vege-type">{getVegeType(profileInfo.vege_type)}</p>
     </NameBox>
   );
 }
 Nickname.propTypes = {
+  profileInfo: PropTypes.shape().isRequired,
   isDesktop: PropTypes.bool.isRequired,
 };
 export default Nickname;
