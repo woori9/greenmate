@@ -8,8 +8,20 @@ import { getMyFeeds } from '../api/mypage';
 import useWindowDimensions from '../utils/windowDimension';
 
 const Container = styled.div`
-  padding: ${props =>
-    props.isDesktop ? '0 2rem 0 34rem' : '62px 1rem 5rem 1rem'};
+  border-radius: 10px;
+  padding: 78px 1rem 5rem 1rem;
+  height: calc(100vh - 104px - 4rem);
+  @media screen and (min-width: 1025px) {
+    margin: 0 2rem 0 34rem;
+    border: 1px solid #f2f2f2;
+    height: 33rem;
+  }
+`;
+const NoContent = styled.div`
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 function MyPageReviews() {
@@ -22,7 +34,7 @@ function MyPageReviews() {
     getMyFeeds(
       { userId: userPk },
       res => {
-        setFeeds(res.data);
+        setFeeds(res);
       },
       err => {
         console.log(err);
@@ -40,7 +52,17 @@ function MyPageReviews() {
         <GoBackBar title="작성한 피드" />
       )}
       <Container isDesktop={isDesktop}>
-        <p>피드</p>
+        {feeds.length ? (
+          <>
+            {feeds.map(review => (
+              <p>{review}</p>
+            ))}
+          </>
+        ) : (
+          <NoContent>
+            <p>아직 작성된 피드가 없습니다</p>
+          </NoContent>
+        )}
       </Container>
     </>
   );

@@ -91,7 +91,11 @@ function ButtonContainer({ getProfileInfo, profileInfo }) {
       );
     } else if (statusNum === 2) {
       rightButton = (
-        <button type="button" className="active">
+        <button
+          type="button"
+          className="active"
+          onClick={() => navigate('/community/form')}
+        >
           {language === 0 ? '글쓰기' : 'Create new post'}
         </button>
       );

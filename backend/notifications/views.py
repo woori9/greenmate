@@ -11,7 +11,8 @@ from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
     HTTP_401_UNAUTHORIZED,
     HTTP_403_FORBIDDEN,
-    HTTP_405_METHOD_NOT_ALLOWED
+    HTTP_405_METHOD_NOT_ALLOWED,
+    HTTP_409_CONFLICT
 )
 from .models import Alirm, FirebaseToken
 from .serializers import AlirmSerializer, FirebaseTokenSerializer
@@ -27,7 +28,7 @@ def create_update_token(request):
     '''
     POST: 유저, 토큰이 일치하는 값이 DB에 없을 경우 저장, 있을 경우 updated_at 수정
     '''
-    # user = get_object_or_404(User, pk=1)
+    # user = get_object_or_404(User, pk=6)
     user = get_request_user(request)
 
     if not user:
@@ -35,9 +36,11 @@ def create_update_token(request):
     elif user == 'EXPIRED_TOKEN':
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
     
-    token = request.data['registration_token']
+    request_token = request.data['registration_token']
     try:
-        token = FirebaseToken.objects.get(user=user, registration_token=token)
+        token = FirebaseToken.objects.get(registration_token=request_token)
+        if token.user != user:
+            return Response(data='중복된 토큰입니다.', status=HTTP_409_CONFLICT)
         token.save()
         serializer = FirebaseTokenSerializer(token)
         return Response(serializer.data, status=HTTP_200_OK)
