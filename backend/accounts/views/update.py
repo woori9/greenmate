@@ -49,7 +49,7 @@ def update_userinfo(request):
          { "new_nickname": 변경하려는 닉네임 }
     PUT: 회원 정보 수정 (nickname, vege_type, language)
     '''
-    # user = get_object_or_404(User, pk=1)
+    # user = get_object_or_404(User, pk=2)
     user = get_request_user(request)
 
     if not user:
@@ -59,12 +59,17 @@ def update_userinfo(request):
 
     if request.method == 'GET':
         new_nick = request.GET.get('nickname')
-
         if not User.objects.filter(nickname=new_nick).exists():
             return Response(data='사용 가능', status=HTTP_200_OK)
         return Response(data='사용 불가능', status=HTTP_409_CONFLICT)
 
     elif request.method == 'PUT':
+        try:
+            new_nick = request.data['nickname']
+            if not new_nick.strip():
+                return Response(data='공백은 닉네임으로 등록할 수 없습니다.', status=HTTP_400_BAD_REQUEST)
+        except:
+            pass
         serializer = UserPutSerializer(user, data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
