@@ -2,7 +2,6 @@ import datetime
 from greenmates.models import Moim, Mate
 from notifications.views import send_message, create_multiple_alirm
 from notifications.models import FirebaseToken
-from django.db.models import Prefetch
 
 def make_messages(tokens, body):
     if tokens:
