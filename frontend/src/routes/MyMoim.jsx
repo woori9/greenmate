@@ -14,6 +14,11 @@ import useUserInfo from '../hooks/useUserInfo';
 const Container = styled.div`
   padding: 5rem 1rem calc(5rem + 140px) 1rem;
 
+  .no-moim-txt {
+    text-align: center;
+    margin: 5rem 0;
+  }
+
   @media screen and (min-width: 1025px) {
     padding: 60px 2rem 140px calc(130px + 2rem);
   }
@@ -37,21 +42,21 @@ function MyMoim() {
   const [needUpdate, setNeedUpdate] = useState(0);
   const userInfo = useUserInfo();
   const moimCategories = [
-    ['대기', 'Wait', 0],
     ['참여', 'Join', 1],
+    ['대기', 'Wait', 0],
     ['진행', 'Host', 5],
     ['완료', 'Finished', 4],
   ];
 
   useEffect(() => {
     if (selectedCategory === 6) {
-      setSelectedCategory(0);
+      setSelectedCategory(1);
     }
   }, []);
 
   useEffect(() => {
     getMyMoimList(
-      selectedCategory === 6 ? 0 : selectedCategory,
+      selectedCategory === 6 ? 1 : selectedCategory,
       res => {
         const formattedData = res.data.map(item => ({
           ...snakeToCamel(item),
@@ -79,7 +84,7 @@ function MyMoim() {
         ))}
       </CategoryDiv>
       {width <= 1024 && <hr />}
-      {moimList.length > 0 &&
+      {moimList.length > 0 ? (
         moimList.map(moimInfo => (
           <MoimCard
             key={moimInfo.id}
@@ -87,7 +92,10 @@ function MyMoim() {
             setNeedUpdate={setNeedUpdate}
             showStatus
           />
-        ))}
+        ))
+      ) : (
+        <p className="no-moim-txt">해당하는 모임이 없습니다.</p>
+      )}
     </Container>
   );
 }

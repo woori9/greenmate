@@ -292,8 +292,7 @@ function CommunityForm() {
     }
   }, []);
 
-  function handleSubmit(e) {
-    e.preventDefault();
+  function handleSubmit() {
     if (category === 0 || !content || !imgs) {
       if (category === 2) {
         if (!selectedRestaurantId) {
@@ -327,7 +326,6 @@ function CommunityForm() {
     }
   }
 
-  console.log(imgs);
   return (
     <Container>
       {width > 1024 ? (
@@ -386,7 +384,11 @@ function CommunityForm() {
           onChange={event => {
             // console.log('here!!!!!!!!!!!!!');
             // console.log(event.target.files);
+            // const dataTransfer = new DataTransfer();
             setImgs(event.target.files);
+            // for (fileItem of event.target.files) {
+            //   dataTransfer.items.add(fileItem);
+            // }
             const reader = new FileReader();
             reader.onload = function (e) {
               setShowImg(e.target.result);
@@ -535,7 +537,7 @@ function CommunityForm() {
         <button
           type="button"
           className={`submit-btn ${width > 1024 && 'mini-btn'}`}
-          onClick={e => handleSubmit(e)}
+          onClick={() => handleSubmit()}
         >
           {userInfo.language === 0 ? '작성' : 'Submit'}
         </button>
