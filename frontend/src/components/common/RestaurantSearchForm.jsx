@@ -46,7 +46,6 @@ function RestaurantSearchForm({
 }) {
   const [isSearch, setIsSearch] = useState(false);
   const [searchResult, setSearchResult] = useState([]);
-  const [timer, setTimer] = useState(0);
   const userInfo = useUserInfo();
 
   async function handleKeyUp(e) {
@@ -71,16 +70,7 @@ function RestaurantSearchForm({
           id="restaurant"
           name="restaurant"
           value={searchKeyword}
-          onChange={e => {
-            setSearchKeyword(e.target.value);
-            if (timer) {
-              clearTimeout(timer);
-            }
-            const newTimer = setTimeout(() => {
-              handleKeyUp(e.target.value);
-            }, 1000);
-            setTimer(newTimer);
-          }}
+          onChange={e => setSearchKeyword(e.target.value)}
           onKeyUp={event => handleKeyUp(event)}
           disabled={!!isForUpdate}
           margin="dense"
