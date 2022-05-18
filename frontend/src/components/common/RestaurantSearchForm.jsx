@@ -18,6 +18,8 @@ const SearchList = styled.ul`
   clear: both;
   list-style-type: none;
   width: 100%;
+  height: 400%;
+  overflow-y: scroll;
   background-color: #fff;
   padding-left: 0;
   border: 1px solid #a9a9a9;
@@ -27,6 +29,10 @@ const SearchList = styled.ul`
   li {
     padding: 0.5rem;
 
+    :hover {
+      background-color: #f2f2f2;
+      cursor: pointer;
+    }
     &:not(:last-child) {
       border-bottom: 1px solid #a9a9a9;
     }
@@ -49,7 +55,7 @@ function RestaurantSearchForm({
   const userInfo = useUserInfo();
 
   async function handleKeyUp(e) {
-    if (searchKeyword.length > 0) {
+    if (e.keyCode === 13 && searchKeyword.length > 0) {
       setIsSearch(true);
       setSearchKeyword(e.target.value);
       apiGetSearchRestau({ keyword: searchKeyword }).then(res => {
