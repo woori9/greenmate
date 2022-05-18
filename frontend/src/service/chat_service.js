@@ -337,43 +337,19 @@ const getNotifications = async userId => {
   return notifications;
 };
 
-const updateNickname = async (userId, changedNickname) => {
-  console.log('change nickname', userId, ' s to', changedNickname);
+const updateUserInfo = async (userId, nickname, vegeType) => {
   try {
     const userRef = doc(db, 'users', userId);
     updateDoc(userRef, {
-      nickname: changedNickname,
+      nickname,
     });
 
-    const querySnapshot = await getDocs(
-      collection(db, 'users', userId, 'rooms'),
-    );
-
-    const userRooms = querySnapshot.docs.map(room => room.id);
-
-    userRooms.forEach(room => {
-      const roomRef = doc(db, 'rooms', room);
-
-      const key = `membersInfo.nickname${userId}`;
-      const obj = {};
-      obj[key] = changedNickname;
-
-      updateDoc(roomRef, obj);
-    });
-
-    userRooms.forEach(room => {
-      const messagesRef = collection(db, 'message', room, 'messages');
-      getDocs(messagesRef).then(snapshot =>
-        snapshot.docs.forEach(message => {
-          const messageRef = doc(db, 'message', room, 'messages', message.id);
-
-          updateDoc(messageRef, {
-            'sentBy.nickname': changedNickname,
-          });
-        }),
-      );
+    updateDoc(userRef, {
+      vegeType,
     });
   } catch (err) {
+    // eslint-disable-next-line no-alert
+    alert('회원 정보를 수정하지 못했습니다. 다시 한번 시도해주세요.');
     throw new Error(err);
   }
 };
@@ -396,5 +372,5 @@ export {
   getNotifications,
   getChatRoomList,
   getCountUnreadMessages,
-  updateNickname,
+  updateUserInfo,
 };

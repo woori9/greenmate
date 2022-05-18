@@ -7,6 +7,7 @@ import ProfileImage from '../common/ProfileImage';
 import SettingCenteredModalBase from './SettingCenteredModalBase';
 import { userInfoAtom } from '../../atoms/accounts';
 import { apiCheckNickname, apiPutUserInfo } from '../../api/accounts';
+import { updateUserInfo } from '../../service/chat_service';
 
 const Container = styled.div`
   display: flex;
@@ -175,6 +176,7 @@ function SettingUserInfo({ setPageStatus, isDesktop }) {
           type="button"
           onClick={() => {
             putUserInfo(newNickname, newVegeType);
+            updateUserInfo(`${userInfo.id}`, newNickname, newVegeType);
           }}
         >
           수정
@@ -186,6 +188,7 @@ function SettingUserInfo({ setPageStatus, isDesktop }) {
             className="delete-btn"
             onClick={() => {
               putUserInfo(newNickname, newVegeType);
+              updateUserInfo(`${userInfo.id}`, newNickname, newVegeType);
             }}
           >
             수정
