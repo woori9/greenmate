@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import { useAtom } from 'jotai';
+import { userInfoAtom } from '../../atoms/accounts';
 
 const NameBox = styled.div`
   display: flex;
@@ -20,19 +22,35 @@ const NameBox = styled.div`
 `;
 
 function Nickname({ profileInfo, isDesktop }) {
+  const [userInfo] = useAtom(userInfoAtom);
   const vegeTypes = [
     '비건',
     '락토',
     '오보',
     '락토오보',
-    '페스토',
+    '페스코',
     '폴로',
     '관심',
   ];
+  const engVegeTypes = [
+    'vegan',
+    'lacto',
+    'ovo',
+    'lacto-ovo',
+    'pesco',
+    'pollo',
+    'flexitarian',
+  ];
+  const getVegeType = idx => {
+    if (userInfo.language === 0) {
+      return vegeTypes[idx];
+    }
+    return engVegeTypes[idx];
+  };
   return (
     <NameBox isDesktop={isDesktop}>
       <p className="nickname">{profileInfo.nickname}</p>
-      <p className="vege-type">{vegeTypes[profileInfo.vege_type]}</p>
+      <p className="vege-type">{getVegeType(profileInfo.vege_type)}</p>
     </NameBox>
   );
 }

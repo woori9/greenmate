@@ -135,7 +135,7 @@ const DescriptionVegeTypeTitle = styled.div`
   }
 `;
 
-function SettingCenteredModalBase({ vegeType, mainAction }) {
+function SettingCenteredModalBase({ vegeType, mainAction, language }) {
   // h1 태그로 모달 헤더, p 태그로 모달 내용 전달
   // mainAction: 확인 클릭 시 실행할 함수 전달
   // document.querySelector('#dialog').showModal(); 을 통해 모달 열어야 함 (show 메서드 사용할 경우 반투명 배경 적용 x)
@@ -143,7 +143,7 @@ function SettingCenteredModalBase({ vegeType, mainAction }) {
 
   return (
     <Dialog id="dialog">
-      <p>채식타입</p>
+      <p>{language === 0 ? '채식타입' : 'Types of Vegetarian'}</p>
       <Description>
         <Page className="descript-page">
           {vegeTypeList.map(ele => {
@@ -158,7 +158,9 @@ function SettingCenteredModalBase({ vegeType, mainAction }) {
             );
           })}
         </Page>
-        <p className="descript-title">채식 타입 안내</p>
+        <p className="descript-title">
+          {language === 0 ? '채식 타입 안내' : 'Types of Vegetarian?'}
+        </p>
         <ChevronRightIcon />
       </Description>
       <TypeLstContainer>
@@ -203,6 +205,7 @@ function SettingCenteredModalBase({ vegeType, mainAction }) {
 SettingCenteredModalBase.propTypes = {
   mainAction: PropTypes.func.isRequired,
   vegeType: PropTypes.number.isRequired,
+  language: PropTypes.number.isRequired,
 };
 
 export default SettingCenteredModalBase;

@@ -94,6 +94,7 @@ const DesktopBtn = styled.div`
 function SettingUserInfo({ setPageStatus, isDesktop }) {
   const isBig = true;
   const [userInfo, setUserInfo] = useAtom(userInfoAtom);
+  const { language } = userInfo;
   const nowNickname = userInfo.nickname;
   const [newNickname, setNewNickname] = useState(nowNickname);
   const nowVegeType = userInfo.vege_type;
@@ -155,12 +156,13 @@ function SettingUserInfo({ setPageStatus, isDesktop }) {
               checkNickname(newNickname.trim());
             }}
           >
-            중복 확인
+            {language === 0 ? '중복 확인' : 'check'}
           </button>
         </ModifyNickName>
         <SettingCenteredModalBase
           vegeType={newVegeType}
           mainAction={setVegeType}
+          language={language}
         />
       </Container>
       {isDesktop ? (

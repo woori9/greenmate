@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useAtom } from 'jotai';
 import ResponsiveNavbar from '../components/common/navbar/ResponsiveNavbar';
 import FloatingActionBtn from '../components/common/FloatingActionBtn';
@@ -8,6 +9,7 @@ import HomeCarousel from '../components/home/HomeCarousel';
 import FilterSearchBar from '../components/home/FilterSearchBar';
 import { categoryAtom, moimListAtom } from '../atoms/moim';
 import { getMoimList } from '../api/moim';
+import { apiGetLetseatMoim } from '../api/map';
 import { userInfoAtom } from '../atoms/accounts';
 import { snakeToCamel } from '../utils/formatKey';
 
@@ -54,10 +56,12 @@ const Hr = styled.hr`
 `;
 
 function Home() {
+  const location = useLocation();
   const [searchKeyword, setSearchKeyword] = useState('');
   const [, setSelectedCategory] = useAtom(categoryAtom);
   const [moimList, setMoimList] = useAtom(moimListAtom);
   const [userInfo] = useAtom(userInfoAtom);
+  let selectedRestau;
 
   useEffect(() => {
     setSelectedCategory(6);
@@ -71,6 +75,23 @@ function Home() {
       },
       () => {},
     );
+    if (location.state) {
+      const { inputRestauPk } = location.state;
+      selectedRestau = { inputRestauPk };
+      apiGetLetseatMoim(
+        {
+          restauId: selectedRestau.inputRestauPk,
+        },
+        res => {
+          const formattedData = res.data.map(item => ({
+            ...snakeToCamel(item),
+            time: new Date(item.time),
+          }));
+          setMoimList(formattedData);
+        },
+        () => {},
+      );
+    }
   }, []);
 
   return (

@@ -16,8 +16,6 @@ import ManageMember from './routes/ManageMember';
 import EvaluateMoim from './routes/EvaluateMoim';
 import MyPage from './routes/MyPage';
 import MyPageLikedRestaurants from './routes/MyPageLikedRestaurants';
-import MyPageLikedFeeds from './routes/MyPageLikedFeeds';
-import MyPageLikedReview from './routes/MyPageLikedReview';
 import MyPageEvaluation from './routes/MyPageEvaluation';
 import MyPageReviews from './routes/MyPageReviews';
 import MyPageFeeds from './routes/MyPageFeeds';
@@ -83,12 +81,17 @@ function App() {
       } catch (error) {
         if (error instanceof TypeError) {
           console.log('safari');
-          window.Notification.requestPermission(permission => {
-            if (permission !== 'granted') {
-              // eslint-disable-next-line no-alert
-              alert('알림을 받으시려면 설정에서 알림 권한을 허용해주세요.');
-            }
-          });
+          try {
+            window.Notification.requestPermission(permission => {
+              if (permission !== 'granted') {
+                // eslint-disable-next-line no-alert
+                alert('알림을 받으시려면 설정에서 알림 권한을 허용해주세요.');
+              }
+            });
+          } catch (err) {
+            // eslint-disable-next-line no-alert
+            alert('알림을 지원하지 않는 기기입니다.');
+          }
         } else {
           console.error(error);
         }
@@ -134,14 +137,6 @@ function App() {
             <Route
               path="/mypage/:userPk/liked-restaurants"
               element={<MyPageLikedRestaurants />}
-            />
-            <Route
-              path="/mypage/:userPk/liked-feeds"
-              element={<MyPageLikedFeeds />}
-            />
-            <Route
-              path="/mypage/:userPk/liked-reviews"
-              element={<MyPageLikedReview />}
             />
             <Route
               path="/mypage/:userPk/evaluation"

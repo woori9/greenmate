@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { useAtom } from 'jotai';
 import { apiPostFollow } from '../../api/accounts';
 import {
   findPrivateChatRoom,
@@ -9,6 +10,7 @@ import {
 } from '../../service/chat_service';
 import useUserInfo from '../../hooks/useUserInfo';
 import formatUserInfo from '../../utils/formatUserInfo';
+import { userInfoAtom } from '../../atoms/accounts';
 
 const Container = styled.div`
   border-bottom: 1px solid #f2f2f2;
@@ -38,6 +40,7 @@ function ButtonContainer({ getProfileInfo, profileInfo }) {
   const { userPk } = useParams();
   const navigate = useNavigate();
   const userInfo = useUserInfo();
+  const [{ language }] = useAtom(userInfoAtom);
   function postFollow() {
     apiPostFollow(
       {
@@ -48,7 +51,10 @@ function ButtonContainer({ getProfileInfo, profileInfo }) {
   }
 
   async function onClickMessage() {
-    if (profileInfo.id === userInfo.id) return;
+    if (profileInfo.id === userInfo.id) {
+      navigate('/chat');
+      return;
+    }
 
     let chatRoom = await findPrivateChatRoom(
       `${profileInfo.id}`,
@@ -74,19 +80,19 @@ function ButtonContainer({ getProfileInfo, profileInfo }) {
     if (statusNum === 0) {
       rightButton = (
         <button type="button" className="active" onClick={() => postFollow()}>
-          팔로우
+          {language === 0 ? '팔로우' : 'follow'}
         </button>
       );
     } else if (statusNum === 1) {
       rightButton = (
         <button type="button" className="inactive" onClick={() => postFollow()}>
-          팔로잉
+          {language === 0 ? '팔로잉' : 'following'}
         </button>
       );
     } else if (statusNum === 2) {
       rightButton = (
         <button type="button" className="active">
-          글쓰기
+          {language === 0 ? '글쓰기' : 'Create new post'}
         </button>
       );
     } else {
@@ -98,7 +104,7 @@ function ButtonContainer({ getProfileInfo, profileInfo }) {
   return (
     <Container>
       <button type="button" className="inactive" onClick={onClickMessage}>
-        메시지
+        {language === 0 ? '메시지' : 'Message'}
       </button>
       {getRightButton(followingStatus)}
     </Container>

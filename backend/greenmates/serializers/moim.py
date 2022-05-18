@@ -1,9 +1,6 @@
 from rest_framework import serializers
 from ..models import Moim, Mate, UserReview
 from accounts.serializers import UserSerializer
-from .restaurant import (
-    RestaurantMoimDataSerializer
-    )
 from .mate import MateSerializer
 
 class MoimSerializer(serializers.ModelSerializer):
@@ -47,7 +44,17 @@ class MoimSimpleSerializer(MoimBaseSerializer):
             )
     def to_representation(self, instance):
         response = super().to_representation(instance)
-        response['restaurant'] = RestaurantMoimDataSerializer(instance.restaurant, context=self.context).data
+        language = self.context['user'].language
+        restaurant_info = instance.restaurant.restaurantinfo_set.first()
+        # restaurant_info = instance.restaurant.restaurantinfo_set.filter(language=language).first()
+        response['restaurant'] = {
+            'id': instance.restaurant.id,
+            'latitude': instance.restaurant.latitude,
+            'longitude': instance.restaurant.longitude,
+            'img_url': instance.restaurant.img_url,
+            'name': restaurant_info.name,
+            'address': restaurant_info.address
+        }
         return response
 
 # 기본 모임 정보 + 식당정보 + mate_status 합류만 반환 + 로그인 한 유저 mate_status (모임 상세)
@@ -88,7 +95,7 @@ class MoimDetailSerializer(MoimSimpleSerializer):
 # 기본 모임 정보 + 식당정보 + mate_status 대기 / 합류 / 거절 / 취소 / 완료 반환 
 class MoimAllSerializer(MoimSimpleSerializer):
     mates = serializers.SerializerMethodField() 
-    
+    # mates = MateSerializer(many=True)
     class Meta:
         model = Moim
         fields = (
