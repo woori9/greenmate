@@ -21,7 +21,7 @@ def update_status():
     moims = Moim.objects.filter(time__lte=two_hrs, status=0)
     for moim in moims:
         tokens = FirebaseToken.objects.filter(user__mate__moim_id=moim.id, user__mate__mate_status__lte=1).values_list('registration_token', flat=True)
-        body=f'[{moim.title}] 모임이 인원부족으로 취소되었습니다.'
+        body=f'[{moim.title[:6]}…] 인원미달로 취소되었습니다.'
         make_messages(tokens, body)
     moims.update(status=2)
     Mate.objects.filter(mate_status=1, moim__status=2).update(mate_status=3)
