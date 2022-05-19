@@ -97,13 +97,13 @@ function RestaurantSearchForm({
         />
         {isSearch && (
           <SearchList>
-            <li>
-              {isLoading && (
+            {isLoading && (
+              <li>
                 <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                   <CircularProgress />
                 </Box>
-              )}
-            </li>
+              </li>
+            )}
             {!isLoading &&
               (searchResult.length > 0 ? (
                 searchResult.map(searchItem => (
