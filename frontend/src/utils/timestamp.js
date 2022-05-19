@@ -13,6 +13,11 @@ export function timestamp1YearLater() {
 }
 
 export function diff2hour(start, now) {
+  if (
+    start.getMonth() - now.getMonth() >= 0 &&
+    start.getDay() - now.getDay() > 0
+  )
+    return true;
   const diff = (start.getTime() - now.getTime()) / (1000 * 60); // 분 단위로 계산
   if (diff > 120) {
     return true;

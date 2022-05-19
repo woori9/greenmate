@@ -1,32 +1,31 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 import { getFeedList } from '../../api/community';
 import Feed from './Feed';
 
 const Container = styled.div`
-  padding: 0rem 1rem 5rem 1rem;
-
-  @media screen and (min-width: 500px) {
-    margin: 0 0 0 0;
-  }
-
+  padding: 0.5rem 1rem 5rem 1rem;
+  margin-bottom: 3rem;
+  max-width: 100vw;
   @media screen and (min-width: 1025px) {
-    margin: 0 17rem -5rem calc(130px + 17rem);
-    padding: 3rem;
+    max-width: 500px;
   }
-
   .none-feeds {
     margin-top: 50px;
   }
 `;
 function Feeds({ categoryValue, vegeTypeValue }) {
   const [feeds, setFeeds] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const getFeeds = async () => {
       const resData = await getFeedList();
       setFeeds(resData);
+      setIsLoading(false);
     };
     getFeeds();
   }, []);
@@ -44,17 +43,23 @@ function Feeds({ categoryValue, vegeTypeValue }) {
   }
   return (
     <Container>
-      {res.length !== 0 ? (
-        <div>
-          {res.map(feed => (
-            <div key={feed.id}>
-              <Feed feed={feed} />
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="none-feeds">게시글이 없습니다!</div>
+      {isLoading && (
+        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <CircularProgress />
+        </Box>
       )}
+      {!isLoading &&
+        (res.length !== 0 ? (
+          <div>
+            {res.map(feed => (
+              <div key={feed.id}>
+                <Feed feed={feed} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="none-feeds">게시글이 없습니다!</div>
+        ))}
     </Container>
   );
 }

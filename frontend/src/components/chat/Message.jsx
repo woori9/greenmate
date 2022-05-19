@@ -6,7 +6,7 @@ const StyledBox = styled.div`
   display: flex;
   justify-content: ${props => (props.isMyMessage ? 'flex-end' : 'flex-start')};
   font-size: 1em;
-  padding: 0 5%;
+  padding: 0 1.5%;
   margin-top: 3px;
 
   .messageBox {
@@ -14,8 +14,9 @@ const StyledBox = styled.div`
     border-radius: 20px;
     padding: 10px 20px;
     display: inline-block;
-    max-width: 80%;
+    max-width: 70%;
     background: ${props => (props.isMyMessage ? '#ffd08a' : 'white')};
+    margin: 1px 0px;
   }
 
   .content {

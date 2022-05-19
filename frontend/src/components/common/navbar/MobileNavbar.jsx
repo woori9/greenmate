@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import HomeIcon from '@mui/icons-material/Home';
 import PlaceIcon from '@mui/icons-material/Place';
 import WysiwygIcon from '@mui/icons-material/Wysiwyg';
-import EcoIcon from '@mui/icons-material/EnergySavingsLeaf';
+import RestaurantOutlinedIcon from '@mui/icons-material/RestaurantOutlined';
 import PersonIcon from '@mui/icons-material/Person';
 import { useAtom } from 'jotai';
 import { userInfoAtom } from '../../../atoms/accounts';
@@ -78,32 +78,33 @@ const NavTop = styled.div`
 
 function MobileNavbar() {
   const [userInfo] = useAtom(userInfoAtom);
+  const { language } = userInfo;
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
   const links = [
     {
-      name: '홈',
+      name: `${language === 0 ? '홈' : 'Home'}`,
       path: '/',
       icon: <HomeIcon sx={{ fontSize: 30 }} />,
     },
     {
-      name: '식당검색',
+      name: `${language === 0 ? '식당검색' : 'Nearby'}`,
       path: '/map',
       icon: <PlaceIcon sx={{ fontSize: 30 }} />,
     },
     {
-      name: '커뮤니티',
+      name: `${language === 0 ? '커뮤니티' : 'Community'}`,
       path: '/community',
       icon: <WysiwygIcon sx={{ fontSize: 30 }} />,
     },
     {
-      name: '내 활동',
+      name: `${language === 0 ? '그린메이트' : 'Greenmate'}`,
       path: '/mymoim',
-      icon: <EcoIcon sx={{ fontSize: 30 }} />,
+      icon: <RestaurantOutlinedIcon sx={{ fontSize: 30 }} />,
     },
     {
-      name: '마이페이지',
+      name: `${language === 0 ? '마이페이지' : 'MY'}`,
       path: `/mypage/${userInfo.id}`,
       icon: <PersonIcon sx={{ fontSize: 30 }} />,
     },

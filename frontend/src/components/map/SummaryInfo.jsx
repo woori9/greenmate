@@ -83,6 +83,7 @@ function SummaryInfo({ getMapwithCommand }) {
           navigate('/', {
             state: {
               inputRestauPk: summaryRestau.id,
+              inputRestauName: summaryRestau.res_info.name,
             },
           })
         }

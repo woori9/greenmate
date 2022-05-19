@@ -2,8 +2,6 @@ import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
-import ArticleIcon from '@mui/icons-material/Article';
-import StarIcon from '@mui/icons-material/Star';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { useAtom } from 'jotai';
 import { userInfoAtom } from '../../atoms/accounts';
@@ -40,20 +38,6 @@ function ProfileLst() {
   const profilePageTitle = pathname.split('/')[3];
   const isMypage = userPk.toString() === profileUserPk;
   const mypageLst = [
-    {
-      icon: <StarIcon />,
-      pageStatus: 'my-reviews',
-      pageName: `${userLanguage === 0 ? '리뷰' : 'Reviews'}`,
-      path: `/mypage/${profileUserPk}/my-reviews`,
-      isAvailable: true,
-    },
-    {
-      icon: <ArticleIcon />,
-      pageStatus: 'my-feeds',
-      pageName: `${userLanguage === 0 ? '피드' : 'Posts'}`,
-      path: `/mypage/${profileUserPk}/my-feeds`,
-      isAvailable: true,
-    },
     {
       icon: <BookmarkIcon />,
       pageStatus: 'liked-restaurants',

@@ -76,7 +76,8 @@ function Home() {
       () => {},
     );
     if (location.state) {
-      const { inputRestauPk } = location.state;
+      const { inputRestauPk, inputRestauName } = location.state;
+      setSearchKeyword(inputRestauName);
       selectedRestau = { inputRestauPk };
       apiGetLetseatMoim(
         {

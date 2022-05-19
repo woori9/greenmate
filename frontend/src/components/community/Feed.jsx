@@ -5,9 +5,9 @@ import CardHeader from '@mui/material/CardHeader';
 import Avatar from '@mui/material/Avatar';
 import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
+// import CardActions from '@mui/material/CardActions';
 import IconButton from '@mui/material/IconButton';
-import { red } from '@mui/material/colors';
+import { red, yellow } from '@mui/material/colors';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import InsertCommentIcon from '@mui/icons-material/InsertComment';
@@ -23,6 +23,9 @@ import Stack from '@mui/material/Stack';
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
 import SendIcon from '@mui/icons-material/Send';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import StorefrontIcon from '@mui/icons-material/Storefront';
+import Rating from '@mui/material/Rating';
 import FeedImageCarousel from './FeedIamgeCarousel';
 import {
   postFeedLike,
@@ -43,7 +46,7 @@ import CommentDetail from './CommentDetail';
 
 const Trans = styled.div`
   cursor: pointer;
-  font-size: 5px;
+  font-size: 10px;
   color: lightgrey;
 `;
 
@@ -58,6 +61,10 @@ const Container = styled.div`
     margin-bottom: 1rem;
   }
 `;
+const NickNameBox = styled.div`
+  display: flex;
+  cursor: pointer;
+`;
 
 function SimpleDialog(props) {
   const { onClose, open, comments, nowFeedId, setUseUpdate, userInfoId } =
@@ -67,6 +74,7 @@ function SimpleDialog(props) {
   const handleClose = () => {
     onClose();
   };
+
   const handleSubmit = event => {
     if (event.keyCode === 13 && commentData.length > 0) {
       const feedId = nowFeedId;
@@ -77,6 +85,7 @@ function SimpleDialog(props) {
       event.target.value = '';
     }
   };
+
   return (
     <Dialog
       onClose={handleClose}
@@ -85,7 +94,7 @@ function SimpleDialog(props) {
     >
       <DialogTitle sx={{ m: '0 auto' }}>댓글</DialogTitle>
       <Container>
-        {comments.length === 0 ? (
+        {!comments ? (
           <span>댓글이 없습니다.</span>
         ) : (
           <div>
@@ -141,6 +150,9 @@ SimpleDialog.propTypes = {
   userInfoId: PropTypes.number,
 }.isRequired;
 
+const CardInfo = styled.div`
+  padding: 0 1rem 1rem 1rem;
+`;
 const CntNum = styled.span`
   margin-left: -5px;
   font-size: 12px;
@@ -155,22 +167,16 @@ const DateFont = styled.span`
 `;
 
 const FeedContent = styled.span`
-  font-size: 1.2rem;
-  font-weight: bold;
+  width: 80%;
+  max-width: 80%;
+  font-size: 14px;
 `;
+
 const Setting = styled.div`
   position: absolute;
   right: 0;
   z-index: 1;
   width: 20%;
-  background-color: #fff;
-  border-radius: 10px;
-  filter: drop-shadow(0 -1px 4px rgba(0, 0, 0, 0.25));
-`;
-const GoProfile = styled.div`
-  position: absolute;
-  z-index: 1;
-  width: 25%;
   background-color: #fff;
   border-radius: 10px;
   filter: drop-shadow(0 -1px 4px rgba(0, 0, 0, 0.25));
@@ -182,15 +188,39 @@ const NicknameFont = styled.span`
 const ContentFont = styled.span`
   font-size: 13px;
 `;
-const DeleteButton = styled.button`
-  background-color: #fff;
-  border: none;
-  cursor: pointer;
-  color: red;
+// const DeleteButton = styled.button`
+//   background-color: #fff;
+//   border: none;
+//   cursor: pointer;
+//   color: red;
 
-  :hover {
-    color: #fcb448;
+//   :hover {
+//     color: #fcb448;
+//   }
+// `;
+const VegeTypeLst = styled.div`
+  display: flex;
+  margin-left: 10px;
+  .vege-type {
+    width: 43px;
+    height: 17px;
+    border-radius: 15px;
+    background-color: #fcb448;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 5px;
+    font-size: 10px;
+    color: #fff;
   }
+`;
+const ResInfoTitle = styled.span`
+  color: grey;
+  font-size: 13px;
+  font-weight: bold;
+`;
+const CardContainer = styled.div`
+  padding: 10px 0 0 10px;
 `;
 
 function Feed({ feed }) {
@@ -203,7 +233,10 @@ function Feed({ feed }) {
   const [open, setOpen] = useState(false);
   const [commentData, setCommentData] = useState('');
   const [useUpdate, setUseUpdate] = useState(0);
-  const [isGoProfile, setIsGoPropfile] = useState(false);
+  let VegeTypesString = [];
+  if (feed.category === 2) {
+    VegeTypesString = feed.restaurant.res_info.vege_types.split(' ');
+  }
   const vegeType = {
     1: vegan,
     2: lacto,
@@ -213,9 +246,9 @@ function Feed({ feed }) {
     6: polo,
     7: flexi,
   };
+
   const userInfo = useUserInfo();
   const navigate = useNavigate();
-
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -223,6 +256,7 @@ function Feed({ feed }) {
   const handleClose = () => {
     setOpen(false);
   };
+
   const handleLike = feedId => {
     postFeedLike(feedId);
     if (isLike) {
@@ -232,35 +266,38 @@ function Feed({ feed }) {
     }
     setIsLike(!isLike);
   };
+
+  const handleSubmit = event => {
+    if (event.keyCode === 13 && commentData.length > 0) {
+      const feedId = feed.id;
+      const data = { content: commentData };
+      createComment({ feedId, data }).then(() =>
+        setUseUpdate(prev => prev + 1),
+      );
+      // eslint-disable-next-line no-param-reassign
+      event.target.value = '';
+    }
+  };
+
   useEffect(() => {
     const FeedTrans = async () => {
       const resData = await getFeedTrans(feed.id);
       setFeedTrans(resData);
     };
     FeedTrans();
-    if (feed.comment_cnt !== 0) {
-      const getComments = async () => {
-        const resData = await getCommentList(feed.id);
-        setComments(resData);
-      };
-      getComments();
-    }
+    const getComments = async () => {
+      const resData = await getCommentList(feed.id);
+      setComments(resData);
+    };
+    getComments();
   }, [useUpdate]);
+
   const handleSetiing = () => {
     setIsSetting(prev => !prev);
   };
-  const handleSubmit = event => {
-    if (event.keyCode === 13 && commentData.length > 0) {
-      const feedId = feed.id;
-      const data = { content: commentData };
-      createComment({ feedId, data });
-      setUseUpdate(prev => prev + 1);
-      // eslint-disable-next-line no-param-reassign
-      event.target.value = '';
-    }
-  };
+
   return (
-    <Card sx={{ mb: 7, maxWidth: 500, position: 'relative' }}>
+    <Card sx={{ mb: 1.5, position: 'relative' }}>
       <CardHeader
         avatar={
           <Avatar src={vegeType[feed.vege_type]} alt={feed.author.nickname} />
@@ -276,15 +313,18 @@ function Feed({ feed }) {
         }
         title={
           <Stack direction="row" alignItems="center">
-            <Avatar
-              src={vegeType[feed.author.vege_type + 1]}
-              alt={feed.author.nickname}
+            <NickNameBox
               onClick={() => {
-                setIsGoPropfile(!isGoProfile);
+                navigate(`/mypage/${feed.author.id}`);
               }}
-              sx={{ width: 24, height: 24, mr: 1, cursor: 'pointer' }}
-            />
-            <h4>{feed.author.nickname}</h4>
+            >
+              <Avatar
+                src={vegeType[feed.author.vege_type + 1]}
+                alt={feed.author.nickname}
+                sx={{ width: 24, height: 24, mr: 1 }}
+              />
+              <h4>{feed.author.nickname}</h4>
+            </NickNameBox>
           </Stack>
         }
         subheader={
@@ -301,17 +341,32 @@ function Feed({ feed }) {
               <ListItemButton>
                 <ListItemText
                   primary="수정"
-                  onClick={() =>
+                  onClick={() => {
                     navigate('/community/form', {
-                      state: {
-                        feedId: feed.id,
-                        originalCategory: feed.category,
-                        originalContent: feed.content,
-                        originalVegeType: feed.vege_type,
-                        originalImgs: feed.img_paths,
-                      },
-                    })
-                  }
+                      state:
+                        feed.category === 2
+                          ? {
+                              feedId: feed.id,
+                              originalCategory: feed.category,
+                              originalContent: feed.content,
+                              originalVegeType: feed.vege_type,
+                              originalImgs: feed.img_paths,
+                              restaurantId: feed.restaurant.id,
+                              restaurantName: feed.restaurant.res_info.name,
+                              restaurantRating: parseInt(
+                                feed.restaurant.score,
+                                10,
+                              ),
+                            }
+                          : {
+                              feedId: feed.id,
+                              originalCategory: feed.category,
+                              originalContent: feed.content,
+                              originalVegeType: feed.vege_type,
+                              originalImgs: feed.img_paths,
+                            },
+                    });
+                  }}
                 />
               </ListItemButton>
             </ListItem>
@@ -332,43 +387,66 @@ function Feed({ feed }) {
       ) : (
         <div />
       )}
-      {isGoProfile ? (
-        <GoProfile>
-          <List>
-            <ListItem disablePadding>
-              <ListItemButton
-                onClick={() => navigate(`/mypage/${feed.author.id}`)}
-              >
-                <ListItemText primary="프로필 보기" />
-              </ListItemButton>
-            </ListItem>
-          </List>
-        </GoProfile>
-      ) : (
-        <div />
-      )}
-
       <CardMedia>
         <FeedImageCarousel props={feed.img_paths} />
       </CardMedia>
-      <CardActions disableSpacing>
-        <IconButton
-          onClick={() => {
-            handleLike(feed.id);
-          }}
+      <CardContainer>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
         >
-          {isLike ? (
-            <FavoriteIcon sx={{ color: red[400] }} />
+          <Stack direction="row" alignItems="center">
+            <IconButton
+              onClick={() => {
+                handleLike(feed.id);
+              }}
+            >
+              {isLike ? (
+                <FavoriteIcon sx={{ color: red[400] }} />
+              ) : (
+                <FavoriteBorderIcon sx={{ color: red[400] }} />
+              )}
+            </IconButton>
+            <CntNum>{likeCnt}</CntNum>
+            <IconButton onClick={handleClickOpen}>
+              <InsertCommentIcon />
+            </IconButton>
+            <CntNum>{comments ? comments.length : 0}</CntNum>
+          </Stack>
+          {feed.category === 2 ? (
+            <Stack>
+              <CardInfo>
+                <Rating
+                  name="read-only"
+                  value={feed.score}
+                  readOnly
+                  sx={{ fontSize: 'small', color: yellow[800] }}
+                />
+                <Stack direction="row" alignItems="center">
+                  <StorefrontIcon sx={{ fontSize: 'small', mr: 1 }} />
+                  <ResInfoTitle>{feed.restaurant.res_info.name}</ResInfoTitle>
+                  <VegeTypeLst>
+                    {VegeTypesString.map((VegeType, idx) => (
+                      <div key={idx && VegeType} className="vege-type">
+                        {VegeType}
+                      </div>
+                    ))}
+                  </VegeTypeLst>
+                </Stack>
+                <Stack direction="row" alignItems="center">
+                  <LocationOnIcon sx={{ fontSize: 'small', mr: 1 }} />
+                  <ResInfoTitle>
+                    {feed.restaurant.res_info.address}
+                  </ResInfoTitle>
+                </Stack>
+              </CardInfo>
+            </Stack>
           ) : (
-            <FavoriteBorderIcon sx={{ color: red[400] }} />
+            <div />
           )}
-        </IconButton>
-        <CntNum>{likeCnt}</CntNum>
-        <IconButton onClick={handleClickOpen}>
-          <InsertCommentIcon />
-        </IconButton>
-        <CntNum>{feed.comment_cnt}</CntNum>
-      </CardActions>
+        </Stack>
+      </CardContainer>
       <CardContent>
         {isFeedTrans ? (
           <div>
@@ -399,7 +477,7 @@ function Feed({ feed }) {
         )}
       </CardContent>
       <CardContent>
-        {comments.length === 1 ? (
+        {comments && comments.length === 1 ? (
           <Stack sx={{ mt: 1, mb: 1 }}>
             <Stack
               direction="row"
@@ -420,11 +498,11 @@ function Feed({ feed }) {
                     ' ' +
                     `${comments[0].created_at.substr(8, 2)}일`}
                 </DateFont>
-                {userInfo.id === comments[0].author ? (
+                {/* {userInfo.id === comments[0].author ? (
                   <DeleteButton>삭제</DeleteButton>
                 ) : (
                   <div />
-                )}
+                )} */}
               </Stack>
             </Stack>
             <Stack
@@ -439,7 +517,7 @@ function Feed({ feed }) {
         ) : (
           <div />
         )}
-        {comments.length >= 2 ? (
+        {comments && comments.length >= 2 && (
           <div>
             <Stack sx={{ mt: 1, mb: 1 }}>
               <Stack
@@ -461,11 +539,11 @@ function Feed({ feed }) {
                       ' ' +
                       `${comments[0].created_at.substr(8, 2)}일`}
                   </DateFont>
-                  {userInfo.id === comments[0].author ? (
+                  {/* {userInfo.id === comments[0].author ? (
                     <DeleteButton>삭제</DeleteButton>
                   ) : (
                     <div />
-                  )}
+                  )} */}
                 </Stack>
               </Stack>
               <Stack
@@ -497,11 +575,11 @@ function Feed({ feed }) {
                       ' ' +
                       `${comments[1].created_at.substr(8, 2)}일`}
                   </DateFont>
-                  {userInfo.id === comments[1].author ? (
+                  {/* {userInfo.id === comments[1].author ? (
                     <DeleteButton>삭제</DeleteButton>
                   ) : (
                     <div />
-                  )}
+                  )} */}
                 </Stack>
               </Stack>
               <Stack
@@ -514,8 +592,6 @@ function Feed({ feed }) {
               </Stack>
             </Stack>
           </div>
-        ) : (
-          <div />
         )}
         <Stack direction="row" alignItems="center" sx={{ mt: 3 }}>
           <SendIcon sx={{ fs: 'large', mr: 2 }} />

@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import styled, { css } from 'styled-components';
 import StorefrontIcon from '@mui/icons-material/Storefront';
@@ -35,14 +36,6 @@ const Card = styled.div`
             margin-bottom: 1rem;
           }
         `}
-  .status-text {
-    display: inline-block;
-    color: #92c769;
-    padding: 0.5rem;
-    border: 2px solid #92c769;
-    border-radius: 50px;
-    margin-left: 0.5rem;
-  }
 
   @media screen and (min-width: 1025px) {
     &:hover {
@@ -50,6 +43,34 @@ const Card = styled.div`
       cursor: pointer;
     }
   }
+`;
+
+const StatusText = styled.p`
+  display: inline-block;
+  padding: 0.5rem;
+  border-radius: 50px;
+  margin-left: 0.5rem;
+
+  ${props =>
+    props.status === 0
+      ? css`
+          color: #92c769;
+          border: 2px solid #92c769;
+        `
+      : props.status === 1
+      ? css`
+          color: #3e8bff;
+          border: 2px solid #3e8bff;
+        `
+      : props.status === 2
+      ? css`
+          color: #a9a9a9;
+          border: 2px solid #a9a9a9;
+        `
+      : css`
+          color: #ff5959;
+          border: 2px solid #ff5959;
+        `}
 `;
 
 const ProfileWithInfo = styled.div`
@@ -113,13 +134,13 @@ function MoimCard({ moimInfo, setNeedUpdate, showStatus }) {
         tabIndex="0"
       >
         {showStatus && (
-          <span className="status-text">
+          <StatusText status={moimInfo.status}>
             {
               (userInfo.language === 0 ? moimStatus : moimStatusEng)[
                 moimInfo.status
               ]
             }
-          </span>
+          </StatusText>
         )}
         <ProfileWithInfo>
           <ProfileImage vegeType={moimInfo.author.vegeType} isBig />

@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
-import vegan from '../../assets/vegan-icon.png';
+import EmailIcon from '@mui/icons-material/Email';
 import {
   findPrivateChatRoom,
   getJoinDate,
@@ -26,12 +26,6 @@ const StyledNotificationItem = styled.div`
 
   .date {
     margin-left: auto;
-  }
-  img {
-    width: 5rem;
-    height: auto;
-    border-radius: 50%;
-    background-color: azure;
   }
 `;
 
@@ -83,7 +77,7 @@ function NotificationItem({ notification, handleDelete }) {
 
   return (
     <StyledNotificationItem onClick={() => handleNotification(notification)}>
-      <img src={vegan} alt="greenmate" />
+      <EmailIcon sx={{ color: '#454545', fontSize: 30 }} />
       <p className="title">{notification.body}</p>
       <p className="date">{notification.createdAt}</p>
     </StyledNotificationItem>

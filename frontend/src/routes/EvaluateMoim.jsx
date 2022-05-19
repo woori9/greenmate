@@ -10,6 +10,7 @@ import { evaluateMoim } from '../api/moim';
 import { evaluationAtom } from '../atoms/moim';
 import { formattedDatetime } from '../utils/formattedDate';
 import useWindowDimensions from '../utils/windowDimension';
+import useUserInfo from '../hooks/useUserInfo';
 
 const Page = styled.div`
   position: relative;
@@ -124,6 +125,7 @@ function EvaluateMoim() {
   const { moimInfo, mateList } = location.state;
   const [selectedMate, setSelectedMate] = useState(mateList[1]);
   const [evaluationResult] = useAtom(evaluationAtom);
+  const userInfo = useUserInfo();
 
   function handleSubmit() {
     evaluateMoim(
@@ -167,17 +169,19 @@ function EvaluateMoim() {
           <p>함께한 상대에 대한 의견을 들려주세요.</p>
         </TextContainer>
         <UserList>
-          {mateList.slice(1).map(mate => (
-            <UserListItem
-              key={mate.id}
-              isSelected={mate.id === selectedMate.id}
-            >
-              <button type="button" onClick={() => setSelectedMate(mate)}>
-                <ProfileImage vegeType={mate.vegeType} isBig={false} />
-                <p>{mate.nickname}</p>
-              </button>
-            </UserListItem>
-          ))}
+          {mateList
+            .filter(mate => mate.userId !== userInfo.id)
+            .map(mate => (
+              <UserListItem
+                key={mate.id}
+                isSelected={mate.id === selectedMate.id}
+              >
+                <button type="button" onClick={() => setSelectedMate(mate)}>
+                  <ProfileImage vegeType={mate.vegeType} isBig={false} />
+                  <p>{mate.nickname}</p>
+                </button>
+              </UserListItem>
+            ))}
         </UserList>
         <Hr />
         <EvaluationForm
