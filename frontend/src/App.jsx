@@ -137,12 +137,12 @@ function App() {
             element={<MyPageEvaluation />}
           />
           <Route path="/mypage/:userPk/setting" element={<MyPageSetting />} />
+          <Route path="/notification" element={<Notification />} />
           <Route element={<Footer />}>
             <Route path="/" element={<Home />} />
             <Route path="/community" element={<Community />} />
             <Route path="/mymoim" element={<MyMoim />} />
             <Route path="/mypage/:userPk" element={<MyPage />} />
-            <Route path="/notification" element={<Notification />} />
           </Route>
         </Route>
       </Routes>
