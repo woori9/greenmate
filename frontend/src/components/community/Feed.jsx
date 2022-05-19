@@ -5,9 +5,9 @@ import CardHeader from '@mui/material/CardHeader';
 import Avatar from '@mui/material/Avatar';
 import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
+// import CardActions from '@mui/material/CardActions';
 import IconButton from '@mui/material/IconButton';
-import { red } from '@mui/material/colors';
+import { red, yellow } from '@mui/material/colors';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import InsertCommentIcon from '@mui/icons-material/InsertComment';
@@ -23,6 +23,9 @@ import Stack from '@mui/material/Stack';
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
 import SendIcon from '@mui/icons-material/Send';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import StorefrontIcon from '@mui/icons-material/Storefront';
+import Rating from '@mui/material/Rating';
 import FeedImageCarousel from './FeedIamgeCarousel';
 import {
   postFeedLike,
@@ -147,6 +150,9 @@ SimpleDialog.propTypes = {
   userInfoId: PropTypes.number,
 }.isRequired;
 
+const CardInfo = styled.div`
+  padding: 0 1rem 1rem 1rem;
+`;
 const CntNum = styled.span`
   margin-left: -5px;
   font-size: 12px;
@@ -192,6 +198,30 @@ const ContentFont = styled.span`
 //     color: #fcb448;
 //   }
 // `;
+const VegeTypeLst = styled.div`
+  display: flex;
+  margin-left: 10px;
+  .vege-type {
+    width: 43px;
+    height: 17px;
+    border-radius: 15px;
+    background-color: #fcb448;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 5px;
+    font-size: 10px;
+    color: #fff;
+  }
+`;
+const ResInfoTitle = styled.span`
+  color: grey;
+  font-size: 13px;
+  font-weight: bold;
+`;
+const CardContainer = styled.div`
+  padding: 10px 0 0 10px;
+`;
 
 function Feed({ feed }) {
   const [isLike, setIsLike] = useState(feed.is_like);
@@ -203,7 +233,10 @@ function Feed({ feed }) {
   const [open, setOpen] = useState(false);
   const [commentData, setCommentData] = useState('');
   const [useUpdate, setUseUpdate] = useState(0);
-
+  let VegeTypesString = [];
+  if (feed.category === 2) {
+    VegeTypesString = feed.restaurant.res_info.vege_types.split(' ');
+  }
   const vegeType = {
     1: vegan,
     2: lacto,
@@ -216,7 +249,6 @@ function Feed({ feed }) {
 
   const userInfo = useUserInfo();
   const navigate = useNavigate();
-
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -358,24 +390,63 @@ function Feed({ feed }) {
       <CardMedia>
         <FeedImageCarousel props={feed.img_paths} />
       </CardMedia>
-      <CardActions disableSpacing>
-        <IconButton
-          onClick={() => {
-            handleLike(feed.id);
-          }}
+      <CardContainer>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
         >
-          {isLike ? (
-            <FavoriteIcon sx={{ color: red[400] }} />
+          <Stack direction="row" alignItems="center">
+            <IconButton
+              onClick={() => {
+                handleLike(feed.id);
+              }}
+            >
+              {isLike ? (
+                <FavoriteIcon sx={{ color: red[400] }} />
+              ) : (
+                <FavoriteBorderIcon sx={{ color: red[400] }} />
+              )}
+            </IconButton>
+            <CntNum>{likeCnt}</CntNum>
+            <IconButton onClick={handleClickOpen}>
+              <InsertCommentIcon />
+            </IconButton>
+            <CntNum>{comments ? comments.length : 0}</CntNum>
+          </Stack>
+          {feed.category === 2 ? (
+            <Stack>
+              <CardInfo>
+                <Rating
+                  name="read-only"
+                  value={feed.score}
+                  readOnly
+                  sx={{ fontSize: 'small', color: yellow[800] }}
+                />
+                <Stack direction="row" alignItems="center">
+                  <StorefrontIcon sx={{ fontSize: 'small', mr: 1 }} />
+                  <ResInfoTitle>{feed.restaurant.res_info.name}</ResInfoTitle>
+                  <VegeTypeLst>
+                    {VegeTypesString.map((VegeType, idx) => (
+                      <div key={idx && VegeType} className="vege-type">
+                        {VegeType}
+                      </div>
+                    ))}
+                  </VegeTypeLst>
+                </Stack>
+                <Stack direction="row" alignItems="center">
+                  <LocationOnIcon sx={{ fontSize: 'small', mr: 1 }} />
+                  <ResInfoTitle>
+                    {feed.restaurant.res_info.address}
+                  </ResInfoTitle>
+                </Stack>
+              </CardInfo>
+            </Stack>
           ) : (
-            <FavoriteBorderIcon sx={{ color: red[400] }} />
+            <div />
           )}
-        </IconButton>
-        <CntNum>{likeCnt}</CntNum>
-        <IconButton onClick={handleClickOpen}>
-          <InsertCommentIcon />
-        </IconButton>
-        <CntNum>{comments ? comments.length : 0}</CntNum>
-      </CardActions>
+        </Stack>
+      </CardContainer>
       <CardContent>
         {isFeedTrans ? (
           <div>
