@@ -6,11 +6,9 @@ import vegeTypeList from '../../utils/vegeTypeList';
 import useUserInfo from '../../hooks/useUserInfo';
 
 const Dialog = styled.dialog`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   text-align: center;
-  padding: 1rem 1rem 4rem 1rem;
+  padding: 1rem 3rem;
+  padding-bottom: 4rem;
   border: none;
   border-radius: 10px;
   margin: auto;
@@ -46,7 +44,7 @@ const Dialog = styled.dialog`
       cursor: pointer;
 
       &:first-child {
-        background-color: #fcb448;
+        background-color: #f9795d;
       }
 
       &:last-child {
@@ -94,7 +92,7 @@ const VegeTypeBox = styled.div`
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  width: 5rem;
+  width: 100%;
 
   .img-box {
     display: flex;
