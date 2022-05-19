@@ -59,10 +59,10 @@ class ProfileSerializer(serializers.ModelSerializer):
         return 0
         
     def get_feed_cnt(self, obj):
-        return Feed.objects.filter(author=obj.id).exclude(category=1).count()
+        return Feed.objects.filter(author=obj.id).exclude(category=2).count()
 
     def get_review_cnt(self, obj):
-        return Feed.objects.filter(author=obj.id, category=1).count()
+        return Feed.objects.filter(author=obj.id, category=2).count()
 
 
 class RequestSerializer(serializers.ModelSerializer):
