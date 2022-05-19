@@ -49,22 +49,6 @@ const Form = styled.div`
     margin-top: 20px;
   }
 
-  .input-file-button {
-    display: flex;
-    justify-content: center;
-    left: 1rem;
-    bottom: 5rem;
-    width: 100%;
-    color: #fff;
-    font-weight: 600;
-    background-color: #fcb448;
-    border: none;
-    border-radius: 5px;
-    padding: 0.5rem 0;
-    margin: 0 auto;
-    cursor: pointer;
-  }
-
   .imgInput {
     display: none;
   }
@@ -94,11 +78,25 @@ const Form = styled.div`
     color: #fcb448;
     text-align: center;
   }
+`;
+
+const InputFileButton = styled.label`
+  display: flex;
+  justify-content: center;
+  left: 1rem;
+  bottom: 5rem;
+  width: 100%;
+  color: #fff;
+  font-weight: 600;
+  background-color: ${props => (props.disabled ? '#d1d1d1' : '#fcb448')};
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem 0;
+  margin: 0 auto;
+  cursor: ${props => !props.disabled && 'pointer'};
 
   @media screen and (min-width: 1025px) {
-    .input-file-button {
-      width: 50%;
-    }
+    width: 50%;
   }
 `;
 
@@ -205,23 +203,28 @@ const VegeTypeBox = styled.div`
   }
 `;
 
-const Info = styled.span`
-  cursor: pointer;
-  color: #a9a9a9;
-
-  :hover {
-    color: #fcb448;
-  }
-`;
-
 const Page = styled.div`
   position: absolute;
   right: 11%;
+  color: #a9a9a9;
   background-color: #fff;
   padding: 1rem;
   border-radius: 10px;
   z-index: 6;
   filter: drop-shadow(0 -1px 4px rgba(0, 0, 0, 0.25));
+`;
+
+const Info = styled.span`
+  cursor: pointer;
+  color: #a9a9a9;
+
+  &:hover {
+    color: #fcb448;
+    cursor: pointer;
+    ${Page} {
+      display: block;
+    }
+  }
 `;
 
 const Description = styled.div`
@@ -240,13 +243,6 @@ const Description = styled.div`
 
   .descript-page {
     display: none;
-  }
-
-  :hover {
-    cursor: pointer;
-    ${Page} {
-      display: block;
-    }
   }
 `;
 
@@ -280,8 +276,9 @@ function CommunityForm() {
       setOriginalFeedId(feedId);
       setCategory(originalCategory);
       setContent(originalContent);
-      setVegeType(originalVegeType);
+      setVegeType(originalVegeType - 1);
       setImgs(originalImgs);
+      setShowImg(originalImgs[0].img_path);
       if (originalCategory === 2) {
         const { restaurantId, restaurantName, restaurantRating } =
           location.state;
@@ -293,7 +290,7 @@ function CommunityForm() {
   }, []);
 
   function handleSubmit() {
-    if (category === 0 || !content || !imgs) {
+    if (category === 0 || vegeType === null || !content || !imgs) {
       if (category === 2) {
         if (!selectedRestaurantId) {
           alert('입력하지 않은 정보가 있습니다.');
@@ -320,9 +317,9 @@ function CommunityForm() {
     formData.append('enctype', 'multipart/form-data');
 
     if (isForUpdate) {
-      updateFeed(originalFeedId, formData).then(() => navigate('/community'));
+      updateFeed(originalFeedId, formData).then(() => navigate(-1));
     } else {
-      createFeed(formData).then(() => navigate('/community'));
+      createFeed(formData).then(() => navigate(-1));
     }
   }
 
@@ -341,7 +338,7 @@ function CommunityForm() {
             {userInfo.language === 0 ? '글 작성하기' : 'Write a post'}
           </h1>
         )}
-        {imgs && (
+        {imgs && !isForUpdate && (
           <>
             <ImageBox>
               <div className="image-upload image-preview">
@@ -352,7 +349,10 @@ function CommunityForm() {
                   viewBox="0 0 20 20"
                   fill="#848282"
                   aria-label="닫기"
-                  onClick={() => setShowImg(null)}
+                  onClick={() => {
+                    setShowImg(null);
+                    setImgs(null);
+                  }}
                 >
                   <path
                     fillRule="evenodd"
@@ -371,9 +371,9 @@ function CommunityForm() {
             </p>
           </>
         )}
-        <label className="input-file-button" htmlFor="input-file">
+        <InputFileButton disabled={isForUpdate} htmlFor="input-file">
           {userInfo.language === 0 ? '사진 추가' : 'Upload photos'}
-        </label>
+        </InputFileButton>
         <input
           type="file"
           multiple="multiple"
@@ -381,14 +381,9 @@ function CommunityForm() {
           id="input-file"
           accept="image/*"
           name="file"
+          disabled={isForUpdate}
           onChange={event => {
-            // console.log('here!!!!!!!!!!!!!');
-            // console.log(event.target.files);
-            // const dataTransfer = new DataTransfer();
             setImgs(event.target.files);
-            // for (fileItem of event.target.files) {
-            //   dataTransfer.items.add(fileItem);
-            // }
             const reader = new FileReader();
             reader.onload = function (e) {
               setShowImg(e.target.result);
@@ -475,10 +470,10 @@ function CommunityForm() {
                 ? '채식 타입 안내'
                 : 'A guide to vegetarian types'}{' '}
               {'>'}
+              <Page className="descript-page">
+                <VegeTypeInform />
+              </Page>
             </Info>
-            <Page className="descript-page">
-              <VegeTypeInform />
-            </Page>
           </Description>
         </Stack>
         <VegeTypeLst>
@@ -493,7 +488,7 @@ function CommunityForm() {
               <div className="img-box">
                 <img className="vege-img" src={type.icon} alt="vege-img" />
               </div>
-              <p>{type.title}</p>
+              <p>{userInfo.language === 0 ? type.title : type.titleEng}</p>
             </VegeTypeBox>
           ))}
         </VegeTypeLst>

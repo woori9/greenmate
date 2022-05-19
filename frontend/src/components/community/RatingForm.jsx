@@ -3,16 +3,13 @@ import Rating from '@mui/material/Rating';
 import PropTypes from 'prop-types';
 
 const StarContainer = styled.div`
-  StarBorderIcon {
-    margin: 20px 10px 20px 0;
-    opacity: 0.1;
-    cursor: pointer;
-    font-size: 50px;
+  label {
+    width: 3rem !important;
   }
 
-  .yellowStar {
-    color: orange;
-    opacity: 1;
+  svg {
+    width: 30px !important;
+    height: 30px !important;
   }
 `;
 
