@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import CircularProgress from '@mui/material/CircularProgress';
 import { getFeedList } from '../../api/community';
 import Feed from './Feed';
 import useWindowDimensions from '../../utils/windowDimension';
@@ -24,11 +25,13 @@ const Container = styled.div`
 function Feeds({ categoryValue, vegeTypeValue }) {
   const { width } = useWindowDimensions();
   const [feeds, setFeeds] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const getFeeds = async () => {
       const resData = await getFeedList();
       setFeeds(resData);
+      setIsLoading(false);
     };
     getFeeds();
   }, []);
@@ -47,17 +50,19 @@ function Feeds({ categoryValue, vegeTypeValue }) {
   console.log(width);
   return (
     <Container>
-      {res.length !== 0 ? (
-        <div>
-          {res.map(feed => (
-            <div key={feed.id}>
-              <Feed feed={feed} />
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="none-feeds">게시글이 없습니다!</div>
-      )}
+      {isLoading && <CircularProgress />}
+      {!isLoading &&
+        (res.length !== 0 ? (
+          <div>
+            {res.map(feed => (
+              <div key={feed.id}>
+                <Feed feed={feed} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="none-feeds">게시글이 없습니다!</div>
+        ))}
     </Container>
   );
 }
