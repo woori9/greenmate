@@ -46,18 +46,18 @@ const NicknameFont = styled.span`
 const ContentFont = styled.span`
   font-size: 13px;
 `;
-const DeleteButton = styled.button`
-  padding-right: 0;
-  font-size: 10px;
-  background-color: #fff;
-  border: none;
-  cursor: pointer;
-  color: red;
+// const DeleteButton = styled.button`
+//   padding-right: 0;
+//   font-size: 10px;
+//   background-color: #fff;
+//   border: none;
+//   cursor: pointer;
+//   color: red;
 
-  :hover {
-    color: #fcb448;
-  }
-`;
+//   :hover {
+//     color: #fcb448;
+//   }
+// `;
 const CntNum = styled.span`
   margin-left: -5px;
   font-size: 12px;
@@ -80,7 +80,7 @@ function CommentDetail({
   commentLikeCnt,
   commentAuthor,
   commentCreateAt,
-  userInfoId,
+  // userInfoId,
 }) {
   const [commentTrans, setCommentTrans] = useState([]);
   const [isTrans, setIsTrans] = useState(false);
@@ -139,11 +139,11 @@ function CommentDetail({
                   ' ' +
                   `${commentCreateAt.substr(8, 2)}일`}
               </DateFont>
-              {userInfoId === commentAuthor ? (
+              {/* {userInfoId === commentAuthor ? (
                 <DeleteButton>삭제</DeleteButton>
               ) : (
                 <div />
-              )}
+              )} */}
             </Stack>
           </Stack>
           <Stack
@@ -203,11 +203,11 @@ function CommentDetail({
                   ' ' +
                   `${commentCreateAt.substr(8, 2)}일`}
               </DateFont>
-              {userInfoId === commentAuthor ? (
+              {/* {userInfoId === commentAuthor ? (
                 <DeleteButton>삭제</DeleteButton>
               ) : (
                 <div />
-              )}
+              )} */}
             </Stack>
           </Stack>
           <Stack
@@ -272,7 +272,7 @@ CommentDetail.propTypes = {
   commentLikeCnt: PropTypes.number.isRequired,
   commentAuthor: PropTypes.number.isRequired,
   commentCreateAt: PropTypes.string.isRequired,
-  userInfoId: PropTypes.number.isRequired,
+  // userInfoId: PropTypes.number.isRequired,
 };
 
 export default CommentDetail;
