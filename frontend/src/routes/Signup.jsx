@@ -78,11 +78,12 @@ const NicknameContainer = styled.div`
     }
   }
 `;
+
 const VegeTypeContainer = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  padding: 3rem 0;
+  padding: 1.5rem 0 3rem 0;
 `;
 const VegeTypeLst = styled.div`
   display: flex;
@@ -127,13 +128,31 @@ const Page = styled.div`
   position: fixed;
   bottom: 10%;
   right: 11%;
+  color: #a9a9a9;
   padding: 1rem;
   z-index: 6;
   background-color: #fff;
   border-radius: 10px;
   filter: drop-shadow(0 -1px 4px rgba(0, 0, 0, 0.25));
 `;
+
+const Info = styled.span`
+  display: flex;
+  align-items: center;
+  color: #a9a9a9;
+  font-size: 0.7rem;
+  cursor: pointer;
+
+  &:hover {
+    color: #fcb448;
+    ${Page} {
+      display: block;
+    }
+  }
+`;
+
 const Description = styled.div`
+  align-self: end;
   display: flex;
   justify-content: end;
   align-items: center;
@@ -144,15 +163,6 @@ const Description = styled.div`
   }
   .descript-page {
     display: none;
-  }
-  :hover {
-    cursor: pointer;
-    .info-txt {
-      color: #fcb448;
-    }
-    ${Page} {
-      display: block;
-    }
   }
 `;
 
@@ -187,7 +197,6 @@ function Signup() {
       { nickname: putNickname },
       () => {
         SetNicknameStatus(true);
-        setNewNickname(putNickname);
       },
       () => {
         SetNicknameStatus(false);
@@ -218,7 +227,8 @@ function Signup() {
             <input
               value={newNickname}
               onChange={event => {
-                checkNickname(event.target.value.trim());
+                setNewNickname(event.target.value);
+                checkNickname(event.target.value);
               }}
             />
             {nicknameStatus ? (
@@ -233,11 +243,13 @@ function Signup() {
         <VegeTypeContainer>
           <p className="title">채식 타입을 선택해주세요</p>
           <Description>
-            <p className="info-txt">채식 타입 안내</p>
-            <ChevronRightIcon />
-            <Page className="descript-page">
-              <VegeTypeInform />
-            </Page>
+            <Info>
+              채식 타입 안내
+              <ChevronRightIcon />
+              <Page className="descript-page">
+                <VegeTypeInform />
+              </Page>
+            </Info>
           </Description>
           <VegeTypeLst>
             {vegeTypeList.map(type => (

@@ -10,6 +10,7 @@ const vegeTypeList = [
   {
     id: 0,
     title: '비건',
+    titleEng: 'Vegan',
     sentence: '비건',
     icon: veganIcon,
     rule: '식물식',
@@ -17,6 +18,7 @@ const vegeTypeList = [
   {
     id: 1,
     title: '락토',
+    titleEng: 'Lacto',
     sentence: '락토',
     icon: lactoIcon,
     rule: '채식 + 우유 + 유제품',
@@ -24,6 +26,7 @@ const vegeTypeList = [
   {
     id: 2,
     title: '오보',
+    titleEng: 'Ovo',
     sentence: '오보',
     icon: ovoIcon,
     rule: '채식 + 난류',
@@ -31,6 +34,7 @@ const vegeTypeList = [
   {
     id: 3,
     title: '락토오보',
+    titleEng: 'Lacto ovo',
     sentence: '락토오보',
     icon: lactoOvoUcon,
     rule: '채식 + 우유 + 유제품 + 난류',
@@ -38,6 +42,7 @@ const vegeTypeList = [
   {
     id: 4,
     title: '페스코',
+    titleEng: 'Pesco',
     sentence: '페스코',
     icon: pescoIcon,
     rule: '채식 + 우유 + 유제품 + 난류 + 바다동물',
@@ -45,6 +50,7 @@ const vegeTypeList = [
   {
     id: 5,
     title: '폴로',
+    titleEng: 'Polo',
     sentence: '폴로',
     icon: poloIcon,
     rule: '채식 + 우유 + 유제품 + 난류 + 바다동물 + 가금류',
@@ -52,6 +58,7 @@ const vegeTypeList = [
   {
     id: 6,
     title: '관심있어요',
+    titleEng: 'Flexiterian',
     sentence: '플렉시테리언',
     icon: flexiIcon,
     rule: '채식 + 우유 + 유제품 + 난류 + 바다동물 + 가금류 + 동물',

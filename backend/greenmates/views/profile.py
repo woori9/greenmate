@@ -89,9 +89,9 @@ def get_feed_list(request, type, user_id):
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
 
     if type == 'f':
-        feed_list = Feed.objects.filter(author=user_id).exclude(category=1).order_by('-pk')
+        feed_list = Feed.objects.filter(author=user_id).exclude(category=2).order_by('-pk')
     elif type == 'r':
-        feed_list = Feed.objects.filter(author=user_id, category=1).order_by('-pk')
+        feed_list = Feed.objects.filter(author=user_id, category=2).order_by('-pk')
 
     serializer = FeedCommentSerializer(feed_list, context={'user': user}, many=True)
     return Response(serializer.data)
@@ -127,9 +127,9 @@ def get_like_feed(request, type):
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
 
     if type == 'f':
-        feed_list = Feed.objects.filter(like_users=user.id).exclude(category=1).order_by('-pk')
+        feed_list = Feed.objects.filter(like_users=user.id).exclude(category=2).order_by('-pk')
     elif type == 'r':
-        feed_list = Feed.objects.filter(like_users=user.id, category=1).order_by('-pk')
+        feed_list = Feed.objects.filter(like_users=user.id, category=2).order_by('-pk')
 
     serializer = FeedCommentSerializer(feed_list, context={'user': user}, many=True)
     return Response(serializer.data)

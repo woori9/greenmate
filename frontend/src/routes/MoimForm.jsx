@@ -13,7 +13,11 @@ import RestaurantSearchForm from '../components/common/RestaurantSearchForm';
 import DesktopNavbar from '../components/common/navbar/DesktopNavbar';
 import GoBackBar from '../components/common/GoBackBar';
 import { createMoim, updateMoim } from '../api/moim';
-import { timestampNextDay, timestamp1YearLater } from '../utils/timestamp';
+import {
+  timestampNextDay,
+  timestamp1YearLater,
+  diff2hour,
+} from '../utils/timestamp';
 import { createMoimChat } from '../service/chat_service';
 import useUserInfo from '../hooks/useUserInfo';
 import useWindowDimensions from '../utils/windowDimension';
@@ -117,6 +121,12 @@ function MoimForm() {
       alert('입력하지 않은 정보가 있습니다.');
       return;
     }
+    console.log(new Date(datetimeValue));
+    console.log(new Date());
+    if (!diff2hour(new Date(datetimeValue), new Date())) {
+      alert('모임 시간은 현재로부터 2시간 이상 남아있어야 합니다.');
+      return;
+    }
     if (count < 2 || count > 20) {
       alert('인원은 최소 2명, 최대 20명까지 가능합니다.');
       return;
@@ -148,6 +158,7 @@ function MoimForm() {
         },
         result => {
           const { data } = result;
+          console.log('생성된 모임 id: ', data.id);
           const moimIdCreated = `${data.id}`;
           createMoimChat(moimIdCreated, userInfo);
           navigate('/');
@@ -198,7 +209,10 @@ function MoimForm() {
         <label htmlFor="datetime">
           {userInfo.language === 0 ? '날짜' : 'Date'}
         </label>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <LocalizationProvider
+          dateAdapter={AdapterDayjs}
+          locale={userInfo.language === 0 ? 'ko' : 'en'}
+        >
           <DateTimePicker
             value={datetimeValue}
             onChange={newValue => setDatetimeValue(newValue)}
@@ -228,7 +242,11 @@ function MoimForm() {
           onChange={e => setCount(e.target.value)}
           disabled={!!isForUpdate}
           margin="dense"
-          endAdornment={<InputAdornment position="end">명</InputAdornment>}
+          endAdornment={
+            <InputAdornment position="end">
+              {userInfo.language === 0 && '명'}
+            </InputAdornment>
+          }
           inputProps={{
             min: 2,
             max: 20,

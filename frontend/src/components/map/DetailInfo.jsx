@@ -85,20 +85,6 @@ const Menu = styled.div`
     padding: 1rem 0;
   }
 `;
-const Review = styled.div`
-  padding: 1rem 0;
-  .sub-title {
-    border-bottom: 1px solid #f2f2f2;
-    padding-bottom: 1rem;
-  }
-  .no-content {
-    padding: 2rem;
-    text-align: center;
-  }
-  .review {
-    padding: 1rem 0.5rem;
-  }
-`;
 const BoxLetsEat = styled.div``;
 
 function copyAddress(text) {
@@ -122,8 +108,6 @@ function DetailInfo() {
   const restauInfo = detailRestau.res_info;
   const { address, menus } = restauInfo;
   const splitMenus = menus.split(' ');
-  const reviews = detailRestau.review;
-  const reviewCnt = reviews.length;
 
   const [newBookMark, setNewBookMark] = useState(detailRestau.is_like);
   function postLikeRestau() {
@@ -193,35 +177,12 @@ function DetailInfo() {
           </div>
         ))}
       </Menu>
-      <Review>
-        <h3 className="sub-title">
-          {userInfo.language === 0 ? '리뷰' : 'Reviews'}
-        </h3>
-        <div>
-          {reviewCnt ? (
-            <div>
-              {reviews.map(review => (
-                <div className="review">
-                  <p>{review.id}</p>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="no-content">
-              <p>
-                {userInfo.language === 0
-                  ? '작성된 리뷰가 없습니다'
-                  : 'There are no reviews yet'}
-              </p>
-            </div>
-          )}
-        </div>
-      </Review>
       <BoxLetsEat
         onClick={() =>
           navigate('/', {
             state: {
               inputRestauPk: detailRestau.id,
+              inputRestauName: detailRestau.res_info.name,
             },
           })
         }

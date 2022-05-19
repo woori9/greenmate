@@ -3,11 +3,10 @@ import styled from 'styled-components';
 import HomeIcon from '@mui/icons-material/Home';
 import PlaceIcon from '@mui/icons-material/Place';
 import WysiwygIcon from '@mui/icons-material/Wysiwyg';
-import EcoIcon from '@mui/icons-material/EnergySavingsLeaf';
+import RestaurantOutlinedIcon from '@mui/icons-material/RestaurantOutlined';
 import PersonIcon from '@mui/icons-material/Person';
 import { useAtom } from 'jotai';
 import { userInfoAtom } from '../../../atoms/accounts';
-import NotificationIcon from '../../notification/NotificationIcon';
 
 const defaultColor = '#a9a9a9';
 const selectedColor = '#fcb448';
@@ -39,69 +38,52 @@ const StyledLink = styled(Link)`
     font-size: 10px;
   }
 `;
-const NavTop = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1;
-  width: 100%;
-  height: 56px;
-  padding: 0 1rem;
-  display: flex;
-  justify-content: end;
-  align-items: center;
-  background-color: transparent;
-`;
 
 function MobileMapNavbar() {
   const [userInfo] = useAtom(userInfoAtom);
+  const { language } = userInfo;
   const { pathname } = useLocation();
   const links = [
     {
-      name: '홈',
+      name: `${language === 0 ? '홈' : 'Home'}`,
       path: '/',
       icon: <HomeIcon sx={{ fontSize: 30 }} />,
     },
     {
-      name: '식당검색',
+      name: `${language === 0 ? '식당검색' : 'Nearby'}`,
       path: '/map',
       icon: <PlaceIcon sx={{ fontSize: 30 }} />,
     },
     {
-      name: '커뮤니티',
+      name: `${language === 0 ? '커뮤니티' : 'Community'}`,
       path: '/community',
       icon: <WysiwygIcon sx={{ fontSize: 30 }} />,
     },
     {
-      name: '내 활동',
+      name: `${language === 0 ? '그린메이트' : 'Greenmate'}`,
       path: '/mymoim',
-      icon: <EcoIcon sx={{ fontSize: 30 }} />,
+      icon: <RestaurantOutlinedIcon sx={{ fontSize: 30 }} />,
     },
     {
-      name: '마이페이지',
+      name: `${language === 0 ? '마이페이지' : 'MY'}`,
       path: `/mypage/${userInfo.id}`,
       icon: <PersonIcon sx={{ fontSize: 30 }} />,
     },
   ];
 
   return (
-    <>
-      <NavTop>
-        <NotificationIcon />
-      </NavTop>
-      <NavBottom>
-        <ul>
-          {links.map(link => (
-            <li key={link.path}>
-              <StyledLink to={link.path} selected={pathname === `${link.path}`}>
-                {link.icon}
-                <p>{link.name}</p>
-              </StyledLink>
-            </li>
-          ))}
-        </ul>
-      </NavBottom>
-    </>
+    <NavBottom>
+      <ul>
+        {links.map(link => (
+          <li key={link.path}>
+            <StyledLink to={link.path} selected={pathname === `${link.path}`}>
+              {link.icon}
+              <p>{link.name}</p>
+            </StyledLink>
+          </li>
+        ))}
+      </ul>
+    </NavBottom>
   );
 }
 

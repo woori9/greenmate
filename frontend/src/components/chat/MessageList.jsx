@@ -7,18 +7,24 @@ const StyledMessageList = styled.ul`
   list-style: none;
   padding: 0;
   margin: 0;
-  padding-bottom: 5rem;
+  padding-bottom: 90px;
 `;
 
 function MessageList({ messages, userId }) {
   const messagesEndRef = useRef(null);
+  const messageListRef = useRef([]);
   const scrollToBottom = () => {
-    messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    if (!messageListRef.current) return;
+
+    // (window.innerWidth > 1024 ? 130 : 50)
+    if (messageListRef.current.scrollHeight > window.innerHeight - 110) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   useEffect(scrollToBottom, [messages]);
   return (
-    <StyledMessageList>
+    <StyledMessageList ref={messageListRef}>
       {messages.map((message, index) => (
         <Message
           key={message.id}

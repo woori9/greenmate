@@ -3,9 +3,10 @@ import styled from 'styled-components';
 import HomeIcon from '@mui/icons-material/Home';
 import PlaceIcon from '@mui/icons-material/Place';
 import WysiwygIcon from '@mui/icons-material/Wysiwyg';
-import EcoIcon from '@mui/icons-material/EnergySavingsLeaf';
+import RestaurantOutlinedIcon from '@mui/icons-material/RestaurantOutlined';
 import PersonIcon from '@mui/icons-material/Person';
 import { useAtom } from 'jotai';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import { userInfoAtom } from '../../../atoms/accounts';
 import logo from '../../../assets/logo.png';
 import NotificationIcon from '../../notification/NotificationIcon';
@@ -96,7 +97,12 @@ function DesktopNavbar() {
     {
       name: '내 활동',
       path: '/mymoim',
-      icon: <EcoIcon sx={{ fontSize: 35 }} />,
+      icon: <RestaurantOutlinedIcon sx={{ fontSize: 35 }} />,
+    },
+    {
+      name: '채팅',
+      path: '/chat',
+      icon: <ChatBubbleOutlineIcon sx={{ fontSize: 35 }} />,
     },
   ];
   return (

@@ -8,6 +8,8 @@ import {
   excludeFromChatRoom,
   getMoimChatRoom,
   getJoinDate,
+  findPrivateChatRoom,
+  createPrivateRoom,
 } from '../../service/chat_service';
 import useUserInfo from '../../hooks/useUserInfo';
 
@@ -49,7 +51,34 @@ function MoimCardButtons({ moimInfo, setNeedUpdate }) {
   const buttonDict = {
     0: (
       <ButtonDiv>
-        <Button type="button">호스트 문의</Button>
+        <Button
+          type="button"
+          onClick={async () => {
+            const authorId = `${moimInfo.author.id}`;
+            const userId = `${userInfo.id}`;
+            let chatRoom = await findPrivateChatRoom(authorId, userId);
+            const pair = { ...moimInfo.author, id: authorId };
+            const user = {
+              id: userId,
+              nickname: userInfo.nickname,
+              vegeType: userInfo.vege_type,
+            };
+
+            if (!chatRoom) {
+              chatRoom = await createPrivateRoom(pair, user);
+            }
+
+            const joinDate = await getJoinDate(userId, chatRoom.id);
+            chatRoom.joinDate = joinDate;
+            chatRoom.chatTitle = moimInfo.author.nickname;
+            chatRoom.notificationTargetId = authorId;
+            navigate('/chatRoom', {
+              state: chatRoom,
+            });
+          }}
+        >
+          호스트 문의
+        </Button>
         <Button
           type="button"
           onClick={() =>
@@ -106,7 +135,20 @@ function MoimCardButtons({ moimInfo, setNeedUpdate }) {
     ),
     4: (
       <ButtonDiv>
-        <Button type="button">식당 리뷰</Button>
+        <Button
+          type="button"
+          onClick={() =>
+            navigate('/community/form', {
+              state: {
+                originalCategory: 2,
+                restaurantId: moimInfo.restaurant.restaurantId,
+                restaurantName: moimInfo.restaurant.name,
+              },
+            })
+          }
+        >
+          식당 리뷰
+        </Button>
         <Button
           type="button"
           onClick={() =>
@@ -234,7 +276,19 @@ function MoimCardButtons({ moimInfo, setNeedUpdate }) {
     ),
     4: (
       <ButtonDiv>
-        <Button type="button">Create a restaurant review</Button>
+        <Button
+          type="button"
+          onClick={() =>
+            navigate('/community/form', {
+              state: {
+                restaurantId: moimInfo.restaurant.restaurantId,
+                restaurantName: moimInfo.restaurant.name,
+              },
+            })
+          }
+        >
+          Create a restaurant review
+        </Button>
         <Button
           type="button"
           onClick={() =>

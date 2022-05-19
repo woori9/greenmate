@@ -44,6 +44,7 @@ const StyledChatRoom = styled.div`
 
   .container {
     position: relative;
+    padding-top: 1rem;
   }
 
   .input-container {
@@ -65,6 +66,8 @@ const StyledChatRoom = styled.div`
       height: 3rem;
       border: 1px solid #a9a9a9;
       border-radius: 25px;
+      padding: 0.5rem 1.2rem;
+      font-size: 16px;
     }
     button {
       border: 0;
