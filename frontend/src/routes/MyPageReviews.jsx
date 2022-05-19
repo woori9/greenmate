@@ -33,6 +33,7 @@ function MyPageReviews() {
     getMyReviews(
       { userId: userPk },
       res => {
+        console.log(res);
         setReviews(res);
       },
       err => {
@@ -51,11 +52,12 @@ function MyPageReviews() {
         <GoBackBar title="작성한 리뷰" />
       )}
       <Container isDesktop={isDesktop}>
-        {reviews.length ? (
+        {reviews ? (
           <>
-            {reviews.map(review => (
-              <p>{review}</p>
-            ))}
+            <p>1</p>
+            {/* {reviews.map(review => (
+              <p>{review.id}</p>
+            ))} */}
           </>
         ) : (
           <NoContent>

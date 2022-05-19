@@ -6,6 +6,9 @@ import vegeTypeList from '../../utils/vegeTypeList';
 import useUserInfo from '../../hooks/useUserInfo';
 
 const Dialog = styled.dialog`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   text-align: center;
   padding: 1rem 1rem 4rem 1rem;
   border: none;
@@ -67,6 +70,7 @@ const Page = styled.div`
   filter: drop-shadow(0 -1px 4px rgba(0, 0, 0, 0.25));
 `;
 const Description = styled.div`
+  align-self: end;
   display: flex;
   justify-content: end;
   align-items: center;
@@ -96,8 +100,8 @@ const VegeTypeBox = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 4rem;
-    height: 4rem;
+    width: 2rem;
+    height: 2rem;
     border: ${props => props.selected && '3px solid #fcb448'};
     border-radius: ${props => props.selected && '50%'};
 
