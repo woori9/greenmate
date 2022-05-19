@@ -38,6 +38,7 @@ import ovo from '../../assets/ovo-icon.png';
 import lactoOvo from '../../assets/lacto-ovo-icon.png';
 import pesco from '../../assets/pesco-icon.png';
 import polo from '../../assets/polo-icon.png';
+import flexi from '../../assets/flexi-icon.png';
 import useUserInfo from '../../hooks/useUserInfo';
 import CommentDetail from './CommentDetail';
 
@@ -156,7 +157,7 @@ SimpleDialog.propTypes = {
   userInfoId: PropTypes.number,
 }.isRequired;
 
-const LikeCntNum = styled.span`
+const CntNum = styled.span`
   margin-left: -5px;
   font-size: 12px;
   color: lightgrey;
@@ -209,6 +210,7 @@ function Feed({ feed }) {
     4: lactoOvo,
     5: pesco,
     6: polo,
+    7: flexi,
   };
   const userInfo = useUserInfo();
   const navigate = useNavigate();
@@ -235,11 +237,13 @@ function Feed({ feed }) {
       setFeedTrans(resData);
     };
     FeedTrans();
-    const getComments = async () => {
-      const resData = await getCommentList(feed.id);
-      setComments(resData);
-    };
-    getComments();
+    if (feed.comment_cnt !== 0) {
+      const getComments = async () => {
+        const resData = await getCommentList(feed.id);
+        setComments(resData);
+      };
+      getComments();
+    }
   }, [useUpdate]);
   const handleSetiing = () => {
     setIsSetting(prev => !prev);
@@ -255,17 +259,10 @@ function Feed({ feed }) {
     }
   };
   return (
-    <Card sx={{ mb: 7, width: 500, position: 'relative' }}>
+    <Card sx={{ mb: 7, maxWidth: 500, position: 'relative' }}>
       <CardHeader
         avatar={
-          <Avatar
-            src={vegeType[feed.vege_type]}
-            alt={feed.author.nickname}
-            onClick={() => {
-              setIsGoPropfile(!isGoProfile);
-            }}
-            sx={{ cursor: 'pointer' }}
-          />
+          <Avatar src={vegeType[feed.vege_type]} alt={feed.author.nickname} />
         }
         action={
           feed.author.id === userInfo.id ? (
@@ -276,7 +273,19 @@ function Feed({ feed }) {
             <div />
           )
         }
-        title={<h4>{feed.author.nickname}</h4>}
+        title={
+          <Stack direction="row" alignItems="center">
+            <Avatar
+              src={vegeType[feed.author.vege_type + 1]}
+              alt={feed.author.nickname}
+              onClick={() => {
+                setIsGoPropfile(!isGoProfile);
+              }}
+              sx={{ width: 24, height: 24, mr: 1, cursor: 'pointer' }}
+            />
+            <h4>{feed.author.nickname}</h4>
+          </Stack>
+        }
         subheader={
           <DateFont>
             {feed.created_at.substr(0, 4)}년 {feed.created_at.substr(5, 2)}월{' '}
@@ -353,10 +362,11 @@ function Feed({ feed }) {
             <FavoriteBorderIcon sx={{ color: red[400] }} />
           )}
         </IconButton>
-        <LikeCntNum>{likeCnt}</LikeCntNum>
+        <CntNum>{likeCnt}</CntNum>
         <IconButton onClick={handleClickOpen}>
           <InsertCommentIcon />
         </IconButton>
+        <CntNum>{feed.comment_cnt}</CntNum>
       </CardActions>
       <CardContent>
         {isFeedTrans ? (
@@ -388,12 +398,39 @@ function Feed({ feed }) {
         )}
       </CardContent>
       <CardContent>
+        {comments.length === 1 ? (
+          <Stack direction="row" alignItems="center" sx={{ mt: 1, mb: 1 }}>
+            <Stack direction="row" alignItems="center">
+              <Avatar
+                src={vegeType[comments[0].vege_type + 1]}
+                alt={comments[0].nickname}
+                sx={{ mr: 1, width: 24, height: 24 }}
+              />
+              <h4>{comments[0].nickname} |</h4>
+              <span>{comments[0].content}</span>
+              <span className="small-font">
+                {`${comments[0].created_at.substr(0, 4)}년` +
+                  ' ' +
+                  `${comments[0].created_at.substr(5, 2)}월` +
+                  ' ' +
+                  `${comments[0].created_at.substr(8, 2)}일`}
+              </span>
+              {userInfo.id === comments[0].author ? (
+                <Button variant="text">삭제</Button>
+              ) : (
+                <Button disabled />
+              )}
+            </Stack>
+          </Stack>
+        ) : (
+          <div />
+        )}
         {comments.length >= 2 ? (
           <div>
             <Stack direction="row" alignItems="center" sx={{ mt: 1, mb: 1 }}>
               <Stack direction="row" alignItems="center">
                 <Avatar
-                  src={vegeType[comments[0].vege_type]}
+                  src={vegeType[comments[0].vege_type + 1]}
                   alt={comments[0].nickname}
                   sx={{ mr: 1, width: 24, height: 24 }}
                 />
@@ -416,7 +453,7 @@ function Feed({ feed }) {
             <Stack direction="row" alignItems="center" sx={{ mb: 1 }}>
               <Stack direction="row" alignItems="center">
                 <Avatar
-                  src={vegeType[comments[1].vege_type]}
+                  src={vegeType[comments[1].vege_type + 1]}
                   alt={comments[1].nickname}
                   sx={{ mr: 1, width: 24, height: 24 }}
                 />
@@ -473,6 +510,7 @@ Feed.propTypes = {
       vege_type: PropTypes.number,
     }),
     category: PropTypes.number,
+    comment_cnt: PropTypes.number,
     content: PropTypes.string,
     created_at: PropTypes.string,
     id: PropTypes.number,

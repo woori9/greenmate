@@ -261,7 +261,7 @@ function CommunityForm() {
   const [searchKeyword, setSearchKeyword] = useState('');
   const [isForUpdate, setIsForUpdate] = useState(false);
   const [originalFeedId, setOriginalFeedId] = useState();
-  const [rating, setRating] = useState();
+  const [rating, setRating] = useState(0);
   const location = useLocation();
   const navigate = useNavigate();
   const userInfo = useUserInfo();
@@ -313,12 +313,14 @@ function CommunityForm() {
     formData.append('category', category);
     formData.append('content', content);
     formData.append('vege_type', vegeType + 1);
-    formData.append('retaurant_id', selectedRestaurantId);
+    formData.append('restaurant_id', selectedRestaurantId);
     for (let i = 0; i < imgs.length; i += 1) {
       formData.append('img_path', imgs[i]);
     }
     formData.append('enctype', 'multipart/form-data');
-
+    if (rating !== 0) {
+      formData.append('score', rating);
+    }
     if (isForUpdate) {
       updateFeed(originalFeedId, formData).then(() => navigate('/community'));
     } else {

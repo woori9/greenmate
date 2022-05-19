@@ -3,9 +3,14 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { getFeedList } from '../../api/community';
 import Feed from './Feed';
+import useWindowDimensions from '../../utils/windowDimension';
 
 const Container = styled.div`
   padding: 0rem 1rem 5rem 1rem;
+
+  @media screen and (min-width: 500px) {
+    margin: 0 0 0 0;
+  }
 
   @media screen and (min-width: 1025px) {
     margin: 0 17rem -5rem calc(130px + 17rem);
@@ -17,6 +22,7 @@ const Container = styled.div`
   }
 `;
 function Feeds({ categoryValue, vegeTypeValue }) {
+  const { width } = useWindowDimensions();
   const [feeds, setFeeds] = useState([]);
 
   useEffect(() => {
@@ -38,6 +44,7 @@ function Feeds({ categoryValue, vegeTypeValue }) {
   if (categoryValue === 0 && vegeTypeValue === 0) {
     res = feeds;
   }
+  console.log(width);
   return (
     <Container>
       {res.length !== 0 ? (
