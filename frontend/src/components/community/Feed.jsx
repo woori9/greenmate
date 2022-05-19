@@ -43,7 +43,7 @@ import CommentDetail from './CommentDetail';
 
 const Trans = styled.div`
   cursor: pointer;
-  font-size: 5px;
+  font-size: 10px;
   color: lightgrey;
 `;
 
@@ -57,6 +57,10 @@ const Container = styled.div`
   .margin {
     margin-bottom: 1rem;
   }
+`;
+const NickNameBox = styled.div`
+  display: flex;
+  cursor: pointer;
 `;
 
 function SimpleDialog(props) {
@@ -155,22 +159,15 @@ const DateFont = styled.span`
 `;
 
 const FeedContent = styled.span`
-  font-size: 1.2rem;
-  font-weight: bold;
+  width: 80%;
+  max-width: 80%;
+  font-size: 14px;
 `;
 const Setting = styled.div`
   position: absolute;
   right: 0;
   z-index: 1;
   width: 20%;
-  background-color: #fff;
-  border-radius: 10px;
-  filter: drop-shadow(0 -1px 4px rgba(0, 0, 0, 0.25));
-`;
-const GoProfile = styled.div`
-  position: absolute;
-  z-index: 1;
-  width: 25%;
   background-color: #fff;
   border-radius: 10px;
   filter: drop-shadow(0 -1px 4px rgba(0, 0, 0, 0.25));
@@ -203,7 +200,7 @@ function Feed({ feed }) {
   const [open, setOpen] = useState(false);
   const [commentData, setCommentData] = useState('');
   const [useUpdate, setUseUpdate] = useState(0);
-  const [isGoProfile, setIsGoPropfile] = useState(false);
+
   const vegeType = {
     1: vegan,
     2: lacto,
@@ -260,7 +257,7 @@ function Feed({ feed }) {
     }
   };
   return (
-    <Card sx={{ mb: 7, maxWidth: 500, position: 'relative' }}>
+    <Card sx={{ mb: 1.5, position: 'relative' }}>
       <CardHeader
         avatar={
           <Avatar src={vegeType[feed.vege_type]} alt={feed.author.nickname} />
@@ -276,15 +273,18 @@ function Feed({ feed }) {
         }
         title={
           <Stack direction="row" alignItems="center">
-            <Avatar
-              src={vegeType[feed.author.vege_type + 1]}
-              alt={feed.author.nickname}
+            <NickNameBox
               onClick={() => {
-                setIsGoPropfile(!isGoProfile);
+                navigate(`/mypage/${feed.author.id}`);
               }}
-              sx={{ width: 24, height: 24, mr: 1, cursor: 'pointer' }}
-            />
-            <h4>{feed.author.nickname}</h4>
+            >
+              <Avatar
+                src={vegeType[feed.author.vege_type + 1]}
+                alt={feed.author.nickname}
+                sx={{ width: 24, height: 24, mr: 1 }}
+              />
+              <h4>{feed.author.nickname}</h4>
+            </NickNameBox>
           </Stack>
         }
         subheader={
@@ -332,22 +332,6 @@ function Feed({ feed }) {
       ) : (
         <div />
       )}
-      {isGoProfile ? (
-        <GoProfile>
-          <List>
-            <ListItem disablePadding>
-              <ListItemButton
-                onClick={() => navigate(`/mypage/${feed.author.id}`)}
-              >
-                <ListItemText primary="프로필 보기" />
-              </ListItemButton>
-            </ListItem>
-          </List>
-        </GoProfile>
-      ) : (
-        <div />
-      )}
-
       <CardMedia>
         <FeedImageCarousel props={feed.img_paths} />
       </CardMedia>

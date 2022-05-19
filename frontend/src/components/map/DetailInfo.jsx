@@ -182,6 +182,7 @@ function DetailInfo() {
           navigate('/', {
             state: {
               inputRestauPk: detailRestau.id,
+              inputRestauName: detailRestau.res_info.name,
             },
           })
         }

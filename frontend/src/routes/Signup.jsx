@@ -197,7 +197,6 @@ function Signup() {
       { nickname: putNickname },
       () => {
         SetNicknameStatus(true);
-        setNewNickname(putNickname);
       },
       () => {
         SetNicknameStatus(false);
@@ -228,7 +227,8 @@ function Signup() {
             <input
               value={newNickname}
               onChange={event => {
-                checkNickname(event.target.value.trim());
+                setNewNickname(event.target.value);
+                checkNickname(event.target.value);
               }}
             />
             {nicknameStatus ? (
