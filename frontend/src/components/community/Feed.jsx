@@ -87,7 +87,7 @@ function SimpleDialog(props) {
     >
       <DialogTitle sx={{ m: '0 auto' }}>댓글</DialogTitle>
       <Container>
-        {comments.length === 0 ? (
+        {!comments ? (
           <span>댓글이 없습니다.</span>
         ) : (
           <div>
@@ -186,16 +186,16 @@ const NicknameFont = styled.span`
 const ContentFont = styled.span`
   font-size: 13px;
 `;
-const DeleteButton = styled.button`
-  background-color: #fff;
-  border: none;
-  cursor: pointer;
-  color: red;
+// const DeleteButton = styled.button`
+//   background-color: #fff;
+//   border: none;
+//   cursor: pointer;
+//   color: red;
 
-  :hover {
-    color: #fcb448;
-  }
-`;
+//   :hover {
+//     color: #fcb448;
+//   }
+// `;
 
 function Feed({ feed }) {
   const [isLike, setIsLike] = useState(feed.is_like);
@@ -239,34 +239,33 @@ function Feed({ feed }) {
     setIsLike(!isLike);
   };
 
+  const handleSubmit = event => {
+    if (event.keyCode === 13 && commentData.length > 0) {
+      const feedId = feed.id;
+      const data = { content: commentData };
+      createComment({ feedId, data }).then(() =>
+        setUseUpdate(prev => prev + 1),
+      );
+      // eslint-disable-next-line no-param-reassign
+      event.target.value = '';
+    }
+  };
+
   useEffect(() => {
     const FeedTrans = async () => {
       const resData = await getFeedTrans(feed.id);
       setFeedTrans(resData);
     };
     FeedTrans();
-    if (feed.comment_cnt !== 0) {
-      const getComments = async () => {
-        const resData = await getCommentList(feed.id);
-        setComments(resData);
-      };
-      getComments();
-    }
+    const getComments = async () => {
+      const resData = await getCommentList(feed.id);
+      setComments(resData);
+    };
+    getComments();
   }, [useUpdate]);
 
   const handleSetiing = () => {
     setIsSetting(prev => !prev);
-  };
-
-  const handleSubmit = event => {
-    if (event.keyCode === 13 && commentData.length > 0) {
-      const feedId = feed.id;
-      const data = { content: commentData };
-      createComment({ feedId, data });
-      setUseUpdate(prev => prev + 1);
-      // eslint-disable-next-line no-param-reassign
-      event.target.value = '';
-    }
   };
 
   return (
@@ -392,7 +391,7 @@ function Feed({ feed }) {
         <IconButton onClick={handleClickOpen}>
           <InsertCommentIcon />
         </IconButton>
-        <CntNum>{feed.comment_cnt}</CntNum>
+        <CntNum>{comments ? comments.length : 0}</CntNum>
       </CardActions>
       <CardContent>
         {isFeedTrans ? (
@@ -424,7 +423,7 @@ function Feed({ feed }) {
         )}
       </CardContent>
       <CardContent>
-        {comments.length === 1 ? (
+        {comments && comments.length === 1 ? (
           <Stack sx={{ mt: 1, mb: 1 }}>
             <Stack
               direction="row"
@@ -445,11 +444,11 @@ function Feed({ feed }) {
                     ' ' +
                     `${comments[0].created_at.substr(8, 2)}일`}
                 </DateFont>
-                {userInfo.id === comments[0].author ? (
+                {/* {userInfo.id === comments[0].author ? (
                   <DeleteButton>삭제</DeleteButton>
                 ) : (
                   <div />
-                )}
+                )} */}
               </Stack>
             </Stack>
             <Stack
@@ -464,7 +463,7 @@ function Feed({ feed }) {
         ) : (
           <div />
         )}
-        {comments.length >= 2 ? (
+        {comments && comments.length >= 2 && (
           <div>
             <Stack sx={{ mt: 1, mb: 1 }}>
               <Stack
@@ -486,11 +485,11 @@ function Feed({ feed }) {
                       ' ' +
                       `${comments[0].created_at.substr(8, 2)}일`}
                   </DateFont>
-                  {userInfo.id === comments[0].author ? (
+                  {/* {userInfo.id === comments[0].author ? (
                     <DeleteButton>삭제</DeleteButton>
                   ) : (
                     <div />
-                  )}
+                  )} */}
                 </Stack>
               </Stack>
               <Stack
@@ -522,11 +521,11 @@ function Feed({ feed }) {
                       ' ' +
                       `${comments[1].created_at.substr(8, 2)}일`}
                   </DateFont>
-                  {userInfo.id === comments[1].author ? (
+                  {/* {userInfo.id === comments[1].author ? (
                     <DeleteButton>삭제</DeleteButton>
                   ) : (
                     <div />
-                  )}
+                  )} */}
                 </Stack>
               </Stack>
               <Stack
@@ -539,8 +538,6 @@ function Feed({ feed }) {
               </Stack>
             </Stack>
           </div>
-        ) : (
-          <div />
         )}
         <Stack direction="row" alignItems="center" sx={{ mt: 3 }}>
           <SendIcon sx={{ fs: 'large', mr: 2 }} />

@@ -43,7 +43,7 @@ export async function createComment({ feedId, data }) {
     `/greenmates/community/comment/${feedId}/`,
     data,
   );
-  return response.data;
+  return response;
 }
 
 // 댓글 삭제
