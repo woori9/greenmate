@@ -7,17 +7,12 @@ import { getFeedList } from '../../api/community';
 import Feed from './Feed';
 
 const Container = styled.div`
-  padding: 0rem 1rem 5rem 1rem;
-
-  @media screen and (min-width: 500px) {
-    margin: 0 0 0 0;
-  }
-
+  padding: 0.5rem 1rem 5rem 1rem;
+  margin-bottom: 3rem;
+  max-width: 100vw;
   @media screen and (min-width: 1025px) {
-    margin: 0 17rem -5rem calc(130px + 17rem);
-    padding: 3rem;
+    max-width: 500px;
   }
-
   .none-feeds {
     margin-top: 50px;
   }
