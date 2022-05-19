@@ -19,6 +19,7 @@ import ovo from '../../assets/ovo-icon.png';
 import lactoOvo from '../../assets/lacto-ovo-icon.png';
 import pesco from '../../assets/pesco-icon.png';
 import polo from '../../assets/polo-icon.png';
+import flexi from '../../assets/flexi-icon.png';
 
 const Trans = styled.div`
   cursor: pointer;
@@ -56,6 +57,7 @@ function CommentDetail({
     4: lactoOvo,
     5: pesco,
     6: polo,
+    7: flexi,
   };
   useEffect(() => {
     const getFeeds = async () => {
@@ -78,7 +80,7 @@ function CommentDetail({
       {isTrans ? (
         <Stack direction="row" alignItems="center">
           <Avatar
-            src={vegeType[commentVegeType]}
+            src={vegeType[commentVegeType + 1]}
             alt={commentNickname}
             sx={{ mr: 1, width: 24, height: 24, cursor: 'pointer' }}
             onClick={() => {
@@ -110,7 +112,7 @@ function CommentDetail({
       ) : (
         <Stack direction="row" alignItems="center">
           <Avatar
-            src={vegeType[commentVegeType]}
+            src={vegeType[commentVegeType + 1]}
             alt={commentNickname}
             sx={{ mr: 1, width: 24, height: 24, cursor: 'pointer' }}
             onClick={() => {
