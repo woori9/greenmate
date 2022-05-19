@@ -120,6 +120,10 @@ const DataList = styled.dl`
       margin-bottom: 0.5rem;
     }
 
+    .moim-content {
+      white-space: pre-line;
+    }
+
     .mini-btn {
       color: #f5a468;
       background: none;
@@ -368,7 +372,6 @@ function MoimDetail() {
           <div className="restaurant-data">
             <dd>
               {moimInfo.restaurant.name}
-              {/* TODO: 지도 연결 */}
               <button
                 className="mini-btn"
                 type="button"
@@ -404,7 +407,7 @@ function MoimDetail() {
             <dd>
               <CommentIcon sx={{ color: '#a9a9a9', marginRight: '0.5rem' }} />
             </dd>
-            <dd>{moimInfo.content}</dd>
+            <dd className="moim-content">{moimInfo.content}</dd>
           </div>
           {!toggleTranslation && (
             <button
