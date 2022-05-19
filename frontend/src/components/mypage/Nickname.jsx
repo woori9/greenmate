@@ -22,7 +22,7 @@ const NameBox = styled.div`
 `;
 
 function Nickname({ profileInfo, isDesktop }) {
-  const [userInfo] = useAtom(userInfoAtom);
+  const [{ language }] = useAtom(userInfoAtom);
   const vegeTypes = [
     '비건',
     '락토',
@@ -42,7 +42,7 @@ function Nickname({ profileInfo, isDesktop }) {
     'flexitarian',
   ];
   const getVegeType = idx => {
-    if (userInfo.language === 0) {
+    if (language === 0) {
       return vegeTypes[idx];
     }
     return engVegeTypes[idx];

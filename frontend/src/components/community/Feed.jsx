@@ -23,7 +23,6 @@ import Stack from '@mui/material/Stack';
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
 import SendIcon from '@mui/icons-material/Send';
-import Button from '@mui/material/Button';
 import FeedImageCarousel from './FeedIamgeCarousel';
 import {
   postFeedLike,
@@ -81,8 +80,12 @@ function SimpleDialog(props) {
   };
 
   return (
-    <Dialog onClose={handleClose} open={open}>
-      <DialogTitle sx={{ m: 'auto' }}>댓글</DialogTitle>
+    <Dialog
+      onClose={handleClose}
+      open={open}
+      PaperProps={{ sx: { width: '80%', height: '60%' } }}
+    >
+      <DialogTitle sx={{ m: '0 auto' }}>댓글</DialogTitle>
       <Container>
         {comments.length === 0 ? (
           <span>댓글이 없습니다.</span>
@@ -90,36 +93,17 @@ function SimpleDialog(props) {
           <div>
             {comments.map(comment => (
               <div key={comment.id} className="margin">
-                <Stack
-                  direction="row"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  sx={{ mb: 1 }}
-                >
-                  <Stack direction="row" alignItems="center">
-                    <CommentDetail
-                      commentVegeType={comment.vege_type}
-                      commentNickname={comment.nickname}
-                      commentId={comment.id}
-                      commentContent={comment.content}
-                      commentIsLike={comment.is_like}
-                      commentLikeCnt={comment.like_cnt}
-                      commentAuthor={comment.author}
-                    />
-                    <span className="small-font">
-                      {`${comment.created_at.substr(0, 4)}년` +
-                        ' ' +
-                        `${comment.created_at.substr(5, 2)}월` +
-                        ' ' +
-                        `${comment.created_at.substr(8, 2)}일`}
-                    </span>
-                  </Stack>
-                  {userInfoId === comment.author ? (
-                    <Button variant="text">삭제</Button>
-                  ) : (
-                    <Button disabled />
-                  )}
-                </Stack>
+                <CommentDetail
+                  commentVegeType={comment.vege_type}
+                  commentNickname={comment.nickname}
+                  commentId={comment.id}
+                  commentContent={comment.content}
+                  commentIsLike={comment.is_like}
+                  commentLikeCnt={comment.like_cnt}
+                  commentAuthor={comment.author}
+                  commentCreateAt={comment.created_at}
+                  userInfoId={userInfoId}
+                />
               </div>
             ))}
           </div>
@@ -167,7 +151,7 @@ const CntNum = styled.span`
 `;
 
 const DateFont = styled.span`
-  font-size: 12px;
+  font-size: 8px;
   color: grey;
   font-weight: bold;
 `;
@@ -195,6 +179,23 @@ const GoProfile = styled.div`
   border-radius: 10px;
   filter: drop-shadow(0 -1px 4px rgba(0, 0, 0, 0.25));
 `;
+const NicknameFont = styled.span`
+  font-size: 1rem;
+  font-weight: bold;
+`;
+const ContentFont = styled.span`
+  font-size: 13px;
+`;
+const DeleteButton = styled.button`
+  background-color: #fff;
+  border: none;
+  cursor: pointer;
+  color: red;
+
+  :hover {
+    color: #fcb448;
+  }
+`;
 
 function Feed({ feed }) {
   const [isLike, setIsLike] = useState(feed.is_like);
@@ -205,7 +206,7 @@ function Feed({ feed }) {
   const [comments, setComments] = useState([]);
   const [open, setOpen] = useState(false);
   const [commentData, setCommentData] = useState('');
-  const [useUpdate, setUseUpdate] = useState(1);
+  const [useUpdate, setUseUpdate] = useState(0);
   const [isGoProfile, setIsGoPropfile] = useState(false);
   const vegeType = {
     1: vegan,
@@ -276,8 +277,8 @@ function Feed({ feed }) {
         }
         action={
           feed.author.id === userInfo.id ? (
-            <IconButton>
-              <MoreVertIcon onClick={() => handleSetiing()} />
+            <IconButton onClick={() => handleSetiing()}>
+              <MoreVertIcon />
             </IconButton>
           ) : (
             <div />
@@ -424,27 +425,40 @@ function Feed({ feed }) {
       </CardContent>
       <CardContent>
         {comments.length === 1 ? (
-          <Stack direction="row" alignItems="center" sx={{ mt: 1, mb: 1 }}>
-            <Stack direction="row" alignItems="center">
-              <Avatar
-                src={vegeType[comments[0].vege_type + 1]}
-                alt={comments[0].nickname}
-                sx={{ mr: 1, width: 24, height: 24 }}
-              />
-              <h4>{comments[0].nickname} |</h4>
-              <span>{comments[0].content}</span>
-              <span className="small-font">
-                {`${comments[0].created_at.substr(0, 4)}년` +
-                  ' ' +
-                  `${comments[0].created_at.substr(5, 2)}월` +
-                  ' ' +
-                  `${comments[0].created_at.substr(8, 2)}일`}
-              </span>
-              {userInfo.id === comments[0].author ? (
-                <Button variant="text">삭제</Button>
-              ) : (
-                <Button disabled />
-              )}
+          <Stack sx={{ mt: 1, mb: 1 }}>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Stack direction="row" alignItems="center">
+                <Avatar
+                  src={vegeType[comments[0].vege_type + 1]}
+                  alt={comments[0].nickname}
+                  sx={{ mr: 0.5, width: 24, height: 24 }}
+                />
+                <NicknameFont>{comments[0].nickname}</NicknameFont>
+              </Stack>
+              <Stack direction="row" alignItems="center">
+                <DateFont>
+                  {`${comments[0].created_at.substr(5, 2)}월` +
+                    ' ' +
+                    `${comments[0].created_at.substr(8, 2)}일`}
+                </DateFont>
+                {userInfo.id === comments[0].author ? (
+                  <DeleteButton>삭제</DeleteButton>
+                ) : (
+                  <div />
+                )}
+              </Stack>
+            </Stack>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              sx={{ pl: '24px' }}
+            >
+              <ContentFont>{comments[0].content}</ContentFont>
             </Stack>
           </Stack>
         ) : (
@@ -452,52 +466,76 @@ function Feed({ feed }) {
         )}
         {comments.length >= 2 ? (
           <div>
-            <Stack direction="row" alignItems="center" sx={{ mt: 1, mb: 1 }}>
-              <Stack direction="row" alignItems="center">
-                <Avatar
-                  src={vegeType[comments[0].vege_type + 1]}
-                  alt={comments[0].nickname}
-                  sx={{ mr: 1, width: 24, height: 24 }}
-                />
-                <h4>{comments[0].nickname} |</h4>
-                <span>{comments[0].content}</span>
-                <span className="small-font">
-                  {`${comments[0].created_at.substr(0, 4)}년` +
-                    ' ' +
-                    `${comments[0].created_at.substr(5, 2)}월` +
-                    ' ' +
-                    `${comments[0].created_at.substr(8, 2)}일`}
-                </span>
-                {userInfo.id === comments[0].author ? (
-                  <Button variant="text">삭제</Button>
-                ) : (
-                  <Button disabled />
-                )}
+            <Stack sx={{ mt: 1, mb: 1 }}>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Stack direction="row" alignItems="center">
+                  <Avatar
+                    src={vegeType[comments[0].vege_type + 1]}
+                    alt={comments[0].nickname}
+                    sx={{ mr: 0.5, width: 24, height: 24 }}
+                  />
+                  <NicknameFont>{comments[0].nickname}</NicknameFont>
+                </Stack>
+                <Stack direction="row" alignItems="center">
+                  <DateFont>
+                    {`${comments[0].created_at.substr(5, 2)}월` +
+                      ' ' +
+                      `${comments[0].created_at.substr(8, 2)}일`}
+                  </DateFont>
+                  {userInfo.id === comments[0].author ? (
+                    <DeleteButton>삭제</DeleteButton>
+                  ) : (
+                    <div />
+                  )}
+                </Stack>
+              </Stack>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                sx={{ pl: '24px' }}
+              >
+                <ContentFont>{comments[0].content}</ContentFont>
               </Stack>
             </Stack>
-            <Stack direction="row" alignItems="center" sx={{ mb: 1 }}>
-              <Stack direction="row" alignItems="center">
-                <Avatar
-                  src={vegeType[comments[1].vege_type + 1]}
-                  alt={comments[1].nickname}
-                  sx={{ mr: 1, width: 24, height: 24 }}
-                />
-                <h4>{comments[1].nickname}</h4>
-                <span>{comments[1].content}</span>
-                <span className="small-font">
-                  {`${comments[1].created_at.substr(0, 4)}년` +
-                    ' ' +
-                    `${comments[1].created_at.substr(5, 2)}월` +
-                    ' ' +
-                    `${comments[1].created_at.substr(8, 2)}일`}
-                </span>
-                {userInfo.id === comments[1].author ? (
-                  <Button variant="text" sx={{ color: red[300] }}>
-                    삭제
-                  </Button>
-                ) : (
-                  <Button disabled />
-                )}
+            <Stack sx={{ mt: 1, mb: 1 }}>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Stack direction="row" alignItems="center">
+                  <Avatar
+                    src={vegeType[comments[1].vege_type + 1]}
+                    alt={comments[1].nickname}
+                    sx={{ mr: 0.5, width: 24, height: 24 }}
+                  />
+                  <NicknameFont>{comments[1].nickname}</NicknameFont>
+                </Stack>
+                <Stack direction="row" alignItems="center">
+                  <DateFont>
+                    {`${comments[1].created_at.substr(5, 2)}월` +
+                      ' ' +
+                      `${comments[1].created_at.substr(8, 2)}일`}
+                  </DateFont>
+                  {userInfo.id === comments[1].author ? (
+                    <DeleteButton>삭제</DeleteButton>
+                  ) : (
+                    <div />
+                  )}
+                </Stack>
+              </Stack>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                sx={{ pl: '24px' }}
+              >
+                <ContentFont>{comments[1].content}</ContentFont>
               </Stack>
             </Stack>
           </div>

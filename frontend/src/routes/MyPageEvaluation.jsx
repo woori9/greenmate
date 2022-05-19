@@ -106,7 +106,7 @@ function MyPageEvaluation() {
         <GoBackBar title="메이트 평가" />
       )}
       <Container isDesktop={isDesktop}>
-        {evaluationLst.length ? (
+        {evaluationLst !== [] ? (
           <>
             {Object.entries(evaluationLst).map(evaluationEle => {
               const idx = evaluationEle[0];
