@@ -94,7 +94,11 @@ function MyMoim() {
           />
         ))
       ) : (
-        <p className="no-moim-txt">해당하는 모임이 없습니다.</p>
+        <p className="no-moim-txt">
+          {userInfo.language === 0
+            ? '해당하는 모임이 없습니다.'
+            : 'No such meeting exists.'}
+        </p>
       )}
     </Container>
   );
