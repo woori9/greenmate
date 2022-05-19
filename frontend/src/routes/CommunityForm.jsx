@@ -292,7 +292,7 @@ function CommunityForm() {
   function handleSubmit() {
     if (category === 0 || vegeType === null || !content || !imgs) {
       if (category === 2) {
-        if (!selectedRestaurantId) {
+        if (!selectedRestaurantId || rating === 0) {
           alert('입력하지 않은 정보가 있습니다.');
           return;
         }
@@ -314,7 +314,7 @@ function CommunityForm() {
       formData.append('img_path', imgs[i]);
     }
     formData.append('enctype', 'multipart/form-data');
-    if (rating !== 0) {
+    if (rating !== 0 && selectedRestaurantId) {
       formData.append('restaurant_id', selectedRestaurantId);
       formData.append('score', rating);
     }
