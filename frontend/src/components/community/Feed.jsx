@@ -44,6 +44,8 @@ import flexi from '../../assets/flexi-icon.png';
 import useUserInfo from '../../hooks/useUserInfo';
 import CommentDetail from './CommentDetail';
 
+const { check } = require('korcen');
+
 const Trans = styled.div`
   cursor: pointer;
   font-size: 10px;
@@ -77,6 +79,10 @@ function SimpleDialog(props) {
 
   const handleSubmit = event => {
     if (event.keyCode === 13 && commentData.length > 0) {
+      if (check(commentData)) {
+        alert('욕설은 입력할 수 없습니다.');
+        return;
+      }
       const feedId = nowFeedId;
       const data = { content: commentData };
       createComment({ feedId, data });
@@ -269,6 +275,10 @@ function Feed({ feed }) {
 
   const handleSubmit = event => {
     if (event.keyCode === 13 && commentData.length > 0) {
+      if (check(commentData)) {
+        alert('욕설은 입력할 수 없습니다.');
+        return;
+      }
       const feedId = feed.id;
       const data = { content: commentData };
       createComment({ feedId, data }).then(() =>
