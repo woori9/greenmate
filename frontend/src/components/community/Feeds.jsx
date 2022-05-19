@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { getFeedList } from '../../api/community';
 import Feed from './Feed';
@@ -47,7 +48,11 @@ function Feeds({ categoryValue, vegeTypeValue }) {
   }
   return (
     <Container>
-      {isLoading && <CircularProgress />}
+      {isLoading && (
+        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <CircularProgress />
+        </Box>
+      )}
       {!isLoading &&
         (res.length !== 0 ? (
           <div>
