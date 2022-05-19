@@ -55,7 +55,7 @@ function App() {
 
   const handleOpenSnackbar = body => {
     const { pathname } = window.location;
-    if (pathname.includes('chat') || pathname.includes('notification')) return;
+    if (pathname.includes('notification')) return;
 
     const { innerWidth: width } = window;
 
@@ -150,7 +150,7 @@ function App() {
       <Snackbar
         anchorOrigin={{ vertical, horizontal }}
         open={open}
-        autoHideDuration={5000}
+        autoHideDuration={2000}
         onClose={() => {
           setAlarm({ ...alarm, ...initialAlarmState });
         }}
