@@ -276,7 +276,7 @@ function CommunityForm() {
       setOriginalFeedId(feedId);
       setCategory(originalCategory);
       setContent(originalContent);
-      setVegeType(originalVegeType - 1);
+      setVegeType(originalVegeType + 1);
       setImgs(originalImgs);
       setShowImg(originalImgs[0].img_path);
       if (originalCategory === 2) {
@@ -310,12 +310,12 @@ function CommunityForm() {
     formData.append('category', category);
     formData.append('content', content);
     formData.append('vege_type', vegeType + 1);
-    formData.append('restaurant_id', selectedRestaurantId);
     for (let i = 0; i < imgs.length; i += 1) {
       formData.append('img_path', imgs[i]);
     }
     formData.append('enctype', 'multipart/form-data');
     if (rating !== 0) {
+      formData.append('restaurant_id', selectedRestaurantId);
       formData.append('score', rating);
     }
     if (isForUpdate) {
