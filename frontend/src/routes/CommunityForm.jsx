@@ -256,6 +256,7 @@ function CommunityForm() {
   const [selectedRestaurantId, setSelectedRestaurantId] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [isForUpdate, setIsForUpdate] = useState(false);
+  const [isForRestoReview, setIsForRestoReview] = useState(false);
   const [originalFeedId, setOriginalFeedId] = useState();
   const [rating, setRating] = useState(0);
   const location = useLocation();
@@ -263,6 +264,14 @@ function CommunityForm() {
   const userInfo = useUserInfo();
 
   useEffect(() => {
+    if (location.state && Object.keys(location.state).length === 3) {
+      const { restaurantId, restaurantName } = location.state;
+      setCategory(2);
+      setSelectedRestaurantId(restaurantId);
+      setSearchKeyword(restaurantName);
+      setIsForRestoReview(true);
+      return;
+    }
     if (location.state) {
       const {
         feedId,
@@ -319,9 +328,9 @@ function CommunityForm() {
       formData.append('score', rating);
     }
     if (isForUpdate) {
-      updateFeed(originalFeedId, formData).then(() => navigate(-1));
+      updateFeed(originalFeedId, formData).then(() => navigate('/community'));
     } else {
-      createFeed(formData).then(() => navigate(-1));
+      createFeed(formData).then(() => navigate('/community'));
     }
   }
 
@@ -497,7 +506,7 @@ function CommunityForm() {
         {category === 2 ? (
           <div className="review_margin">
             <RestaurantSearchForm
-              isForUpdate={isForUpdate}
+              isForUpdate={isForRestoReview || isForUpdate}
               searchKeyword={searchKeyword}
               setSearchKeyword={setSearchKeyword}
               setSelectedRestaurantId={setSelectedRestaurantId}

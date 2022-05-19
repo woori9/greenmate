@@ -135,7 +135,20 @@ function MoimCardButtons({ moimInfo, setNeedUpdate }) {
     ),
     4: (
       <ButtonDiv>
-        <Button type="button">식당 리뷰</Button>
+        <Button
+          type="button"
+          onClick={() =>
+            navigate('/community/form', {
+              state: {
+                originalCategory: 2,
+                restaurantId: moimInfo.restaurant.restaurantId,
+                restaurantName: moimInfo.restaurant.name,
+              },
+            })
+          }
+        >
+          식당 리뷰
+        </Button>
         <Button
           type="button"
           onClick={() =>
@@ -263,7 +276,19 @@ function MoimCardButtons({ moimInfo, setNeedUpdate }) {
     ),
     4: (
       <ButtonDiv>
-        <Button type="button">Create a restaurant review</Button>
+        <Button
+          type="button"
+          onClick={() =>
+            navigate('/community/form', {
+              state: {
+                restaurantId: moimInfo.restaurant.restaurantId,
+                restaurantName: moimInfo.restaurant.name,
+              },
+            })
+          }
+        >
+          Create a restaurant review
+        </Button>
         <Button
           type="button"
           onClick={() =>
