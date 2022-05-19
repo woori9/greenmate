@@ -18,7 +18,7 @@ from unicodedata import category
 
 
 class Restaurant(models.Model):
-    category = models.IntegerField()
+    category = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(9)])
     call = models.CharField(max_length=20)
     latitude = models.FloatField()
     longitude = models.FloatField()
@@ -89,15 +89,15 @@ class UserEvaluation(models.Model):
 
 class Feed(models.Model):
     '''
-    category: 0(일상)/1(식당)/2(제품)/3(레시피)
+    category: 1(일상)/2식당)/3(제품)/4(레시피)
     '''
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, null=True)
     score = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)], null=True)
-    category = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(3)])
+    category = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(4)])
     content = models.CharField(max_length=100)
     content_trans = models.TextField()
-    vege_type = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(6)], null=True)
+    vege_type = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(6)], null=True)
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_feeds')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

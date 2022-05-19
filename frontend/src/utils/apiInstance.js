@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 import axios from 'axios';
 
 const API_BASE_URL = 'https://k6b105.p.ssafy.io/api';
@@ -34,7 +35,7 @@ apiInstance.interceptors.response.use(
         console.log(error);
       }
     } else {
-      console.log(statusCode);
+      return { message: errMsg, statusCode };
     }
   },
 );

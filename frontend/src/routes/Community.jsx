@@ -30,31 +30,29 @@ function Community() {
   return (
     <>
       <Container>
-        <FormControl sx={{ ml: 3, mr: 3, width: 100 }}>
-          <InputLabel id="category">카테고리</InputLabel>
+        <FormControl sx={{ ml: 3, mr: 3, minWidth: 120 }}>
+          <InputLabel id="category">filter</InputLabel>
           <Select
             labelId="category"
             id="standard"
             value={category}
             onChange={handleCategoryChange}
-            displayEmpty
             label="category"
           >
             <MenuItem value={0}>전체</MenuItem>
             <MenuItem value={1}>일상</MenuItem>
-            <MenuItem value={2}>식당</MenuItem>
+            <MenuItem value={2}>식당 리뷰</MenuItem>
             <MenuItem value={3}>제품</MenuItem>
             <MenuItem value={4}>레시피</MenuItem>
           </Select>
         </FormControl>
-        <FormControl sx={{ width: 100 }}>
-          <InputLabel id="vegeType">채식 타입</InputLabel>
+        <FormControl sx={{ minWidth: 120 }}>
+          <InputLabel id="vegeType">filter</InputLabel>
           <Select
             labelId="vegeType"
             id="vegeType"
             value={vegeType}
             onChange={handleVegeTypeChange}
-            displayEmpty
             label="vegeType"
           >
             <MenuItem value={0}>전체</MenuItem>

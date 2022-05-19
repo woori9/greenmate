@@ -267,6 +267,7 @@ const createMoimChat = (moimId, userInfo) => {
 
     setDoc(newRoomRef, newRoom);
     addRoomToUser(id, newRoomRef.id, 2);
+    console.log('모임이 생성되었습니다.');
     return newRoomRef.id;
   } catch (e) {
     throw new Error(e);

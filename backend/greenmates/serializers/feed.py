@@ -98,7 +98,7 @@ class FeedCommentSerializer(FeedSimpleSerializer):
 
     def to_representation(self, instance):
         response = super().to_representation(instance)
-        if instance.category == 1:
+        if instance.category == 2:
             response['score'] = instance.score
             res_info = RestaurantInfo.objects.filter(
                 restaurant=instance.restaurant,

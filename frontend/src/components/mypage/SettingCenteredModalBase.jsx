@@ -3,8 +3,12 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import vegeTypeList from '../../utils/vegeTypeList';
+import useUserInfo from '../../hooks/useUserInfo';
 
 const Dialog = styled.dialog`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   text-align: center;
   padding: 1rem 1rem 4rem 1rem;
   border: none;
@@ -39,6 +43,7 @@ const Dialog = styled.dialog`
       width: 50%;
       height: 2.8rem;
       border: none;
+      cursor: pointer;
 
       &:first-child {
         background-color: #fcb448;
@@ -65,6 +70,7 @@ const Page = styled.div`
   filter: drop-shadow(0 -1px 4px rgba(0, 0, 0, 0.25));
 `;
 const Description = styled.div`
+  align-self: end;
   display: flex;
   justify-content: end;
   align-items: center;
@@ -94,8 +100,8 @@ const VegeTypeBox = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 4rem;
-    height: 4rem;
+    width: 2rem;
+    height: 2rem;
     border: ${props => props.selected && '3px solid #fcb448'};
     border-radius: ${props => props.selected && '50%'};
 
@@ -140,6 +146,7 @@ function SettingCenteredModalBase({ vegeType, mainAction, language }) {
   // mainAction: 확인 클릭 시 실행할 함수 전달
   // document.querySelector('#dialog').showModal(); 을 통해 모달 열어야 함 (show 메서드 사용할 경우 반투명 배경 적용 x)
   const [newVegeType, setNewVegeType] = useState(vegeType);
+  const userInfo = useUserInfo();
 
   return (
     <Dialog id="dialog">
@@ -174,7 +181,7 @@ function SettingCenteredModalBase({ vegeType, mainAction, language }) {
               <div className="img-box">
                 <img src={ele.icon} alt={ele.id} />
               </div>
-              <p>{ele.title}</p>
+              <p>{userInfo.language === 0 ? ele.title : ele.titleEng}</p>
             </VegeTypeBox>
           );
         })}
@@ -188,14 +195,14 @@ function SettingCenteredModalBase({ vegeType, mainAction, language }) {
             document.querySelector('#dialog').close();
           }}
         >
-          변경
+          {userInfo.language === 0 ? '변경' : 'Change'}
         </button>
         <button
           type="button"
           value="cancel"
           onClick={() => document.querySelector('#dialog').close()}
         >
-          취소
+          {userInfo.language === 0 ? '취소' : 'Cancel'}
         </button>
       </div>
     </Dialog>

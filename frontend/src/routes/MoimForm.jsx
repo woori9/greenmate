@@ -148,6 +148,7 @@ function MoimForm() {
         },
         result => {
           const { data } = result;
+          console.log('생성된 모임 id: ', data.id);
           const moimIdCreated = `${data.id}`;
           createMoimChat(moimIdCreated, userInfo);
           navigate('/');

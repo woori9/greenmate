@@ -29,12 +29,15 @@ function MyPageReviews() {
   const isDesktop = width > 1024;
   const [feeds, setFeeds] = useState([]);
   const { userPk } = useParams();
-  console.log(feeds);
+  if (feeds.length) {
+    console.log(feeds);
+  }
   useEffect(() => {
     getMyFeeds(
       { userId: userPk },
       res => {
-        setFeeds(res);
+        const { data } = res;
+        setFeeds(data);
       },
       err => {
         console.log(err);
@@ -54,8 +57,8 @@ function MyPageReviews() {
       <Container isDesktop={isDesktop}>
         {feeds.length ? (
           <>
-            {feeds.map(review => (
-              <p>{review}</p>
+            {feeds.map(feed => (
+              <p>{feed.id}</p>
             ))}
           </>
         ) : (
