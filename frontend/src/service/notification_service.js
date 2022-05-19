@@ -12,7 +12,11 @@ export const checkToken = async setTokenId => {
 
     if (currentToken) {
       const tokenId = await sendToken(currentToken);
-      setTokenId(tokenId);
+      if (tokenId) {
+        setTokenId(tokenId);
+      } else {
+        setTokenId(null);
+      }
     } else {
       setTokenId(null);
     }
