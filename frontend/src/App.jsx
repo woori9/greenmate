@@ -17,8 +17,6 @@ import EvaluateMoim from './routes/EvaluateMoim';
 import MyPage from './routes/MyPage';
 import MyPageLikedRestaurants from './routes/MyPageLikedRestaurants';
 import MyPageEvaluation from './routes/MyPageEvaluation';
-import MyPageReviews from './routes/MyPageReviews';
-import MyPageFeeds from './routes/MyPageFeeds';
 import MyPageSetting from './routes/MyPageSetting';
 import Chat from './routes/Chat';
 import BottomSheetBase from './components/common/BottomSheetBase';
@@ -138,11 +136,6 @@ function App() {
             path="/mypage/:userPk/evaluation"
             element={<MyPageEvaluation />}
           />
-          <Route
-            path="/mypage/:userPk/my-reviews"
-            element={<MyPageReviews />}
-          />
-          <Route path="/mypage/:userPk/my-feeds" element={<MyPageFeeds />} />
           <Route path="/mypage/:userPk/setting" element={<MyPageSetting />} />
           <Route element={<Footer />}>
             <Route path="/" element={<Home />} />
