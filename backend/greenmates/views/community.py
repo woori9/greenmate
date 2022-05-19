@@ -182,7 +182,7 @@ def get_create_comment(request, feed_id):
         return Response(data='EXPIRED_TOKEN', status=HTTP_400_BAD_REQUEST)
 
     if request.method == 'GET':
-        comment = get_list_or_404(Comment, feed_id=feed_id)
+        comment = Comment.objects.filter(feed_id=feed_id)
         serializer = CommentSerializer(comment, context={'user': user}, many=True)
         return Response(serializer.data)
 
