@@ -78,11 +78,12 @@ const NicknameContainer = styled.div`
     }
   }
 `;
+
 const VegeTypeContainer = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  padding: 3rem 0;
+  padding: 1.5rem 0 3rem 0;
 `;
 const VegeTypeLst = styled.div`
   display: flex;
@@ -134,6 +135,7 @@ const Page = styled.div`
   filter: drop-shadow(0 -1px 4px rgba(0, 0, 0, 0.25));
 `;
 const Description = styled.div`
+  align-self: end;
   display: flex;
   justify-content: end;
   align-items: center;

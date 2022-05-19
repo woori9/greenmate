@@ -33,7 +33,8 @@ function MyPageReviews() {
     getMyReviews(
       { userId: userPk },
       res => {
-        setReviews(res);
+        const { data } = res;
+        setReviews(data);
       },
       err => {
         console.log(err);
@@ -54,7 +55,7 @@ function MyPageReviews() {
         {reviews.length ? (
           <>
             {reviews.map(review => (
-              <p>{review}</p>
+              <p>{review.id}</p>
             ))}
           </>
         ) : (
