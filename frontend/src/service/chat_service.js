@@ -207,7 +207,9 @@ const getCountUnreadMessages = (userId, callback) => {
 const getJoinDate = async (userId, chatRoomId) => {
   try {
     const userRoomRef = doc(db, 'users', userId, 'rooms', chatRoomId);
-    const { joinDate } = (await getDoc(userRoomRef)).data();
+    const docSnap = await getDoc(userRoomRef);
+    const { joinDate } = docSnap.data();
+
     return joinDate;
   } catch (err) {
     throw new Error(err);
