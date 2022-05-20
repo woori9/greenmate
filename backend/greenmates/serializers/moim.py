@@ -45,8 +45,8 @@ class MoimSimpleSerializer(MoimBaseSerializer):
     def to_representation(self, instance):
         response = super().to_representation(instance)
         language = self.context['user'].language
-        restaurant_info = instance.restaurant.restaurantinfo_set.first()
-        # restaurant_info = instance.restaurant.restaurantinfo_set.filter(language=language).first()
+        # restaurant_info = instance.restaurant.restaurantinfo_set.first()
+        restaurant_info = instance.restaurant.restaurantinfo_set.filter(language=language).first()
         response['restaurant'] = {
             'id': instance.restaurant.id,
             'latitude': instance.restaurant.latitude,

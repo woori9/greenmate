@@ -32,11 +32,15 @@ function SettingLanguage() {
     apiPutLanguage(
       { language: putNewLang },
       res => {
-        alert('언어 설정이 변경되었습니다');
+        alert(
+          putNewLang === 0
+            ? '언어 설정이 변경되었습니다.'
+            : 'Language settings changed.',
+        );
         setUserInfo({ ...userInfo, ...res.data });
       },
       () => {
-        alert('언어 설정 변경에 실패했습니다');
+        alert('언어 설정 변경에 실패했습니다.');
       },
     );
   }
