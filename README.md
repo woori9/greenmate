@@ -18,7 +18,7 @@
 
 [기술 스택](##기술-스택)
 
-[프로젝트 일정](##프로젝트-구조)
+[프로젝트 구조](##프로젝트-구조)
 
 [사용 방법](##사용-방법)
 
@@ -42,6 +42,52 @@
 
 ## 주요 기능
 
+### 메이트 구하기
+
+#### 모임 생성/참여
+
+- 직접 모임을 열거나, 다른 사람이 만든 모임에 참여할 수 있습니다.
+
+![image-20220520001713985](README.assets/image-20220520001713985.png)
+
+#### 모임 상태 자동 업데이트
+
+- 모임 시간이 지나면 모집 완료에서 모임 종료 상태로 변경되고, 종료된 모임에 대해 메이트 평가를 남길 수 있습니다.
+
+![image-20220520000523067](README.assets/image-20220520000523067.png)
+
+- 모임 시간 2시간 전까지 인원이 채워지지 않았다면 해당 모임은 자동으로 취소됩니다. 내가 해당 모임에 참여 중이었다면 취소 알림을 받게 됩니다.
+
+![image-20220520000727265](README.assets/image-20220520000727265.png)
+
+#### 푸시 알림
+
+- 내가 만든 모임에 대한 참여 신청, 내가 신청한 모임에 대한 신청 수락, 채팅 등 모임과 관련된 다양한 푸시 알림을 받을 수 있습니다.
+
+#### 채팅
+
+- 모임에 참여하는 유저 간에 1:N 채팅을 할 수 있습니다.
+
+![chatting](README.assets/chatting.gif)
+
+
+
+### 채식 식당 지도
+
+- 서울 내에 있는 채식 식당을 찾고 관련 정보를 얻을 수 있습니다.
+- 해당 식당에서 열리는 모임을 검색할 수 있습니다.
+
+![map](README.assets/map.gif)
+
+
+
+### 다국어 서비스
+
+- 우리나라에서 채식을 하는 외국인들도 관련 모임에 참여하고 정보를 얻을 수 있도록 언어 설정 기능을 추가했습니다.
+- 한국어, 영어 중에 선택할 수 있습니다.
+
+![image-20220519235301263](README.assets/image-20220519235301263.png)
+
 <br />
 
 ## 기술 스택
@@ -52,13 +98,13 @@
 | :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
 |                            HTML5                             |                             CSS3                             |                          JavaScript                          |
 
-| <img src="https://profilinator.rishav.dev/skills-assets/react-original-wordmark.svg" alt="React.js" width="50px" height="50px" /> | <img src="https://storage.googleapis.com/candycode/jotai/jotai-mascot.png" alt="Jotai" width="50px" height="50px" /> | <img src="https://styled-components.com/logo.png" alt="Styled Components" width="50px" height="50px" /> | <img src="https://mui.com/static/logo.png" alt="MUI" width="50px" height="50px" /> |
+| <img src="https://profilinator.rishav.dev/skills-assets/react-original-wordmark.svg" alt="React.js" width="50px" height="50px" /> | <img src="https://storage.googleapis.com/candycode/jotai/jotai-mascot.png" alt="Jotai" width="50px" height="50px" /> | <img src="https://i.ibb.co/ydkG6cv/img.png" alt="Styled Components" width="50px" height="50px" /> | <img src="https://mui.com/static/logo.png" alt="MUI" width="50px" height="50px" /> |
 | :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: | ------------------------------------------------------------ |
 |                            React                             |                            Jotai                             |                      Styled Components                       | MUI                                                          |
 
 ### Backend
 
-| <img src="https://profilinator.rishav.dev/skills-assets/django-original.svg" alt="Django" width="50px" height="50px" /> | <img src="https://profilinator.rishav.dev/skills-assets/mysql-original-wordmark.svg" alt="MySQL" width="50px" height="50px" /> | <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FAbdXE%2Fbtq8ZHZZcZU%2FpSW8kjHrgH0dJRc4l9ei00%2Fimg.jpg" alt="Hibernate" width="50px" height="50px" /> |
+| <img src="https://www.django-rest-framework.org/img/logo.png" alt="Django" width="50px" height="50px" /> | <img src="https://profilinator.rishav.dev/skills-assets/mysql-original-wordmark.svg" alt="MySQL" width="50px" height="50px" /> | <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FAbdXE%2Fbtq8ZHZZcZU%2FpSW8kjHrgH0dJRc4l9ei00%2Fimg.jpg" alt="Hibernate" width="50px" height="50px" /> |
 | :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
 |                    Django Rest Framework                     |                            MySQL                             |                            uWSGI                             |
 
@@ -76,6 +122,14 @@
 <br />
 
 ## 프로젝트 구조
+
+### 아키텍처
+
+![자율PJT](README.assets/자율PJT.jpg)
+
+### ERD
+
+![ERD](README.assets/ERD.png)
 
 <br />
 
@@ -157,3 +211,8 @@ $ pip install -r requirements.txt
 <br />
 
 ## 개선할 점
+
+- 위치 기반 모임 추천
+- 서울뿐만 아니라 전국의 채식 식당 데이터 수집
+- 제품 바코드 분석/원재료 목록 스캔을 통한 비건 여부 판별
+- 사용자 신고 등 서비스 정책 정교화
