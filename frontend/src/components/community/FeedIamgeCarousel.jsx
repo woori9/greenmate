@@ -66,7 +66,14 @@ const SliderItem = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
   width: 100%;
+
+  img {
+    height: 310px;
+    width: 100%;
+    object-fit: cover;
+  }
 `;
 
 function ImgCarousel({ props }) {
@@ -87,7 +94,7 @@ function ImgCarousel({ props }) {
           return (
             <div key={img.img_path}>
               <SliderItem>
-                <img height="300" src={img.img_path} alt="사진" />
+                <img src={img.img_path} alt="사진" />
               </SliderItem>
             </div>
           );

@@ -150,7 +150,7 @@ function DetailInfo() {
             <p>{address}</p>
           </div>
           <Button onClick={() => copyAddress(address)}>
-            {userInfo.language === 0 ? '복사하기' : 'copy'}
+            {userInfo.language === 0 ? '복사' : 'copy'}
           </Button>
         </div>
         <div className="call">

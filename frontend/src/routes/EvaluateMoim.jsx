@@ -82,7 +82,7 @@ const TextContainer = styled.div`
   display: flex;
   flex-flow: column wrap;
   align-items: center;
-  margin: calc(2.5rem + 59px) 0 2.5rem 0;
+  margin: calc(3.5rem + 59px) 0 2.5rem 0;
 
   p {
     font-size: 1.03rem;
