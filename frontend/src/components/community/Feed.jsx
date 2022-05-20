@@ -222,7 +222,7 @@ const VegeTypeLst = styled.div`
 `;
 const ResInfoTitle = styled.span`
   color: grey;
-  font-size: 13px;
+  font-size: 10px;
   font-weight: bold;
 `;
 const CardContainer = styled.div`
