@@ -8,8 +8,6 @@ importScripts(
   'https://www.gstatic.com/firebasejs/9.6.11/firebase-messaging-compat.js',
 );
 
-// This is the "Offline page" service worker
-
 importScripts(
   'https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js',
 );
@@ -35,6 +33,7 @@ if (workbox.navigationPreload.isSupported()) {
 }
 
 self.addEventListener('fetch', event => {
+  // Set Firebase configuration, once available
   const urlParams = new URLSearchParams(location.search);
   self.firebaseConfig = Object.fromEntries(urlParams);
 
@@ -60,12 +59,6 @@ self.addEventListener('fetch', event => {
   }
 });
 
-// Set Firebase configuration, once available
-// self.addEventListener('fetch', () => {
-//   const urlParams = new URLSearchParams(location.search);
-//   self.firebaseConfig = Object.fromEntries(urlParams);
-// });
-
 // "Default" Firebase configuration (prevents errors)
 const defaultConfig = {
   apiKey: true,
@@ -77,9 +70,7 @@ const defaultConfig = {
 let messaging = null;
 
 if (firebase.messaging.isSupported()) {
-  // Initialize Firebase app
   firebase.initializeApp(self.firebaseConfig || defaultConfig);
-  // Retrieve firebase messaging
   messaging = firebase.messaging();
 } else {
   console.log('no support firebase');
